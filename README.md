@@ -1,19 +1,21 @@
-# DecIA — site vitrine (v5)
+# DecIA — site vitrine
 
-Site monopage, prêt pour Git et pour de futures évolutions (nouvelles pages,
-nouvelles sections, contenu dynamique).
+Site monopage en ligne sur https://decia.fr (GitHub Pages), prêt pour de
+futures évolutions (nouvelles pages, nouvelles sections, contenu dynamique).
 
 ## Structure
 
 ```
-decia-v5/
+decia/
 ├── index.html        page unique, 9 sections commentées dans le code
 ├── css/
 │   └── style.css      tokens de design (couleurs, typo, espacements) + styles
 ├── js/
 │   └── main.js         header sticky, reveal au scroll, accordéon FAQ
 ├── assets/
-│   └── logo.png        logo extrait de la v4
+│   └── logo.png        logo du site
+├── CHANGELOG.md       historique daté des évolutions
+├── ROADMAP.md          ce qui reste à faire
 └── README.md
 ```
 
@@ -21,7 +23,28 @@ Chaque section de `index.html` est délimitée par un commentaire numéroté
 (`<!-- 1. HEADER -->`, `<!-- 2. HERO -->`, etc.) pour retrouver rapidement
 où éditer.
 
-## Contenu à finaliser avant mise en ligne
+## Workflow pour les évolutions
+
+Le site est en ligne : on évite de casser la prod en travaillant directement
+sur `main`.
+
+1. **Une branche par évolution** : dans GitHub, onglet « main » (menu
+   déroulant en haut à gauche du dépôt) → tapez un nom (ex.
+   `photo-ambiance-travail`) → « Create branch ».
+2. Faites vos modifications sur cette branche (édition directe des fichiers
+   sur GitHub, ou via un outil local).
+3. Ouvrez une **Pull Request** vers `main` (GitHub vous le propose
+   automatiquement après un commit sur une branche) pour relire le diff
+   avant de fusionner.
+4. Une fois fusionnée, GitHub Pages redéploie automatiquement le site
+   (1-2 minutes).
+5. Notez le changement dans `CHANGELOG.md` (date + ce qui a changé) et
+   cochez la case correspondante dans `ROADMAP.md` si applicable.
+
+Pour un suivi plus formel des tâches à venir, chaque ligne de `ROADMAP.md`
+peut aussi devenir une **issue GitHub** (onglet « Issues » → « New issue »).
+
+## Contenu à finaliser
 
 La section « Preuve sociale » (`#preuve`) contient des **placeholders**
 explicites (`[XX]`, `[Nom Prénom]`, `LOGO 1`…) à remplacer par vos vrais
@@ -36,24 +59,10 @@ les remplir : ajoutez vos fichiers dans `assets/photos/`, puis dans
 derrière la photo). Sources gratuites et libres de droits commerciaux :
 [unsplash.com](https://unsplash.com) ou [pexels.com](https://pexels.com).
 
-## Déploiement sur GitHub Pages + domaine Hostinger
+Le détail de ce qui reste à faire est dans `ROADMAP.md`.
 
-1. Poussez ce dossier sur un dépôt GitHub (`main` ou une branche dédiée).
-2. Dans les paramètres du dépôt → **Pages**, activez GitHub Pages sur la
-   branche/dossier voulu.
-3. Ajoutez votre domaine personnalisé dans ce même écran : GitHub crée
-   automatiquement un fichier `CNAME` à la racine du dépôt.
-4. Chez Hostinger, dans la zone DNS du domaine, pointez-le vers GitHub Pages
-   (enregistrement `A`/`ALIAS` pour un domaine racine, ou `CNAME` pour un
-   sous-domaine comme `www`). Les valeurs exactes à utiliser sont indiquées
-   en temps réel dans la doc officielle GitHub Pages — évitez de copier une
-   IP trouvée ailleurs, elles peuvent changer.
-5. Attendez la propagation DNS (jusqu'à 24-48h), puis activez « Enforce
-   HTTPS » dans les paramètres Pages une fois le certificat proposé.
+## Déploiement
 
-## Prochaines évolutions prévues
-
-Cette architecture (fichiers séparés, sections commentées, tokens CSS
-centralisés) est pensée pour absorber sans refonte : nouvelles sections,
-nouvelles pages (`/mentions-legales.html`, `/blog/...`), ou migration vers
-un contenu piloté par un CMS/JS plus tard.
+Le site est déjà déployé sur GitHub Pages avec `decia.fr` pointé chez
+Hostinger (4 enregistrements A vers les IP GitHub Pages + HTTPS forcé).
+Toute modification fusionnée sur `main` est republiée automatiquement.
