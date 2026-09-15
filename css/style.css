@@ -428,10 +428,16 @@ button {
 }
 
 .hero-inner {
+  /* min-width:0 annule le min-width:auto par défaut des enfants de grid,
+     qui sinon empêche la colonne de rétrécir sous la largeur de son
+     contenu (boutons en nowrap, mot long du H1...) et fait déborder
+     toute la page horizontalement sur les petits écrans. */
+  min-width: 0;
   max-width: 620px;
 }
 
 .hero-visual {
+  min-width: 0;
   align-self: stretch;
 }
 
@@ -1110,8 +1116,21 @@ button {
   }
 
   .hero-visual .photo-placeholder {
-    min-height: 220px;
+    /* min-height assez bas pour ne jamais forcer une largeur supérieure à
+       la colonne disponible, même sur les plus petits écrans (320px) —
+       même bug de blowout aspect-ratio/min-height que .photo-band. */
+    min-height: 140px;
     aspect-ratio: 16 / 9;
+  }
+
+  /* Bug de responsive : aspect-ratio:21/6 + min-height:180px forçait une
+     largeur de ~630px (180 * 21/6) quel que soit le conteneur, ce qui
+     faisait déborder la page horizontalement sur mobile (site "pas
+     responsive" / affiché en partie). On repasse sur un ratio plus étroit
+     et un min-height que la largeur mobile peut satisfaire sans forcer. */
+  .photo-band {
+    aspect-ratio: 16 / 9;
+    min-height: 140px;
   }
 
   .about {

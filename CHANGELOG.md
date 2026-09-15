@@ -3,6 +3,33 @@
 Historique des évolutions du site, par date. Pas de numéros de version : on
 documente ce qui change et pourquoi, dans l'ordre chronologique.
 
+## 2026-09-15 (9)
+
+### Corrigé — bug bloquant : site pas responsive sur smartphone
+Cause racine identifiée : `.photo-band` (bandeau photo « productivité »,
+entre les 3 étapes de la méthode) combinait `aspect-ratio: 21 / 6` et
+`min-height: 180px` sans variante mobile. Sur un écran étroit, l'algorithme
+CSS `aspect-ratio` calcule d'abord la hauteur (min-height gagne car le ratio
+donnerait une hauteur plus petite), puis **recalcule la largeur à partir de
+cette hauteur et du ratio** — soit 180 × 21/6 = 630px, bien plus large que
+l'écran. Comme cet élément n'était clipé par aucun ancêtre `overflow:hidden`,
+ça forçait TOUTE la page à s'élargir (site zoomé/tronqué, comme si on était
+resté en vue desktop — exactement le symptôme décrit).
+- `.photo-band` : ratio resserré à `16/9` et `min-height` réduit à `140px`
+  sous 860px, pour que l'aspect-ratio ne dépasse jamais la largeur du
+  conteneur mobile.
+- Même bug plus mineur (mais contenu par le `overflow:hidden` du hero)
+  sur `.hero-visual .photo-placeholder` : `min-height` mobile réduit de
+  220px à 140px pour la même raison.
+- `.hero-inner` / `.hero-visual` (colonnes de la grille du hero) :
+  ajout de `min-width: 0`, car les enfants de grid ont par défaut un
+  `min-width: auto` qui les empêche de rétrécir sous la largeur de leur
+  contenu (ici les boutons en `white-space: nowrap`) — deuxième cause de
+  débordement horizontal, plus discrète, trouvée pendant le même audit.
+- Vérifié à 320px, 375px et au-delà : plus aucun débordement horizontal
+  sur toute la page (`scrollWidth === clientWidth` partout), site
+  entièrement défilable et lisible du header au footer.
+
 ## 2026-09-15 (8)
 
 ### Modifié — style visuel repris de decia-v4.html
