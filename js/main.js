@@ -15,6 +15,42 @@ function initStickyHeader() {
 }
 
 /**
+ * Menu burger mobile : apparaît quand les liens de nav disparaissent
+ * (voir le breakpoint 760px en CSS). Un seul panneau, fermé par clic sur
+ * un lien, par Échap, ou si la fenêtre repasse en largeur desktop.
+ */
+function initMobileNav() {
+  const toggle = document.getElementById("navToggle");
+  const nav = document.getElementById("mobileNav");
+  if (!toggle || !nav) return;
+
+  const close = () => {
+    toggle.setAttribute("aria-expanded", "false");
+    nav.setAttribute("data-open", "false");
+  };
+
+  const open = () => {
+    toggle.setAttribute("aria-expanded", "true");
+    nav.setAttribute("data-open", "true");
+  };
+
+  toggle.addEventListener("click", () => {
+    const isOpen = nav.getAttribute("data-open") === "true";
+    isOpen ? close() : open();
+  });
+
+  nav.querySelectorAll("a").forEach((link) => link.addEventListener("click", close));
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") close();
+  });
+
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 760) close();
+  });
+}
+
+/**
  * Apparition douce des blocs marqués .reveal au scroll.
  * Le CSS n'applique l'effet (opacity/translate) qu'une fois la classe
  * .reveal-armed posée ici : si ce script ne tourne pas, le contenu reste
@@ -75,6 +111,7 @@ function initFaq() {
 
 document.addEventListener("DOMContentLoaded", () => {
   initStickyHeader();
+  initMobileNav();
   initReveal();
   initFaq();
 });

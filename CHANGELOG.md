@@ -3,6 +3,113 @@
 Historique des évolutions du site, par date. Pas de numéros de version : on
 documente ce qui change et pourquoi, dans l'ordre chronologique.
 
+## 2026-09-15 (8)
+
+### Modifié — style visuel repris de decia-v4.html
+Contenu et rubriques inchangés ; seuls les tokens et traitements visuels
+ont été alignés sur `decia-v4.html` (le fichier fourni pour référence) :
+- Police du texte courant : Inter → Plus Jakarta Sans (Inter retirée du
+  chargement Google Fonts, plus utilisée nulle part).
+- Nouvelle couleur d'accent claire `--accent: #5c9cff` (icônes des
+  cartes bénéfices, badges d'étapes, eyebrows, liens footer survolés,
+  contour de focus) — distincte du bleu du dégradé principal.
+- Rayons de bordure resserrés : `--radius-sm` 10px→8px, `--radius-md`
+  16px→14px, `--radius-lg` 24px→22px (cartes, boutons, CTA final).
+- Gouttières de page élargies : `--container-w` 1160px→1180px,
+  padding du `.container` 24px→40px (22px sous 560px).
+- Rythme vertical des sections agrandi : `--space-6` 6rem→7.5rem
+  (section-pad et bas du hero).
+- Eyebrows (« Consulting IA... », « Réalisations »...) : plus petits,
+  en majuscules, espacés, colorés en accent (au lieu de gris uni).
+- Boutons : padding/rayon/taille ajustés, glow uniquement au survol
+  (translateY + ombre bleue) au lieu d'une ombre permanente ; bouton
+  secondaire avec fond légèrement teinté.
+- Halo du hero (`.hero-glow`) : dégradé ellipse à 3 arrêts + flou,
+  plus proche du rendu v4.
+- Puces de repères (`.proof-chip`) : légère animation de flottement en
+  continu, décalée par puce.
+- Cartes bénéfices : effet de survol repensé (soulèvement + bordure
+  bleutée au lieu d'un simple changement de fond).
+- Badges numérotés des étapes (`.step-num`) : transformés en pastilles
+  circulaires (au lieu d'un simple texte), qui s'agrandissent légèrement
+  au survol de la carte.
+- Animation d'apparition au scroll (`.reveal`) : distance et durée
+  augmentées avec un easing `cubic-bezier`, plus un effet de cascade
+  (`.stagger`) sur les grilles (bénéfices, chiffres, témoignages,
+  étapes) pour un apparition décalée élément par élément.
+- CTA final : fond en dégradé plein (au lieu d'un fond translucide),
+  texte blanc, bouton inversé (fond blanc), halo décoratif en coin.
+- Footer : libellés de colonnes en majuscules espacées, liens en accent
+  au survol, espacements ajustés.
+
+## 2026-09-15 (7)
+
+### Modifié
+- Graisse des titres (h1-h4) : 600 (semi-gras) → 700 (gras). Le poids
+  700 en Plus Jakarta Sans était déjà chargé depuis Google Fonts, seule
+  la règle `font-weight` a changé (`css/style.css`, règle `h1,h2,h3,h4`).
+
+## 2026-09-15 (6)
+
+### Modifié
+- Police des titres (`--font-display`, utilisée par h1-h4 et les éléments
+  d'accent comme les chiffres de la preuve sociale) : Space Grotesk →
+  Plus Jakarta Sans. Police chargée en 400/500/600/700 depuis Google
+  Fonts à la place de Space Grotesk ; Inter (texte courant) et
+  JetBrains Mono (labels) inchangées.
+
+## 2026-09-15 (5)
+
+### Modifié
+- Bouton « Réserver un appel » du header : hauteur réduite (padding
+  vertical 0.85rem → 0.5rem, classe `.nav-group .btn-primary`) pour
+  rester discret à côté du logo ; les autres boutons `.btn` du site ne
+  sont pas concernés.
+
+## 2026-09-15 (4)
+
+### Corrigé
+- Header : le conteneur interne se réduisait à la largeur de son contenu
+  (bug de sizing flex latent, invisible tant que rien n'était collé aux
+  bords) au lieu de remplir toute la largeur disponible — logo et bloc
+  nav+CTA se retrouvaient centrés au lieu d'être chacun sur un bord.
+  `width: 100%` ajouté sur `.site-header .container`.
+
+### Modifié
+- Rubriques + CTA (+ burger en dessous de 960px) regroupés dans un seul
+  bloc `.nav-group` collé au bord droit ; le logo reste fixe tout à
+  gauche. C'est ce bloc, et lui seul, qui s'adapte à la largeur de page.
+
+## 2026-09-15 (3)
+
+### Modifié
+- Header repris au format de `decia-v4.html` (rubriques inchangées) :
+  passage en `position: fixed` flottant et transparent au repos, fond
+  opaque + flou uniquement après un léger scroll, hauteur qui se resserre
+  au scroll, soulignement animé au survol des liens de nav. Seuil
+  d'apparition du menu burger relevé de 760px à 960px, en cohérence avec
+  la v4.
+- « Preuve sociale » renommée en « Réalisations » (eyebrow de la section
+  `#preuve`).
+- Boutons (`.btn`) moins arrondis : `border-radius` passé de la forme
+  pilule à `var(--radius-sm)` (10px).
+
+## 2026-09-15 (2)
+
+### Ajouté
+- Menu burger en dessous de 760px : les liens de nav et le CTA passent dans
+  un panneau déroulant accessible (clavier, `aria-expanded`, fermeture sur
+  Échap/clic sur un lien/retour en largeur desktop).
+- Photo du hero (`#top`) remplie avec le visuel « Automatisation — plus de
+  clients, moins de tâches répétitives » (`assets/photos/hero-automatisation.jpg`).
+
+### Modifié
+- Hauteur du header (`--header-h`) rendue fluide via `clamp()` (56px à
+  76px) au lieu d'une valeur fixe, pour suivre la largeur de la fenêtre.
+- Les visuels déjà composés (texte/graphique intégrés à l'image, comme la
+  photo du hero) utilisent un cadrage `object-position: top` sans
+  l'assombrissement prévu pour les photos brutes (classe `.photo-fit-top`).
+
 ## 2026-09-15
 
 ### Mis en ligne
