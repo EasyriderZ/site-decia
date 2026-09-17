@@ -7,7 +7,7 @@ futures évolutions (nouvelles pages, nouvelles sections, contenu dynamique).
 
 ```
 decia/
-├── index.html        page unique, 9 sections commentées dans le code
+├── index.html        page unique, 8 sections commentées dans le code
 ├── css/
 │   └── style.css      tokens de design (couleurs, typo, espacements) + styles
 ├── js/
@@ -46,18 +46,11 @@ peut aussi devenir une **issue GitHub** (onglet « Issues » → « New issue »
 
 ## Contenu à finaliser
 
-La section « Preuve sociale » (`#preuve`) contient des **placeholders**
-explicites (`[XX]`, `[Nom Prénom]`, `LOGO 1`…) à remplacer par vos vrais
-chiffres, témoignages et logos clients.
-
-Trois emplacements photo (`<figure class="photo-placeholder">`) sont prévus
-dans le hero, entre « Méthode » et « Pourquoi DecIA », et dans la preuve
-sociale — thèmes : ambiance de travail, productivité, gain financier. Pour
-les remplir : ajoutez vos fichiers dans `assets/photos/`, puis dans
-`index.html` ajoutez `<img src="assets/photos/votre-fichier.jpg" alt="...">`
-à l'intérieur du `<figure>` correspondant (la légende disparaît d'elle-même
-derrière la photo). Sources gratuites et libres de droits commerciaux :
-[unsplash.com](https://unsplash.com) ou [pexels.com](https://pexels.com).
+Le site n'a volontairement aucune photo (hero centré, sans section
+« Preuve sociale/Réalisations », sur le modèle de `decia-v4.html`). Le seul
+emplacement image restant est l'avatar `[Photo]` de la section « Pourquoi
+DecIA » (`.avatar`) — à remplacer par une vraie photo d'équipe le cas
+échéant.
 
 Le détail de ce qui reste à faire est dans `ROADMAP.md`.
 

@@ -3,6 +3,47 @@
 Historique des évolutions du site, par date. Pas de numéros de version : on
 documente ce qui change et pourquoi, dans l'ordre chronologique.
 
+## 2026-09-16 (2)
+
+### Ajouté
+- Favicon complet, généré à partir du symbole « IA » recadré dans
+  `assets/logo.png` (fond transparent pour l'onglet navigateur, fond noir
+  plein pour les icônes d'écran d'accueil) : `assets/favicon.ico`,
+  `favicon-16x16.png`, `favicon-32x32.png`, `apple-touch-icon.png` (180px),
+  `android-chrome-192x192.png`, `android-chrome-512x512.png`, et
+  `assets/site.webmanifest` pour l'ajout à l'écran d'accueil iOS/Android.
+  Liens correspondants ajoutés dans le `<head>` de `index.html`.
+
+## 2026-09-16
+
+### Supprimé
+- Les 3 emplacements photo du site (hero, bande « productivité » dans
+  Méthode, « gain financier » dans Réalisations) et tout le CSS associé
+  (`.photo-placeholder` et ses variantes, `.photo-band`).
+- Section « Réalisations » (`#preuve`) entière : chiffres placeholders,
+  témoignages clients, logos clients — retirée avec son CSS
+  (`.stats-block`, `.stats-row`, `.stat`, `.testimonials`, `.testimonial`,
+  `.client-logos`, `.proof-note`).
+
+### Modifié — hero repris au pixel de decia-v4.html
+- Hero centré sur une seule colonne (au lieu de deux colonnes texte +
+  photo) : `text-align:center`, `.hero-inner` en `max-width:720px` centré,
+  padding fixe `200px 0 100px`, tailles de titre/texte et espacements
+  calqués sur la v4.
+- Ajout du champ de bulles décoratif (`.bubble-field` : « Agent IA »,
+  « Automatisation »), masqué sous 960px comme dans la v4.
+- Les repères (« Audit en 2 semaines »…) sont maintenant centrés sous les
+  boutons, eux aussi centrés (`justify-content:center`), au lieu d'être
+  alignés à gauche.
+- Logo du header : taille fixe 24px (au lieu d'un `clamp()` fluide), pour
+  coller exactement à la v4.
+- `--space-7` (uniquement utilisé par l'ancien padding du hero) retiré des
+  tokens, devenu inutile.
+- Numérotation des commentaires de section dans `index.html` mise à jour
+  (8 sections au lieu de 9) suite à la suppression de « Réalisations ».
+- README/ROADMAP mis à jour pour refléter l'absence de photos et de
+  section Réalisations.
+
 ## 2026-09-15 (9)
 
 ### Corrigé — bug bloquant : site pas responsive sur smartphone

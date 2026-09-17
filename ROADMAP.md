@@ -6,16 +6,14 @@ collaboratif, chaque ligne peut aussi devenir une issue GitHub (onglet
 
 ## Contenu à finaliser
 
-- [ ] Remplacer les placeholders de la preuve sociale (`#preuve`) : nombre
-      de projets, % de temps gagné, délai moyen de résultats, % de clients
-      qui recommandent.
-- [ ] Ajouter 3 témoignages clients réels (nom, poste, entreprise, citation).
-- [ ] Ajouter les vrais logos clients (remplacer les 5 `LOGO X`).
-- [ ] Ajouter les 3 photos (ambiance de travail, productivité, gain
-      financier) — voir instructions dans le README.
 - [ ] Relire les mentions légales et la page confidentialité en footer
       (actuellement des liens `#` vides).
 - [ ] Ajouter le lien LinkedIn réel en footer (actuellement `#`).
+- [ ] Remplacer l'avatar `[Photo]` de la section « Pourquoi DecIA » par une
+      vraie photo d'équipe, si souhaité.
+- [ ] Si une section « Réalisations » (chiffres, témoignages, logos
+      clients) est souhaitée à nouveau, la reconstruire avec du contenu
+      réel plutôt que des placeholders.
 
 ## Évolutions techniques envisagées
 
