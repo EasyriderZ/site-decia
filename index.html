@@ -15,6 +15,36 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
+<style>
+  /* Eyebrow du hero centré (sans étirer le badge en pleine largeur) */
+  .hero .eyebrow{ display:table; margin:0 auto; text-align:center; }
+
+  /* Centrer les blocs pour éviter un vide en fin de grille (dernière ligne incomplète) */
+  #probleme .benefits,
+  #cas-usage .benefits{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+  #probleme .benefit-card,
+  #cas-usage .benefit-card{
+    flex:1 1 300px;
+    max-width:340px;
+  }
+
+  /* Lien sous forme de bloc bleu dans les cartes étapes (Audit, Automatisation) */
+  .step-link{
+    display:inline-flex; align-items:center; gap:8px;
+    margin-top:16px;
+    padding:10px 18px; border-radius:8px;
+    background:linear-gradient(135deg, #0066FF, #3B24FC);
+    color:#fff; text-decoration:none;
+    font-size:0.86rem; font-weight:600; line-height:1;
+    transition:transform .3s ease, box-shadow .3s ease;
+  }
+  .step-link:hover{ transform:translateY(-2px); box-shadow:0 12px 26px rgba(0,102,255,0.35); }
+</style>
+
 </head>
 <body>
 
@@ -57,7 +87,7 @@
       <div class="hero-inner reveal">
         <p class="eyebrow">Consulting IA pour TPE et PME</p>
         <h1>Et si votre entreprise pouvait faire <span class="grad-text">plus</span>… sans travailler plus ?</h1>
-        <p class="lead">DECiA identifie les tâches qui vous font perdre du temps, les automatise et met l'intelligence artificielle au service de votre activité.</p>
+        <p class="lead">DecIA identifie les tâches qui vous font perdre du temps, les automatise et met l'intelligence artificielle au service de votre activité.</p>
         <div class="hero-actions">
           <a href="#contact" class="btn btn-primary">Parlons de votre entreprise</a>
           <a href="#cas-usage" class="btn btn-secondary">Voir un exemple concret</a>
@@ -138,11 +168,13 @@
           <div class="step-num">01</div>
           <h3>Audit Flash IA — 48h</h3>
           <p>Nous passons 2h chez vous (ou en visio) et nous cartographions tout ce qui peut être automatisé. Vous repartez avec une feuille de route chiffrée : « Ici 8h gagnées = 1200€/mois ».</p>
+          <a href="audit.html" class="step-link">→ Voir ce que contient l'audit</a>
         </div>
         <div class="step reveal">
           <div class="step-num">02</div>
           <h3>Automatisation clé en main</h3>
           <p>Nous branchons ce que vous avez déjà : Gmail, WhatsApp, votre logiciel de devis, agenda, drive... Devis auto, relances impayés auto, tri de mails, prise de RDV auto. Tout se met en place sans changer vos habitudes. Sans abonnement caché.</p>
+          <a href="experiences-metier.html" class="step-link">→ Voir un exemple pour mon métier</a>
         </div>
         <div class="step reveal">
           <div class="step-num">03</div>
@@ -150,7 +182,7 @@
           <p>Pas de PowerPoint. On bosse sur VOS cas réels, avec vos équipes. À la fin de la mission, vous savez le refaire seul.</p>
         </div>
       </div>
-      <p class="lead" style="text-align:center;margin-top:2rem;"><strong>Une IA utile doit d'abord résoudre un problème.</strong></p>
+      <p class="lead" style="text-align:center;margin:2rem auto 0;font-size:1.5rem;max-width:760px;"><strong>Une IA utile doit d'abord résoudre un problème.</strong></p>
     </div>
   </section>
 
@@ -196,7 +228,6 @@
       </div>
       <div class="section-head reveal" style="margin-top:2rem;">
         <p class="lead">Ce ne sont que des exemples.<br><strong>Votre entreprise a probablement ses propres opportunités.</strong><br>C'est précisément ce que nous cherchons lors de l'audit.</p>
-        <a href="#contact" class="btn btn-primary">Identifier mes opportunités</a>
       </div>
     </div>
   </section>
@@ -237,7 +268,7 @@
     <div class="container">
       <div class="section-head reveal">
         <p class="eyebrow">Pourquoi DecIA</p>
-        <h2>Une équipe qui a fait le travail avant de le vendre</h2>
+        <h2>Parce que vous n'avez probablement pas besoin d'un énième outil.</h2>
       </div>
       <div class="about reveal">
         <div class="avatar" aria-hidden="true">[Photo]</div>
@@ -256,7 +287,7 @@
     <div class="container">
       <div class="section-head reveal">
         <p class="eyebrow">Questions fréquentes</p>
-        <h2>Ce que nos prospects nous demandent avant de se lancer</h2>
+        <h2>Les questions que vous vous posez probablement</h2>
       </div>
       <div class="faq-list reveal">
         <div class="faq-item" data-open="false">
@@ -315,7 +346,7 @@
     <div class="container">
       <div class="cta-band reveal">
         <div>
-          <h2>Votre concurrent a déjà automatisé ses devis. Et vous ?</h2>
+          <h2>Votre concurrent a déjà automatisé ses devis. Et vous?</h2>
           <p>Vous avez peut-être déjà identifié quelques tâches qui vous font perdre du temps. Ou peut-être aucune. Dans les deux cas, un échange de 30 minutes suffit pour commencer à y voir plus clair. Nous regardons ensemble où se trouvent les tâches répétitives et les points de friction, et nous déterminons s'il existe des opportunités concrètes d'automatisation ou d'IA.</p>
           <span class="urgency">Pas de catalogue d'outils. Pas de démonstration forcée. Pas d'engagement.</span>
         </div>
@@ -334,7 +365,7 @@
     <div class="footer-top">
       <div class="footer-brand">
         <a href="#top" class="logo"><img src="assets/logo.png" alt="DecIA" width="110" height="26"></a>
-        <p>L'intelligence artificielle utile aux entreprises.<br>Audit · Automatisation · Agents IA · Formation<br>Plus d'efficacité. Moins de tâches inutiles.</p>
+        <p style="text-align:left;">L'intelligence artificielle utile aux entreprises.<br>Audit · Automatisation · Agents IA · Formation<br>Plus d'efficacité. Moins de tâches inutiles.</p>
       </div>
       <div class="footer-cols">
         <div class="footer-col">
