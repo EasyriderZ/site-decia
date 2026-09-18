@@ -148,6 +148,49 @@ button {
   margin-bottom: var(--space-2);
 }
 
+/* Eyebrow du hero centré (sans étirer le badge en pleine largeur) */
+.hero .eyebrow {
+  display: table;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* Centrer les blocs pour éviter un vide en fin de grille (dernière ligne incomplète) */
+#probleme .benefits,
+#cas-usage .benefits {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+#probleme .benefit-card,
+#cas-usage .benefit-card {
+  flex: 1 1 300px;
+  max-width: 340px;
+}
+
+/* Lien sous forme de bloc bleu (audit, méthode, études de cas...) */
+.step-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  background: var(--grad);
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.86rem;
+  font-weight: 600;
+  line-height: 1;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.step-link:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+}
+
 .section-pad {
   padding: var(--space-6) 0;
 }
@@ -493,58 +536,6 @@ button {
   flex-shrink: 0;
 }
 
-/* Bulles décoratives (= .bubble-field de la v4) */
-.bubble-field {
-  position: relative;
-  height: 70px;
-  max-width: 520px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 24px;
-  z-index: 2;
-}
-
-.bubble {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  background: var(--card);
-  border: 1px solid var(--border);
-  padding: 10px 16px;
-  border-radius: var(--radius-pill);
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  color: var(--text-soft);
-  white-space: nowrap;
-  animation: float 4.5s ease-in-out infinite;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
-}
-
-.bubble:nth-child(1) {
-  animation-delay: 0s;
-}
-
-.bubble:nth-child(2) {
-  animation-delay: 0.8s;
-}
-
-.bubble .dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--grad);
-}
-
-/* Masquées sous 960px (comme dans la v4) — placé après la définition de
-   base pour gagner le tie-break de cascade à spécificité égale. */
-@media (max-width: 960px) {
-  .bubble-field {
-    display: none;
-  }
-}
-
 @keyframes float {
   0%,
   100% {
@@ -601,6 +592,63 @@ button {
 
 .benefit-card p {
   font-size: 0.9rem;
+}
+
+/* ==========================================================================
+   Études de cas — cartes Contexte / Problème / Solution / Résultat
+   ========================================================================== */
+.case-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.case-card {
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--card);
+}
+
+.case-card .eyebrow {
+  margin-bottom: 0.5rem;
+}
+
+.case-card h3 {
+  font-size: 1.2rem;
+  margin-bottom: var(--space-2);
+}
+
+.case-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-2);
+}
+
+.case-grid dt {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-mute);
+  margin-bottom: 0.3rem;
+}
+
+.case-grid dd {
+  font-size: 0.88rem;
+  color: var(--text-soft);
+}
+
+@media (max-width: 860px) {
+  .case-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .case-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ==========================================================================
