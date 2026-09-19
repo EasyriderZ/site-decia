@@ -6,8 +6,10 @@ collaboratif, chaque ligne peut aussi devenir une issue GitHub (onglet
 
 ## Contenu à finaliser
 
-- [ ] Relire les mentions légales et la page confidentialité en footer
-      (actuellement des liens `#` vides).
+- [x] Mentions légales publiées (`mentions-legales.html`, footer mis à
+      jour sur toutes les pages).
+- [x] Politique de confidentialité publiée (`confidentialite.html`,
+      footer mis à jour sur toutes les pages).
 - [ ] Ajouter le lien LinkedIn réel en footer (actuellement `#`).
 - [ ] Remplacer l'avatar `[Photo]` de la section « Pourquoi DecIA » par une
       vraie photo d'équipe, si souhaité.
@@ -17,6 +19,6 @@ collaboratif, chaque ligne peut aussi devenir une issue GitHub (onglet
 
 ## Évolutions techniques envisagées
 
-- [ ] Page dédiée mentions légales (`/mentions-legales.html`).
-- [ ] Page dédiée confidentialité (`/confidentialite.html`).
+- [x] Page dédiée mentions légales (`/mentions-legales.html`).
+- [x] Page dédiée confidentialité (`/confidentialite.html`).
 - [ ] Éventuel blog ou section actualités.

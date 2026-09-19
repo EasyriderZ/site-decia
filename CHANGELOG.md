@@ -3,6 +3,34 @@
 Historique des évolutions du site, par date. Pas de numéros de version : on
 documente ce qui change et pourquoi, dans l'ordre chronologique.
 
+## 2026-09-19 (4)
+
+### Ajouté — page Politique de confidentialité
+Nouvelle page `confidentialite.html` (responsable du traitement, données
+collectées, finalités, durée de conservation, destinataires, droits RGPD,
+cookies, sécurité), habillée au look du site et réutilisant les composants
+`.legal-content` / `.legal-block` créés pour les mentions légales. Contenu
+fourni par le client, dernière mise à jour affichée : 19 septembre 2026.
+- Lien « Confidentialité » du footer mis à jour de `#` vers
+  `confidentialite.html` sur toutes les pages (`index.html`, `audit.html`,
+  `methode.html`, `etudes-de-cas.html`, `mentions-legales.html`).
+- `ROADMAP.md` : cases correspondantes cochées.
+
+## 2026-09-19 (3)
+
+### Ajouté — page Mentions légales
+Nouvelle page `mentions-legales.html` (éditeur, hébergeur, propriété
+intellectuelle, responsabilité, droit applicable), habillée au look du
+site. Contenu fourni par le client (Matteo MORO, EI, SIRET
+944 722 685 00012 — hébergeur Hostinger International Ltd.).
+- Nouveaux composants ajoutés à `css/style.css` : `.legal-content`,
+  `.legal-block`, `.legal-dl` (liste de définitions label/valeur pour les
+  informations éditeur/hébergeur).
+- Lien « Mentions légales » du footer mis à jour de `#` vers
+  `mentions-legales.html` sur toutes les pages (`index.html`, `audit.html`,
+  `methode.html`, `etudes-de-cas.html`).
+- `ROADMAP.md` : cases correspondantes cochées.
+
 ## 2026-09-19 (2)
 
 ### Modifié — refonte complète de `methode.html`
