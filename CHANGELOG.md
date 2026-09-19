@@ -3,6 +3,44 @@
 Historique des évolutions du site, par date. Pas de numéros de version : on
 documente ce qui change et pourquoi, dans l'ordre chronologique.
 
+## 2026-09-19 (2)
+
+### Modifié — refonte complète de `methode.html`
+Contenu remplacé mot pour mot par la maquette « On ne commence pas par un
+outil, on commence par vous » : hero à 2 colonnes (texte + carte "notre
+approche en 3 étapes"), 3 illustrations avant/après (photo WhatsApp → devis,
+factures fournisseurs, relances devis), détail des 3 étapes (observation,
+déploiement en 4 jours avec table des outils conservés, autonomie avec
+mockup de message modifiable), 3 tickets de chantiers récents, CTA final
+avec carte "déroulé des 30 min". Habillé au look DecIA existant (header/
+footer du site, tokens de `css/style.css`).
+- Nouveaux composants ajoutés à `css/style.css` (section « Page Méthode ») :
+  hero éclaté (`.hero-split`, `.mini-card`), illustrations avant/après
+  (`.illustration-card`, `.il-compare`), badge d'étape (`.step-badge`),
+  détail d'étape en 2 colonnes (`.step-detail`), table process
+  (`.process-table`), panneau de déploiement (`.timeline-panel`,
+  `.timeline-days`), table des outils (`.tools-table`), cartes autonomie
+  (`.autonomy-card`), mockup de message (`.message-mock`), tickets de
+  chantiers (`.ticket-card`), CTA final enrichi (`.cta-rich`, `.cta-inner`).
+
+## 2026-09-19
+
+### Modifié — refonte complète d'`audit.html`
+Contenu remplacé mot pour mot par la maquette « Audit IA : passez de
+l'intuition à la performance » (score de maturité, méthodologie 4 piliers,
+roadmap 21 jours, garantie, cartes pour-qui/pas-pour-qui, FAQ prix/process,
+formulaire de diagnostic), habillé au look DecIA existant (header/footer du
+site, tokens de `css/style.css`, accordéon FAQ de `js/main.js`).
+- Nouveaux composants ajoutés à `css/style.css` (section dédiée en fin de
+  fichier) : mockup de restitution (`.report-mock` + anneau de score en
+  conic-gradient), cartes contexte (`.context-card`), cartes piliers
+  (`.pillar-card`), bandeau callout (`.callout-card`), roadmap verticale
+  (`.roadmap`), cartes pour-qui/pas-pour-qui (`.fit-card`), CTA final enrichi
+  (`.final-cta`) et formulaire (`.audit-form`).
+- Formulaire de diagnostic non fonctionnel par conception (site 100%
+  statique, pas de backend) : soumission interceptée en JS, mention
+  « maquette sans backend » conservée, contact via `audit@decia.fr`.
+
 ## 2026-09-16 (2)
 
 ### Ajouté
