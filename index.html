@@ -314,13 +314,14 @@
        ========================================================== -->
   <section id="contact" class="section-pad">
     <div class="container">
-      <div class="cta-band reveal">
-        <div>
-          <h2>Votre concurrent a déjà automatisé ses devis. Et vous?</h2>
-          <p>Vous avez peut-être déjà identifié quelques tâches qui vous font perdre du temps. Ou peut-être aucune. Dans les deux cas, un échange de 30 minutes suffit pour commencer à y voir plus clair. Nous regardons ensemble où se trouvent les tâches répétitives et les points de friction, et nous déterminons s'il existe des opportunités concrètes d'automatisation ou d'IA.</p>
-          <span class="urgency">Pas de catalogue d'outils. Pas de démonstration forcée. Pas d'engagement.</span>
-        </div>
-        <a href="mailto:contact@decia.fr" class="btn btn-primary">Réserver mon échange de 30 minutes</a>
+      <div class="section-head reveal">
+        <p class="eyebrow">Réserver un échange</p>
+        <h2>Votre concurrent a déjà automatisé ses devis. Et vous?</h2>
+        <p class="lead">Vous avez peut-être déjà identifié quelques tâches qui vous font perdre du temps. Ou peut-être aucune. Dans les deux cas, un échange de 30 minutes suffit pour commencer à y voir plus clair. Nous regardons ensemble où se trouvent les tâches répétitives et les points de friction, et nous déterminons s'il existe des opportunités concrètes d'automatisation ou d'IA.</p>
+        <span class="urgency">Pas de catalogue d'outils. Pas de démonstration forcée. Pas d'engagement.</span>
+      </div>
+      <div class="cal-embed-card reveal">
+        <div id="cal-inline-embed"></div>
       </div>
     </div>
   </section>
@@ -367,5 +368,21 @@
 
 <script src="js/main.js"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+<!-- Cal.com — prise de RDV inline (section #contact) -->
+<script type="text/javascript">
+  (function (C, A, L) { let p = function (a, ar) { a.q.push(ar); }; let d = C.document; C.Cal = C.Cal || function () { let cal = C.Cal; let ar = arguments; if (!cal.loaded) { cal.ns = {}; cal.q = cal.q || []; d.head.appendChild(d.createElement("script")).src = A; cal.loaded = true; } if (ar[0] === L) { const api = function () { p(api, arguments); }; const namespace = ar[1]; api.q = api.q || []; if (typeof namespace === "string") { cal.ns[namespace] = cal.ns[namespace] || api; p(cal.ns[namespace], ar); p(cal, ["initNamespace", namespace]); } else p(cal, ar); return; } p(cal, ar); }; })(window, "https://app.cal.com/embed/embed.js", "init");
+  Cal("init", { origin: "https://cal.com" });
+  Cal("inline", {
+    elementOrSelector: "#cal-inline-embed",
+    calLink: "decia",
+    config: { layout: "month_view", theme: "dark" }
+  });
+  Cal("ui", {
+    theme: "dark",
+    cssVarsPerTheme: { dark: { "cal-brand": "#0066ff" } },
+    hideEventTypeDetails: false,
+    layout: "month_view"
+  });
+</script>
 </body>
 </html>

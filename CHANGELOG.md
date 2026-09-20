@@ -3,6 +3,24 @@
 Historique des évolutions du site, par date. Pas de numéros de version : on
 documente ce qui change et pourquoi, dans l'ordre chronologique.
 
+## 2026-09-20 (2)
+
+### Modifié — CTA final de la page d'accueil : prise de RDV Cal.com inline
+Le bouton mailto « Réserver mon échange de 30 minutes » du CTA final
+(`#contact`) est remplacé par un calendrier Cal.com intégré directement
+dans la page (embed inline, thème sombre, couleur de marque alignée sur
+`--blue-start`). Le lien utilisé est le compte `cal.com/decia` (page par
+défaut, sans type d'événement forcé) — l'événement « Appel découverte -
+30 min » configuré sur ce compte s'affiche automatiquement.
+- Nouveaux styles dans `css/style.css` : `.cal-embed-card`,
+  `#cal-inline-embed`, `.urgency` (non scopé, remplace l'ancien usage
+  scopé à `.cta-band`).
+- Script d'initialisation Cal.com (embed.js officiel) ajouté en bas
+  d'`index.html`.
+- Périmètre volontairement limité au CTA final de la page d'accueil : les
+  boutons « Réserver un appel » du header et les CTA finaux d'audit.html /
+  methode.html / etudes-de-cas.html restent des `mailto:` inchangés.
+
 ## 2026-09-20
 
 ### Corrigé — lien mort dans `index.html`

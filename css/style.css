@@ -3202,6 +3202,37 @@ button {
 }
 
 /* ==========================================================================
+   Prise de RDV — embed Cal.com inline (CTA final de la page d'accueil).
+   ========================================================================== */
+.urgency {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-mute);
+  display: inline-block;
+  margin-top: 6px;
+}
+
+.cal-embed-card {
+  max-width: 900px;
+  margin: 0 auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--card);
+}
+
+#cal-inline-embed {
+  width: 100%;
+  height: 680px;
+}
+
+@media (max-width: 640px) {
+  #cal-inline-embed {
+    height: 760px;
+  }
+}
+
+/* ==========================================================================
    Pages légales (mentions légales, confidentialité) — contenu sobre,
    sans schémas, réutilisant les tokens du site.
    ========================================================================== */
