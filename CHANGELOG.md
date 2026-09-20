@@ -3,6 +3,13 @@
 Historique des évolutions du site, par date. Pas de numéros de version : on
 documente ce qui change et pourquoi, dans l'ordre chronologique.
 
+## 2026-09-20
+
+### Corrigé — lien mort dans `index.html`
+Le bouton « Voir un exemple pour mon métier » (section Solutions) pointait
+vers `experiences-metier.html`, une page qui n'existe pas. Il pointe
+maintenant vers `etudes-de-cas.html`.
+
 ## 2026-09-19 (4)
 
 ### Ajouté — page Politique de confidentialité
