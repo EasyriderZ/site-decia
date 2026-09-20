@@ -40,21 +40,21 @@ Carte façon capture d'écran d'un rapport d'audit, barre de titre avec 3 points
 | Indicateur | Valeur | Sous-texte |
 |---|---|---|
 | Quick wins | 3 | < 45j ROI |
-| ROI estimé | €420k | 12 mois |
+| ROI estimé | €42k | 12 mois |
 | Risque AI Act | Faible | après MAJ |
 
 **Top 3 opportunités priorisées** :
-1. Automatisation SAV niveau 1 — €180k/an
-2. Scoring leads & churn prédictif — €140k/an
-3. Assistant devis B2B — €100k/an
+1. Automatisation SAV niveau 1 — €18k/an
+2. Scoring leads & churn prédictif — €14k/an
+3. Assistant devis B2B — €10k/an
 
 **Légende sous le mockup** : ✦ Exemple anonymisé d'une ETI industrielle (180 pers.)
 
 ---
 
-## 2. Contexte 2025 — Pourquoi un Audit IA maintenant
+## 2. Contexte 2026 — Pourquoi un Audit IA maintenant
 
-**Eyebrow** : Contexte 2025
+**Eyebrow** : Contexte 2026
 **H2** : Pourquoi un Audit IA *maintenant* ?
 **Texte** : L'IA n'est plus une option. Entre régulation, pression concurrentielle et gains tangibles, les entreprises qui attendent perdent déjà.
 
@@ -62,7 +62,7 @@ Carte façon capture d'écran d'un rapport d'audit, barre de titre avec 3 points
 
 **Carte 1 — Obligation**
 - Titre : L'AI Act arrive. Êtes-vous prêt ?
-- Texte : À partir de 2025-2026, traçabilité, documentation et gouvernance deviennent obligatoires. Un audit vous évite 2% du CA en amende.
+- Texte : À partir de 2026, traçabilité, documentation et gouvernance deviennent obligatoires. Un audit vous évite 2% du CA en amende.
 - Checklist : Cartographie des risques · Registre modèles & données · Plan de conformité
 
 **Carte 2 — Opportunité**
@@ -81,7 +81,7 @@ Carte façon capture d'écran d'un rapport d'audit, barre de titre avec 3 points
 
 **Eyebrow** : Méthodologie DecIA
 **H2** : 4 piliers. *Zéro angle mort.*
-**Texte** : Inspirée des audits McKinsey & BCG, adaptée aux PME/ETI. Chaque pilier est scoré, sourcé, et relié à un gain business.
+**Texte** : Chaque pilier est scoré, sourcé, et relié à un gain business.
 
 ### Schéma — 4 cartes piliers
 
@@ -113,7 +113,7 @@ Carte façon capture d'écran d'un rapport d'audit, barre de titre avec 3 points
 | 02 | J3-8 | Immersion | Interviews terrain, shadowing process, collecte data & outils. | 12-15 entretiens + mapping |
 | 03 | J9-12 | Analyse & Scoring | Scoring 4 piliers, modélisation gains, benchmark. | Score DecIA + matrice ROI |
 | 04 | J13-15 | Priorisation & Business Case | On choisit les 3 paris qui payent le plus vite. | 3 business cases chiffrés |
-| 05 | J16-21 | Restitution & Roadmap | Présentation COMEX + plan 6/12/18 mois activable. | Deck 25 slides + roadmap |
+| 05 | J16-21 | Restitution & Roadmap | Présentation du rapport + plan 6/12/18 mois activable. | Deck 25 slides + roadmap |
 
 ---
 
@@ -121,7 +121,7 @@ Carte façon capture d'écran d'un rapport d'audit, barre de titre avec 3 points
 
 **Eyebrow** : Résultats tangibles
 **H2** : Vous repartez avec *un dossier décisionnel.*
-**Texte** : Pas un rapport de 80 pages qui finit dans un tiroir. Un kit qui permet à votre COMEX de dire GO / NO GO en 1 réunion.
+**Texte** : Pas un rapport de 80 pages qui finit dans un tiroir. Un kit qui vous permet de dire GO / NO GO en 1 réunion.
 
 **Callout (bandeau sombre) — Garantie DecIA** : Si aucun cas d'usage avec ROI < 12 mois n'est identifié, nous prolongeons l'audit d'une semaine offerte.
 
@@ -141,8 +141,8 @@ Carte façon capture d'écran d'un rapport d'audit, barre de titre avec 3 points
 ## 6. Pour qui / pour qui pas
 
 ### Pour qui c'est fait
-**Titre** : Vous êtes une PME / ETI ambitieuse qui veut passer à l'action.
-- 50 à 800 collaborateurs, process à forte intensité humaine (SAV, devis, admin, prod)
+**Titre** : Vous êtes une PME ambitieuse qui veut passer à l'action.
+- process à forte intensité humaine (SAV, devis, admin, prod)
 - Direction générale impliquée, sponsor désigné, accès aux équipes terrain
 - Vous avez déjà des données (même imparfaites) : CRM, ERP, tickets, fichiers
 - Objectif ROI clair : marge, délai, qualité — pas « faire de l'IA pour faire joli »
@@ -167,7 +167,7 @@ Note : Si vous vous reconnaissez ici, on vous orientera vers un partenaire plus 
 **Texte** : Transparence totale sur prix, durée, confidentialité et suite.
 
 **Q1. Combien coûte l'Audit IA ? Quel est le format d'engagement ?**
-Forfait fixe : 7 900€ HT pour PME <150 pers, 12 500€ HT pour ETI jusqu'à 800 pers. 2-3 jours sur site inclus, le reste off-site. Paiement 50% au cadrage, 50% à la restitution. Si nous ne trouvons aucun ROI <12 mois, semaine supplémentaire offerte.
+Forfait fixe : 2 900€ HT pour PME <150 pers, 5 500€ HT pour ETI jusqu'à 800 pers. 2-3 jours sur site inclus, le reste off-site. Paiement 50% au cadrage, 50% à la restitution. Si nous ne trouvons aucun ROI <12 mois, semaine supplémentaire offerte.
 
 **Q2. Qui doit être mobilisé en interne ? Et la confidentialité ?**
 1 sponsor DG/COO + 1 référent ops/data. 6 à 10 interviews de 45min (commerce, ops, support, IT). Tout est sous NDA. Aucune donnée ne quitte votre infra sans accord. Livrables stockés chez vous.
@@ -176,7 +176,7 @@ Forfait fixe : 7 900€ HT pour PME <150 pers, 12 500€ HT pour ETI jusqu'à 80
 Nous sommes indépendants des éditeurs. Pas de licence à pousser. Notre modèle : audit facturé au forfait, implémentation seulement si ROI prouvé et au choix (vos équipes, notre réseau, ou mixte). On mesure, on ne vend pas.
 
 **Q4. Que se passe-t-il après l'audit ? Vous implémentez ?**
-Vous repartez autonome : roadmap, business cases, quick wins outillés. Si vous le souhaitez, on pilote 1 quick win en 30 jours (forfait 4 900€) ou on vous met en relation avec 2-3 intégrateurs vérifiés. Pas d'engagement caché.
+Vous repartez autonome : roadmap, business cases, quick wins outillés. Si vous le souhaitez, on pilote 1 quick win en 15 jours (tarif a definir). Pas d'engagement caché.
 
 ---
 
@@ -191,8 +191,6 @@ Vous repartez autonome : roadmap, business cases, quick wins outillés. Si vous 
 - ✓ Accès à un extrait de restitution anonymisée
 - ✓ Estimation flash ROI sur 1 process de votre choix
 
-**Fondateur** : JD — Julien D. — Fondateur DecIA — Ex-BCG, 8 ans d'ops & data en ETI
-
 ### Schéma — formulaire « Demander mon diagnostic » (3 min)
 
 | Champ | Type | Placeholder / options |
@@ -200,7 +198,7 @@ Vous repartez autonome : roadmap, business cases, quick wins outillés. Si vous 
 | Nom complet | texte | Marie Dupont |
 | Entreprise | texte | ACME SAS |
 | Email pro | email | marie@acme.fr |
-| Taille | select | 50-150 · 150-400 · 400-800 · 800+ |
+| Taille | select | 10-50 · 50-150 · 150-400 · 400+ |
 | Rôle | select | DG / COO · Direction Ops · DSI / Data · Autre |
 | Votre défi principal (1 phrase) | textarea | Ex: Notre SAV explose, 40% des tickets sont évitables mais on ne sait pas par où commencer... |
 
