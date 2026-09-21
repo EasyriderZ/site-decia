@@ -1947,6 +1947,12 @@ button {
   text-decoration: underline;
 }
 
+.audit-form iframe {
+  display: block;
+  border: none;
+  width: 100%;
+}
+
 @media (max-width: 860px) {
   .context-grid,
   .pillar-grid,
