@@ -3,6 +3,21 @@
 Historique des évolutions du site, par date. Pas de numéros de version : on
 documente ce qui change et pourquoi, dans l'ordre chronologique.
 
+## 2026-09-28
+
+### Ajouté — 7 animations « motion design » dans la bibliothèque de composants
+Nouvelle catégorie « Motion design (7) » dans `components.html` : Bouton →
+lecteur, Logo en particules, Texte → mise en page, Onglets → panneaux, Pile de
+lead magnets, Focus CRM, Chemins du lead.
+- Chaque animation est un fichier HTML autonome dans `animations/` (HTML +
+  CSS pur, boucle parfaite, tailles en `cqw`, charte #0C0D11 / #F5F6FA /
+  #0066FF). Elles sont affichées dans des `iframe` carrées pour isoler leurs
+  styles de `css/style.css`.
+- « Voir le code » charge le fichier complet de l'animation (fonctionne une
+  fois le site en ligne ; en local via `file://`, un lien vers le fichier
+  s'affiche à la place).
+- Compteurs mis à jour : « Tous (13) », intro « 13 blocs ».
+
 ## 2026-09-20 (2)
 
 ### Modifié — CTA final de la page d'accueil : prise de RDV Cal.com inline

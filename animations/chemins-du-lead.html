@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chemins du lead</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0C0D11;
+    --text:#F5F6FA;
+    --accent:#0066FF;
+    --lit:#0F1C36;              /* fond opaque d'un nœud allumé */
+    --line:rgba(245,246,250,.10);
+    --edge:rgba(245,246,250,.20);
+    --muted:rgba(245,246,250,.50);
+    --move:cubic-bezier(.6,0,.2,1);
+    --appear:cubic-bezier(.2,.8,.2,1);
+    --dur:16s;                  /* 2 passages de 8 s : chemin du haut, puis du bas */
+    --title:"Plus Jakarta Sans", system-ui, sans-serif;
+    --mono:"JetBrains Mono", ui-monospace, monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    display:grid;
+    place-items:center;
+    font-family:var(--mono);
+  }
+
+  /* Conteneur de référence pour les unités cqw */
+  .frame{width:min(92vmin,640px);container-type:inline-size}
+  .case{
+    width:100%;
+    aspect-ratio:1;
+    display:grid;
+    grid-template-rows:87cqw 13cqw;
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:2.4cqw;
+    overflow:hidden;
+  }
+
+  /* ---------- Scène : repère de 100 × 87 cqw ----------
+     L (13, 43.5)  T (50, 16)  C (50, 43.5)  B (50, 71)  R (87, 43.5)
+  */
+  .stage{position:relative;overflow:hidden}
+  .edges{position:absolute;inset:0;width:100%;height:100%}
+  .edges line{stroke:var(--edge);stroke-width:1;vector-effect:non-scaling-stroke}
+
+  .route{
+    position:absolute;
+    font-size:1.7cqw;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--muted);
+    white-space:nowrap;
+  }
+  .route.up{left:17cqw;top:23cqw}
+  .route.down{left:17cqw;top:61.5cqw}
+
+  /* Point lumineux : suit un polygone en % de la scène, donc se redimensionne avec elle */
+  .dot{
+    position:absolute; left:0; top:0;
+    width:2.2cqw; height:2.2cqw;
+    border-radius:50%;
+    background:var(--text);
+    box-shadow:0 0 1.6cqw .5cqw rgba(0,102,255,.85);
+    offset-anchor:center;
+    offset-rotate:0deg;
+    offset-distance:0%;
+    opacity:0;
+  }
+  .dot.a{offset-path:polygon(13% 50%, 50% 18.39%, 50% 50%, 87% 50%);animation:dotA var(--dur) infinite}
+  .dot.b{offset-path:polygon(13% 50%, 50% 81.61%, 50% 50%, 87% 50%);animation:dotB var(--dur) infinite}
+
+  /* Nœuds (au-dessus du point : il s'y « absorbe » à chaque étape) */
+  .node{
+    position:absolute;
+    translate:-50% -50%;
+    height:7cqw;
+    padding:0 2.4cqw;
+    display:flex; align-items:center;
+    background:var(--bg);
+    border:1px solid rgba(245,246,250,.22);
+    border-radius:1.4cqw;
+    font-size:2cqw; font-weight:500;
+    color:var(--muted);
+    white-space:nowrap;
+    z-index:1;
+  }
+  .nL{left:13cqw;top:43.5cqw;animation:nL var(--dur) infinite}
+  .nT{left:50cqw;top:16cqw;animation:nT var(--dur) infinite}
+  .nC{left:50cqw;top:43.5cqw;animation:nC var(--dur) infinite}
+  .nB{left:50cqw;top:71cqw;animation:nB var(--dur) infinite}
+  .nR{
+    left:87cqw;top:43.5cqw;
+    border-color:var(--accent);
+    color:var(--accent);
+    animation:nR var(--dur) infinite;
+  }
+
+  /* ---------- Titre de la case ---------- */
+  .caption{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 5cqw;
+    border-top:1px solid var(--line);
+  }
+  .caption h2{font-family:var(--title);font-weight:700;font-size:3.6cqw}
+  .caption span{font-size:2cqw;color:var(--muted)}
+
+  /* ---------- Timeline (16 s = 2 × 8 s) ----------
+     Passage 1 (0–50 %), chemin du haut :
+       3–6 %    le point naît dans « Lead entrant », qui s'allume
+       6–14 %   → « Guide téléchargé »      (s'allume à 14–16 %)
+       16–22 %  → « Appel découverte »      (s'allume à 22–24 %)
+       24–31 %  → « Client signé »          (s'allume à 31–33 %)
+       33–42 %  pause sur le parcours complet
+       42–47 %  tout s'éteint
+     Passage 2 (50–100 %) : identique par le bas (« Demande de devis »).
+     Distances le long du polygone : T 24.97 %, C 39.87 %, R 59.91 %.
+  */
+  @keyframes dotA{
+    0%,3%{offset-distance:0%;opacity:0;animation-timing-function:var(--appear)}
+    6%{offset-distance:0%;opacity:1;animation-timing-function:var(--move)}
+    14%,16%{offset-distance:24.97%;opacity:1;animation-timing-function:var(--move)}
+    22%,24%{offset-distance:39.87%;opacity:1;animation-timing-function:var(--move)}
+    31%,42%{offset-distance:59.91%;opacity:1;animation-timing-function:var(--appear)}
+    47%,100%{offset-distance:59.91%;opacity:0}
+  }
+  @keyframes dotB{
+    0%,53%{offset-distance:0%;opacity:0;animation-timing-function:var(--appear)}
+    56%{offset-distance:0%;opacity:1;animation-timing-function:var(--move)}
+    64%,66%{offset-distance:24.97%;opacity:1;animation-timing-function:var(--move)}
+    72%,74%{offset-distance:39.87%;opacity:1;animation-timing-function:var(--move)}
+    81%,92%{offset-distance:59.91%;opacity:1;animation-timing-function:var(--appear)}
+    97%,100%{offset-distance:59.91%;opacity:0}
+  }
+
+  /* États d'un nœud : éteint / allumé */
+  @keyframes nL{
+    0%,3%{background:var(--bg);border-color:rgba(245,246,250,.22);color:var(--muted);animation-timing-function:var(--appear)}
+    6%,42%{background:var(--lit);border-color:var(--accent);color:var(--text);animation-timing-function:var(--appear)}
+    47%,53%{background:var(--bg);border-color:rgba(245,246,250,.22);color:var(--muted);animation-timing-function:var(--appear)}
+    56%,92%{background:var(--lit);border-color:var(--accent);color:var(--text);animation-timing-function:var(--appear)}
+    97%,100%{background:var(--bg);border-color:rgba(245,246,250,.22);color:var(--muted)}
+  }
+  @keyframes nT{
+    0%,14%{background:var(--bg);border-color:rgba(245,246,250,.22);color:var(--muted);animation-timing-function:var(--appear)}
+    16%,42%{background:var(--lit);border-color:var(--accent);color:var(--text);animation-timing-function:var(--appear)}
+    47%,100%{background:var(--bg);border-color:rgba(245,246,250,.22);color:var(--muted)}
+  }
+  @keyframes nB{
+    0%,64%{background:var(--bg);border-color:rgba(245,246,250,.22);color:var(--muted);animation-timing-function:var(--appear)}
+    66%,92%{background:var(--lit);border-color:var(--accent);color:var(--text);animation-timing-function:var(--appear)}
+    97%,100%{background:var(--bg);border-color:rgba(245,246,250,.22);color:var(--muted)}
+  }
+  @keyframes nC{
+    0%,22%{background:var(--bg);border-color:rgba(245,246,250,.22);color:var(--muted);animation-timing-function:var(--appear)}
+    24%,42%{background:var(--lit);border-color:var(--accent);color:var(--text);animation-timing-function:var(--appear)}
+    47%,72%{background:var(--bg);border-color:rgba(245,246,250,.22);color:var(--muted);animation-timing-function:var(--appear)}
+    74%,92%{background:var(--lit);border-color:var(--accent);color:var(--text);animation-timing-function:var(--appear)}
+    97%,100%{background:var(--bg);border-color:rgba(245,246,250,.22);color:var(--muted)}
+  }
+  @keyframes nR{
+    0%,31%{background:var(--bg);color:var(--accent);animation-timing-function:var(--appear)}
+    33%,42%{background:var(--accent);color:var(--text);animation-timing-function:var(--appear)}
+    47%,81%{background:var(--bg);color:var(--accent);animation-timing-function:var(--appear)}
+    83%,92%{background:var(--accent);color:var(--text);animation-timing-function:var(--appear)}
+    97%,100%{background:var(--bg);color:var(--accent)}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .dot,.node{animation:none}
+  }
+  /* Intégration en iframe (bibliothèque de composants) : la case occupe tout le cadre */
+  html.embed .frame{width:100vmin}
+</style>
+<script>if(window.self!==window.top)document.documentElement.classList.add('embed');</script>
+</head>
+<body>
+  <div class="frame">
+    <figure class="case">
+      <div class="stage">
+        <svg class="edges" viewBox="0 0 100 87" preserveAspectRatio="none" aria-hidden="true">
+          <line x1="13" y1="43.5" x2="50" y2="16"/>
+          <line x1="50" y1="16"   x2="50" y2="43.5"/>
+          <line x1="13" y1="43.5" x2="50" y2="71"/>
+          <line x1="50" y1="71"   x2="50" y2="43.5"/>
+          <line x1="50" y1="43.5" x2="87" y2="43.5"/>
+        </svg>
+
+        <span class="route up">voie contenu</span>
+        <span class="route down">voie directe</span>
+
+        <span class="dot a"></span>
+        <span class="dot b"></span>
+
+        <span class="node nL">Lead entrant</span>
+        <span class="node nT">Guide téléchargé</span>
+        <span class="node nC">Appel découverte</span>
+        <span class="node nB">Demande de devis</span>
+        <span class="node nR">Client signé</span>
+      </div>
+
+      <figcaption class="caption">
+        <h2>Chemins du lead</h2>
+        <span>08 · parcours DecIA</span>
+      </figcaption>
+    </figure>
+  </div>
+</body>
+</html>

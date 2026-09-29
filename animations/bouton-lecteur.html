@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bouton → lecteur</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0C0D11;
+    --text:#F5F6FA;
+    --accent:#0066FF;
+    --surface:#16181E;
+    --line:rgba(245,246,250,.10);
+    --muted:rgba(245,246,250,.55);
+    --move:cubic-bezier(.6,0,.2,1);
+    --appear:cubic-bezier(.2,.8,.2,1);
+    --dur:9s;
+    --title:"Plus Jakarta Sans", system-ui, sans-serif;
+    --mono:"JetBrains Mono", ui-monospace, monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    display:grid;
+    place-items:center;
+    font-family:var(--mono);
+  }
+
+  /* Conteneur de référence pour les unités cqw */
+  .frame{
+    width:min(92vmin,640px);
+    container-type:inline-size;
+  }
+  .case{
+    width:100%;
+    aspect-ratio:1;
+    display:grid;
+    grid-template-rows:1fr auto;
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:2.4cqw;
+    overflow:hidden;
+  }
+
+  /* ---------- Scène ---------- */
+  .stage{position:relative}
+
+  .shape{
+    position:absolute;
+    left:50%; top:50%;
+    translate:-50% -50%;
+    width:44cqw; height:12cqw;
+    border-radius:6cqw;
+    background-color:var(--accent);
+    overflow:hidden;
+    animation:morph var(--dur) infinite;
+  }
+
+  /* Contenu du bouton */
+  .btn{
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    gap:2.2cqw;
+    font-family:var(--mono);
+    font-weight:500;
+    font-size:3.3cqw;
+    letter-spacing:.02em;
+    white-space:nowrap;
+    animation:btn var(--dur) infinite;
+  }
+  .play{
+    width:2.3cqw; height:2.7cqw;
+    background:var(--text);
+    clip-path:polygon(0 0,100% 50%,0 100%);
+    border-radius:.3cqw;
+  }
+
+  /* Contenu du lecteur : taille fixe, révélé par la forme */
+  .player{
+    position:absolute;
+    left:50%; top:50%;
+    translate:-50% -50%;
+    width:80cqw; height:56cqw;
+  }
+  .thumb{
+    position:absolute;
+    left:2.4cqw; right:2.4cqw; top:2.4cqw; bottom:16cqw;
+    border-radius:1.6cqw;
+    background:rgba(245,246,250,.04);
+    border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    gap:2.4cqw;
+    opacity:0;
+    animation:thumb var(--dur) infinite;
+  }
+  .tag{
+    position:absolute; left:2cqw; top:2cqw;
+    font-size:1.8cqw;
+    color:var(--muted);
+    letter-spacing:.08em;
+  }
+  .node{
+    padding:1.4cqw 1.8cqw;
+    border:1px solid rgba(245,246,250,.16);
+    border-radius:1.2cqw;
+    font-size:2.1cqw;
+    white-space:nowrap;
+  }
+  .node.agent{border-color:var(--accent);color:var(--accent)}
+  .link{width:3cqw;height:1px;background:rgba(245,246,250,.28)}
+
+  .controls{
+    position:absolute;
+    left:2.4cqw; right:2.4cqw; bottom:2.6cqw;
+    display:flex; flex-direction:column; gap:2cqw;
+    opacity:0;
+    animation:controls var(--dur) infinite;
+  }
+  .row{display:flex;align-items:center;gap:2.2cqw}
+  .pause{
+    flex:none;
+    width:7cqw; height:7cqw;
+    border-radius:50%;
+    background:var(--accent);
+    display:flex; align-items:center; justify-content:center; gap:.9cqw;
+  }
+  .pause i{width:.9cqw;height:2.6cqw;background:var(--text);border-radius:.2cqw}
+  .meta{flex:1;min-width:0}
+  .meta h3{
+    font-family:var(--title);
+    font-weight:700;
+    font-size:3cqw;
+    line-height:1.2;
+    white-space:nowrap;
+  }
+  .meta p{font-size:1.9cqw;color:var(--muted);margin-top:.5cqw;white-space:nowrap}
+  .time{font-size:2.1cqw;color:var(--muted);font-variant-numeric:tabular-nums}
+  .track{
+    height:.8cqw;
+    border-radius:.4cqw;
+    background:rgba(245,246,250,.12);
+    overflow:hidden;
+  }
+  .fill{
+    height:100%;
+    background:var(--accent);
+    border-radius:.4cqw;
+    transform-origin:left center;
+    transform:scaleX(0);
+    animation:fill var(--dur) infinite;
+  }
+
+  /* ---------- Titre de la case ---------- */
+  .caption{
+    display:flex; align-items:baseline; justify-content:space-between;
+    padding:3.6cqw 5cqw;
+    border-top:1px solid var(--line);
+  }
+  .caption h2{font-family:var(--title);font-weight:700;font-size:3.6cqw}
+  .caption span{font-size:2cqw;color:var(--muted)}
+
+  /* ---------- Timeline (9 s) ----------
+     0–10 %   bouton au repos
+     10–13 %  clic
+     15–26 %  étirement en largeur
+     26–37 %  étirement en hauteur
+     37–43 %  apparition vignette puis commandes
+     43–62 %  lecture : la barre se remplit
+     62–79 %  pause sur l'état final
+     79–81 %  disparition du contenu
+     81–95 %  repli hauteur puis largeur
+     95–100 % retour du bouton
+  */
+  @keyframes morph{
+    0%,10%{
+      width:44cqw;height:12cqw;border-radius:6cqw;
+      background-color:var(--accent);scale:1;
+      animation-timing-function:var(--move);
+    }
+    11.5%{scale:.95;animation-timing-function:var(--appear)}
+    13%,15%{
+      scale:1;width:44cqw;height:12cqw;border-radius:6cqw;
+      background-color:var(--accent);
+      animation-timing-function:var(--move);
+    }
+    26%{
+      width:80cqw;height:12cqw;border-radius:6cqw;
+      background-color:var(--surface);
+      animation-timing-function:var(--move);
+    }
+    37%,81%{
+      width:80cqw;height:56cqw;border-radius:2.4cqw;
+      background-color:var(--surface);
+      animation-timing-function:var(--move);
+    }
+    88%{
+      width:80cqw;height:12cqw;border-radius:6cqw;
+      background-color:var(--surface);
+      animation-timing-function:var(--move);
+    }
+    95%,100%{
+      width:44cqw;height:12cqw;border-radius:6cqw;
+      background-color:var(--accent);scale:1;
+    }
+  }
+  @keyframes btn{
+    0%,13%{opacity:1;animation-timing-function:var(--appear)}
+    15%,95%{opacity:0;animation-timing-function:var(--appear)}
+    97%,100%{opacity:1}
+  }
+  @keyframes thumb{
+    0%,37%{opacity:0;translate:0 1.5cqw;animation-timing-function:var(--appear)}
+    40%,79%{opacity:1;translate:0 0;animation-timing-function:var(--appear)}
+    81%,100%{opacity:0;translate:0 0}
+  }
+  @keyframes controls{
+    0%,40%{opacity:0;translate:0 1.5cqw;animation-timing-function:var(--appear)}
+    43%,79%{opacity:1;translate:0 0;animation-timing-function:var(--appear)}
+    81%,100%{opacity:0;translate:0 0}
+  }
+  @keyframes fill{
+    0%,43%{transform:scaleX(0);animation-timing-function:var(--move)}
+    62%,81%{transform:scaleX(1)}
+    81.1%,100%{transform:scaleX(0)}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .shape,.btn,.thumb,.controls,.fill{animation:none}
+  }
+  /* Intégration en iframe (bibliothèque de composants) : la case occupe tout le cadre */
+  html.embed .frame{width:100vmin}
+</style>
+<script>if(window.self!==window.top)document.documentElement.classList.add('embed');</script>
+</head>
+<body>
+  <div class="frame">
+    <figure class="case">
+      <div class="stage">
+        <div class="shape">
+          <div class="btn"><span class="play"></span>Voir la démo</div>
+
+          <div class="player" aria-hidden="true">
+            <div class="thumb">
+              <span class="tag">DÉMO · 2:14</span>
+              <span class="node">facture_0423.pdf</span>
+              <span class="link"></span>
+              <span class="node agent">Agent IA</span>
+              <span class="link"></span>
+              <span class="node">relance envoyée</span>
+            </div>
+
+            <div class="controls">
+              <div class="row">
+                <span class="pause"><i></i><i></i></span>
+                <div class="meta">
+                  <h3>Relances clients automatisées</h3>
+                  <p>DECIA · agent IA pour PME</p>
+                </div>
+                <span class="time">2:14</span>
+              </div>
+              <div class="track"><div class="fill"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <figcaption class="caption">
+        <h2>Bouton → lecteur</h2>
+        <span>01 · démo produit</span>
+      </figcaption>
+    </figure>
+  </div>
+</body>
+</html>

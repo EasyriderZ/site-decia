@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#000000">
+<title>DecIA — Présentation</title>
+<meta name="description" content="Présentation DecIA : audit, automatisation et formation IA pour TPE et PME.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="assets/favicon.ico" sizes="any">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/components.css">
+<style>
+  html { scroll-snap-type: y proximity; }
+
+  .pres-bar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 50;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.75), transparent);
+    pointer-events: none;
+  }
+  .pres-bar img { display: block; }
+  .pres-bar .pres-bar-right {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    color: var(--text-mute);
+    pointer-events: auto;
+  }
+  .pres-bar .pres-bar-right a { color: var(--text-soft); }
+  .pres-bar .pres-bar-right a:hover { color: var(--accent); }
+
+  .pres-dots {
+    position: fixed;
+    right: 22px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .pres-dots a {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--border-strong);
+    transition: background 0.3s ease, transform 0.3s ease;
+    position: relative;
+  }
+  .pres-dots a::after {
+    content: attr(data-label);
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-soft);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  .pres-dots a:hover::after { opacity: 1; }
+  .pres-dots a.is-active {
+    background: var(--grad);
+    transform: scale(1.3);
+  }
+  @media (max-width: 760px) {
+    .pres-dots { display: none; }
+  }
+
+  .slide {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 110px 0 70px;
+    scroll-snap-align: start;
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .slide-inner { position: relative; z-index: 2; width: 100%; }
+  .slide-num {
+    position: absolute;
+    left: 40px;
+    bottom: 28px;
+    z-index: 2;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-mute);
+  }
+
+  /* ---- Slide 1 : hero ---- */
+  #s-hero { min-height: 100vh; }
+  .pres-hero-actions { display: flex; gap: 14px; flex-wrap: wrap; margin: 28px 0 22px; }
+
+  /* ---- Slide 2 : problème ---- */
+  .pres-problem-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+  }
+
+  /* ---- Slide 3 : offre ---- */
+  .pres-offer-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+    align-items: stretch;
+  }
+  .pres-offer-grid .step {
+    height: 100%;
+    padding: var(--space-3); border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--card);
+  }
+  @media (max-width: 900px) { .pres-offer-grid { grid-template-columns: 1fr; } }
+
+  /* ---- Slide 4 : méthode ---- */
+  .pres-flow-wrap { margin-top: var(--space-4); }
+  .pres-flow-wrap p.dc-flow-caption {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-mute);
+    text-align: center;
+    margin-top: 10px;
+  }
+  .pres-flow-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    padding: var(--space-3);
+  }
+  .pres-flow-arrow { color: var(--text-mute); font-family: var(--font-mono); }
+
+  /* ---- Slide 5 : preuve ---- */
+  .pres-proof-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+    align-items: start;
+  }
+  .pres-proof-grid .dc-stage { height: 100%; }
+  .pres-proof-col { display: flex; flex-direction: column; gap: var(--space-3); }
+  @media (max-width: 900px) { .pres-proof-grid { grid-template-columns: 1fr; } }
+
+  /* ---- Slide 6 : CTA ---- */
+  #s-cta .slide-inner { text-align: center; }
+  #s-cta .section-head { margin: 0 auto var(--space-4); }
+  #s-cta .dc-network-wrap { z-index: 0; }
+  .pres-final-contact {
+    margin-top: var(--space-4);
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--text-mute);
+  }
+  .pres-final-contact a { color: var(--text-soft); }
+</style>
+</head>
+<body>
+
+<div class="pres-bar">
+  <a href="index.html" aria-label="DecIA — accueil" style="pointer-events:auto;">
+    <img src="assets/logo.png" alt="DecIA" width="120" height="28">
+  </a>
+  <div class="pres-bar-right"><a href="index.html">decia.fr</a></div>
+</div>
+
+<nav class="pres-dots" aria-label="Navigation de la présentation">
+  <a href="#s-hero" data-label="Intro" class="is-active"></a>
+  <a href="#s-probleme" data-label="Le problème"></a>
+  <a href="#s-offre" data-label="L'offre"></a>
+  <a href="#s-methode" data-label="La méthode"></a>
+  <a href="#s-preuve" data-label="Concrètement"></a>
+  <a href="#s-cta" data-label="Contact"></a>
+</nav>
+
+<main>
+
+  <!-- ===================================================================
+       SLIDE 1 — HERO
+       =================================================================== -->
+  <section class="slide" id="s-hero">
+    <div class="container slide-inner">
+      <div style="max-width:800px;margin:0 auto;text-align:center;">
+        <p class="eyebrow" style="display:table;margin:0 auto;">Consulting IA pour TPE et PME</p>
+        <h1 style="font-size:clamp(2.1rem,5vw,3.4rem);margin-top:14px;">Et si votre entreprise pouvait faire <span class="grad-text">plus</span>… sans travailler plus ?</h1>
+        <p class="lead" style="margin:18px auto 0;max-width:640px;">DecIA identifie les tâches qui vous font perdre du temps, les automatise et met l'intelligence artificielle au service de votre activité.</p>
+        <div class="pres-hero-actions" style="justify-content:center;">
+          <span class="dc-cta-glow">
+            <a href="https://cal.com/decia" target="_blank" rel="noopener" class="btn btn-primary">Parlons de votre entreprise</a>
+          </span>
+          <a href="#s-probleme" class="btn btn-secondary">Voir comment ça marche</a>
+        </div>
+        <div class="proof-strip" aria-label="Repères sur notre méthode">
+          <span class="proof-chip"><span class="dot" aria-hidden="true"></span>Audit flash en 48h</span>
+          <span class="proof-chip"><span class="dot" aria-hidden="true"></span>Sans engagement</span>
+          <span class="proof-chip"><span class="dot" aria-hidden="true"></span>Résultats mesurables</span>
+        </div>
+      </div>
+    </div>
+    <span class="slide-num">01 / 06</span>
+  </section>
+
+  <!-- ===================================================================
+       SLIDE 2 — LE PROBLÈME
+       =================================================================== -->
+  <section class="slide" id="s-probleme">
+    <div class="container slide-inner">
+      <div class="section-head" style="max-width:720px;">
+        <p class="eyebrow">Le vrai problème</p>
+        <h2>Votre journée est-elle vraiment consacrée à votre métier ?</h2>
+      </div>
+      <div class="pres-problem-grid">
+        <div class="benefit-card">
+          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+          <h3>Les devis qui prennent 2h le soir</h3>
+          <p>Vous rentrez crevé et vous devez encore rédiger. Pendant ce temps, votre concurrent a déjà répondu.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></div>
+          <h3>Les relances jamais faites</h3>
+          <p>3 000 à 5 000 € qui dorment chaque mois parce que vous n'avez pas le temps de relancer.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg></div>
+          <h3>Les mails, factures, plannings du week-end</h3>
+          <p>On branche vos outils entre eux. Vous gardez la main, mais vous arrêtez de faire le robot.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+          <h3>Les tâches administratives</h3>
+          <p>Saisir une information plusieurs fois, mettre à jour des fichiers, préparer des comptes rendus.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></div>
+          <h3>La recherche d'information</h3>
+          <p>Chercher, comparer, synthétiser des dizaines de sources. Tout devient plus facile.</p>
+        </div>
+      </div>
+    </div>
+    <span class="slide-num">02 / 06</span>
+  </section>
+
+  <!-- ===================================================================
+       SLIDE 3 — L'OFFRE
+       =================================================================== -->
+  <section class="slide" id="s-offre">
+    <div class="container slide-inner">
+      <div class="section-head" style="max-width:760px;">
+        <p class="eyebrow">Ce que fait DecIA concrètement</p>
+        <h2>Audit. Automatisation. Formation. Un seul objectif : du temps gagné dès la mise en place !</h2>
+      </div>
+      <div class="pres-offer-grid">
+        <div class="step">
+          <div class="step-num">01</div>
+          <h3>Audit Flash IA — 48h</h3>
+          <p>Nous passons 2h chez vous (ou en visio) et nous cartographions tout ce qui peut être automatisé. Vous repartez avec une feuille de route chiffrée : « Ici 8h gagnées = 1200€/mois ».</p>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <h3>Automatisation clé en main</h3>
+          <p>Nous branchons ce que vous avez déjà : Gmail, WhatsApp, votre logiciel de devis, agenda, drive... Devis auto, relances impayés auto, tri de mails, prise de RDV auto. Sans abonnement caché.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <h3>Terrain</h3>
+          <p>Pas de PowerPoint. On bosse sur VOS cas réels, avec vos équipes. À la fin de la mission, vous savez le refaire seul.</p>
+        </div>
+      </div>
+      <p class="lead" style="text-align:center;margin:2.4rem auto 0;font-size:1.4rem;max-width:700px;"><strong>Une IA utile doit d'abord résoudre un problème.</strong></p>
+    </div>
+    <span class="slide-num">03 / 06</span>
+  </section>
+
+  <!-- ===================================================================
+       SLIDE 4 — LA MÉTHODE
+       =================================================================== -->
+  <section class="slide" id="s-methode">
+    <div class="container slide-inner">
+      <div class="section-head" style="max-width:720px;">
+        <p class="eyebrow">Notre méthode</p>
+        <h2>On ne commence pas par choisir un outil. On commence par comprendre votre entreprise.</h2>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">01</div>
+          <h3>Diagnostiquer</h3>
+          <p>Analyse de vos processus, de vos outils et des points de friction qui vous font perdre du temps.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <h3>Automatiser</h3>
+          <p>Construction des solutions prioritaires : automatisations, workflows, agents IA. Sans bouleverser votre organisation.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <h3>Faire évoluer</h3>
+          <p>Accompagnement dans la prise en main, la formation et l'évolution des solutions selon vos besoins.</p>
+        </div>
+      </div>
+
+      <div class="pres-flow-wrap">
+        <div class="dc-stage">
+          <div class="pres-flow-row">
+            <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M4 8h16"/></svg>Mail reçu</span>
+            <span class="pres-flow-arrow">→</span>
+            <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>Analyse IA</span>
+            <span class="pres-flow-arrow">→</span>
+            <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg>Devis envoyé</span>
+            <span class="pres-flow-arrow">→</span>
+            <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M5 12l5 5L20 7"/></svg>Temps gagné</span>
+          </div>
+        </div>
+        <p class="dc-flow-caption">Exemple concret d'automatisation type mise en place lors d'un accompagnement</p>
+      </div>
+    </div>
+    <span class="slide-num">04 / 06</span>
+  </section>
+
+  <!-- ===================================================================
+       SLIDE 5 — CONCRÈTEMENT (preuve / cas d'usage)
+       =================================================================== -->
+  <section class="slide" id="s-preuve">
+    <div class="container slide-inner">
+      <div class="section-head" style="max-width:720px;">
+        <p class="eyebrow">Cas d'usage</p>
+        <h2>Imaginez récupérer plusieurs heures chaque semaine.</h2>
+      </div>
+
+      <div class="pres-proof-grid">
+        <div class="dc-stage">
+          <div class="dc-rotator">
+            <div class="dc-rotator-slide is-active">
+              <span class="dc-rotator-sector">Artisanat / bâtiment</span>
+              <h4>Des devis qui prenaient 2h chaque soir</h4>
+              <p>Génération automatique des devis à partir des échanges, relance automatique des impayés. Résultat estimé : plusieurs heures récupérées chaque semaine.</p>
+            </div>
+            <div class="dc-rotator-slide">
+              <span class="dc-rotator-sector">Services / conseil</span>
+              <h4>Des comptes rendus jamais rédigés</h4>
+              <p>Structuration automatique des notes en compte rendu, extraction des prochaines actions. Suivi client plus fiable.</p>
+            </div>
+            <div class="dc-rotator-slide">
+              <span class="dc-rotator-sector">Santé / paramédical</span>
+              <h4>Un standard téléphonique saturé</h4>
+              <p>Prise de rendez-vous et rappels automatisés, confirmation par SMS la veille. Moins de rendez-vous manqués.</p>
+            </div>
+            <div class="dc-rotator-slide">
+              <span class="dc-rotator-sector">Juridique / comptable</span>
+              <h4>Des pièces clients relancées une par une</h4>
+              <p>Suivi automatique des pièces attendues, relances ciblées jusqu'à dossier complet.</p>
+            </div>
+            <div class="dc-rotator-dots">
+              <span class="is-active"></span><span></span><span></span><span></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pres-proof-col">
+          <div class="dc-stage">
+            <div class="dc-compare">
+              <div class="dc-compare-row dc-compare-row--before">
+                <span class="dc-compare-label">Avant</span>
+                <div class="dc-compare-track"><div class="dc-compare-fill"></div></div>
+              </div>
+              <div class="dc-compare-row dc-compare-row--after">
+                <span class="dc-compare-label">Avec DecIA</span>
+                <div class="dc-compare-track"><div class="dc-compare-fill"></div></div>
+              </div>
+              <p class="dc-compare-note">Exemple : rédaction d'un devis, à la main vs automatisée.</p>
+            </div>
+          </div>
+          <div class="dc-stage">
+            <div class="dc-activity">
+              <div class="dc-activity-row"><span class="dc-status"></span><span>Devis généré et envoyé</span></div>
+              <div class="dc-activity-row"><span class="dc-status"></span><span>Relance impayé programmée</span></div>
+              <div class="dc-activity-row"><span class="dc-status"></span><span>Compte rendu de RDV structuré</span></div>
+              <div class="dc-activity-row"><span class="dc-status"></span><span>Mails triés et classés</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dc-stage" style="margin-top:var(--space-3);">
+        <div class="dc-marquee">
+          <div class="dc-marquee-track">
+            <span class="dc-marquee-chip"><span class="dot"></span>Devis auto</span>
+            <span class="dc-marquee-chip"><span class="dot"></span>Relances impayés</span>
+            <span class="dc-marquee-chip"><span class="dot"></span>Tri de mails</span>
+            <span class="dc-marquee-chip"><span class="dot"></span>Prise de RDV</span>
+            <span class="dc-marquee-chip"><span class="dot"></span>Comptes rendus</span>
+            <span class="dc-marquee-chip"><span class="dot"></span>Veille &amp; recherche IA</span>
+            <span class="dc-marquee-chip"><span class="dot"></span>Facturation</span>
+            <span class="dc-marquee-chip" aria-hidden="true"><span class="dot"></span>Devis auto</span>
+            <span class="dc-marquee-chip" aria-hidden="true"><span class="dot"></span>Relances impayés</span>
+            <span class="dc-marquee-chip" aria-hidden="true"><span class="dot"></span>Tri de mails</span>
+            <span class="dc-marquee-chip" aria-hidden="true"><span class="dot"></span>Prise de RDV</span>
+            <span class="dc-marquee-chip" aria-hidden="true"><span class="dot"></span>Comptes rendus</span>
+            <span class="dc-marquee-chip" aria-hidden="true"><span class="dot"></span>Veille &amp; recherche IA</span>
+            <span class="dc-marquee-chip" aria-hidden="true"><span class="dot"></span>Facturation</span>
+          </div>
+        </div>
+      </div>
+      <p style="text-align:center;margin-top:1.2rem;color:var(--text-mute);font-size:0.85rem;">Votre entreprise a probablement ses propres opportunités. C'est précisément ce que nous cherchons lors de l'audit.</p>
+    </div>
+    <span class="slide-num">05 / 06</span>
+  </section>
+
+  <!-- ===================================================================
+       SLIDE 6 — CTA FINAL
+       =================================================================== -->
+  <section class="slide" id="s-cta">
+    <div class="dc-network-wrap"><canvas data-dc-network data-count="46"></canvas></div>
+    <div class="container slide-inner">
+      <div class="section-head">
+        <p class="eyebrow">Réserver un échange</p>
+        <h2 style="font-size:clamp(1.9rem,3.6vw,2.6rem);">Votre concurrent a déjà automatisé ses devis. Et vous ?</h2>
+        <p class="lead" style="max-width:640px;margin:0 auto;">Un échange de 30 minutes suffit pour commencer à y voir plus clair. Nous regardons ensemble où se trouvent les tâches répétitives et les points de friction, et nous déterminons s'il existe des opportunités concrètes d'automatisation ou d'IA.</p>
+        <span class="urgency" style="display:block;margin-top:10px;">Pas de catalogue d'outils. Pas de démonstration forcée. Pas d'engagement.</span>
+      </div>
+      <span class="dc-cta-glow">
+        <a href="https://cal.com/decia" target="_blank" rel="noopener" class="btn btn-primary">Réserver mon échange</a>
+      </span>
+      <p class="pres-final-contact">
+        <a href="mailto:contact@decia.fr">contact@decia.fr</a> · <a href="tel:+33689180195">+33 6 89 18 01 95</a>
+      </p>
+    </div>
+    <span class="slide-num">06 / 06</span>
+  </section>
+
+</main>
+
+<script src="js/components.js"></script>
+<script>
+(function () {
+  "use strict";
+  var sections = Array.prototype.slice.call(document.querySelectorAll(".slide"));
+  var dots = Array.prototype.slice.call(document.querySelectorAll(".pres-dots a"));
+
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          var id = entry.target.id;
+          dots.forEach(function (d) {
+            d.classList.toggle("is-active", d.getAttribute("href") === "#" + id);
+          });
+        }
+      });
+    }, { threshold: 0.5 });
+    sections.forEach(function (s) { io.observe(s); });
+  }
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "ArrowDown" && e.key !== "ArrowUp" && e.key !== "PageDown" && e.key !== "PageUp") return;
+    var current = sections.findIndex(function (s) {
+      var r = s.getBoundingClientRect();
+      return r.top > -r.height * 0.5 && r.top < window.innerHeight * 0.5;
+    });
+    if (current === -1) current = 0;
+    var dir = (e.key === "ArrowDown" || e.key === "PageDown") ? 1 : -1;
+    var next = Math.min(Math.max(current + dir, 0), sections.length - 1);
+    sections[next].scrollIntoView({ behavior: "smooth" });
+    e.preventDefault();
+  });
+})();
+</script>
+</body>
+</html>

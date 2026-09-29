@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Texte → mise en page</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0C0D11;
+    --text:#F5F6FA;
+    --accent:#0066FF;
+    --surface:#16181E;
+    --line:rgba(245,246,250,.10);
+    --muted:rgba(245,246,250,.55);
+    --move:cubic-bezier(.6,0,.2,1);
+    --appear:cubic-bezier(.2,.8,.2,1);
+    --dur:9s;
+    --title:"Plus Jakarta Sans", system-ui, sans-serif;
+    --mono:"JetBrains Mono", ui-monospace, monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    display:grid;
+    place-items:center;
+    font-family:var(--mono);
+  }
+
+  /* Conteneur de référence pour les unités cqw */
+  .frame{width:min(92vmin,640px);container-type:inline-size}
+  .case{
+    width:100%;
+    aspect-ratio:1;
+    display:grid;
+    grid-template-rows:87cqw 13cqw;
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:2.4cqw;
+    overflow:hidden;
+  }
+
+  /* ---------- Scène : repère de 100 × 87 cqw ---------- */
+  .stage{position:relative;overflow:hidden}
+
+  /* Paragraphe brut : une colonne mono sans hiérarchie */
+  .raw{
+    position:absolute;
+    left:6cqw;
+    font-family:var(--mono);
+    font-size:2.3cqw;
+    line-height:3.6cqw;
+    color:var(--muted);
+    white-space:nowrap;
+  }
+  .rA{top:18.6cqw;animation:rawA var(--dur) infinite}
+  .rB{top:22.2cqw;animation:rawB var(--dur) infinite}
+  .rC{top:25.8cqw;animation:rawC var(--dur) infinite}
+  .rBody{top:29.4cqw}                 /* reste en place : devient le chapô */
+  .rD{top:36.6cqw;animation:rawD var(--dur) infinite}
+
+  /* Éléments de la mise en page finale */
+  .fin{position:absolute;left:6cqw;opacity:0}
+
+  .kicker{
+    top:8cqw;
+    font-family:var(--mono);
+    font-weight:500;
+    font-size:2cqw;
+    line-height:2.4cqw;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--muted);
+    white-space:nowrap;
+    translate:0 10.6cqw;
+    animation:kicker var(--dur) infinite;
+  }
+  .headline{
+    top:12.5cqw;
+    font-family:var(--title);
+    font-weight:700;
+    font-size:4.8cqw;
+    line-height:1.12;
+    letter-spacing:-.01em;
+    white-space:nowrap;
+    translate:0 9.7cqw;
+    animation:headline var(--dur) infinite;
+  }
+  .headline em{font-style:normal;color:var(--accent)}
+
+  .visual{
+    position:absolute;
+    left:6cqw; top:25.8cqw;
+    width:34cqw; height:3.6cqw;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:1.2cqw;
+    overflow:hidden;
+    opacity:0;
+    animation:visual var(--dur) infinite;
+  }
+  .visual-in{
+    position:absolute;
+    left:50%; top:50%;
+    translate:-50% -50%;
+    width:34cqw; height:39.2cqw;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    opacity:0;
+    animation:visualIn var(--dur) infinite;
+  }
+  .visual-in .label{
+    position:absolute; left:2.4cqw; top:2.2cqw;
+    font-size:1.7cqw; letter-spacing:.12em; color:var(--muted);
+  }
+  .node{
+    padding:1.3cqw 2cqw;
+    border:1px solid rgba(245,246,250,.16);
+    border-radius:1.2cqw;
+    font-size:2cqw;
+    white-space:nowrap;
+  }
+  .node.agent{border-color:var(--accent);color:var(--accent)}
+  .link{width:1px;height:4cqw;background:rgba(245,246,250,.28)}
+
+  .quote{
+    top:56cqw;
+    width:88cqw;
+    padding:3.2cqw 3.6cqw;
+    border:1px solid var(--line);
+    border-radius:1.6cqw;
+    translate:0 -19.4cqw;
+    animation:quote var(--dur) infinite;
+  }
+  .quote blockquote{
+    font-family:var(--title);
+    font-weight:600;
+    font-size:3.1cqw;
+    line-height:1.38;
+  }
+  .quote cite{
+    display:block;
+    margin-top:1.6cqw;
+    font-style:normal;
+    font-size:1.9cqw;
+    color:var(--muted);
+    letter-spacing:.04em;
+  }
+
+  /* ---------- Titre de la case ---------- */
+  .caption{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 5cqw;
+    border-top:1px solid var(--line);
+  }
+  .caption h2{font-family:var(--title);font-weight:700;font-size:3.6cqw}
+  .caption span{font-size:2cqw;color:var(--muted)}
+
+  /* ---------- Timeline (9 s) ----------
+     0–8 %    paragraphe brut au repos
+     8–15 %   le sur-titre monte et passe en mono capitales
+     15–23 %  le titre monte et s'affiche sur deux lignes
+     23–27 %  la ligne "[schéma…]" devient une barre
+     27–34 %  la barre glisse à droite
+     34–41 %  elle s'ouvre en hauteur
+     41–45 %  le schéma apparaît
+     45–53 %  la citation descend et s'encadre
+     53–84 %  pause sur la mise en page
+     84–91 %  la mise en page s'efface, le paragraphe brut revient
+     91–100 % repos
+  */
+  @keyframes rawA{
+    0%,8%{opacity:1;animation-timing-function:var(--appear)}
+    11%,84%{opacity:0;animation-timing-function:var(--appear)}
+    91%,100%{opacity:1}
+  }
+  @keyframes rawB{
+    0%,15%{opacity:1;animation-timing-function:var(--appear)}
+    18%,84%{opacity:0;animation-timing-function:var(--appear)}
+    91%,100%{opacity:1}
+  }
+  @keyframes rawC{
+    0%,23%{opacity:1;animation-timing-function:var(--appear)}
+    26%,84%{opacity:0;animation-timing-function:var(--appear)}
+    91%,100%{opacity:1}
+  }
+  @keyframes rawD{
+    0%,45%{opacity:1;animation-timing-function:var(--appear)}
+    48%,84%{opacity:0;animation-timing-function:var(--appear)}
+    91%,100%{opacity:1}
+  }
+
+  @keyframes kicker{
+    0%,8%{translate:0 10.6cqw;opacity:0;animation-timing-function:var(--move)}
+    15%,84%{translate:0 0;opacity:1;animation-timing-function:var(--appear)}
+    91%{translate:0 0;opacity:0}
+    91.1%,100%{translate:0 10.6cqw;opacity:0}
+  }
+  @keyframes headline{
+    0%,15%{translate:0 9.7cqw;opacity:0;animation-timing-function:var(--move)}
+    23%,84%{translate:0 0;opacity:1;animation-timing-function:var(--appear)}
+    91%{translate:0 0;opacity:0}
+    91.1%,100%{translate:0 9.7cqw;opacity:0}
+  }
+  @keyframes visual{
+    0%,23%{left:6cqw;top:25.8cqw;height:3.6cqw;opacity:0;animation-timing-function:var(--appear)}
+    26%{opacity:1}
+    27%{left:6cqw;animation-timing-function:var(--move)}
+    34%{left:60cqw;top:25.8cqw;height:3.6cqw;animation-timing-function:var(--move)}
+    41%,84%{left:60cqw;top:8cqw;height:39.2cqw;opacity:1;animation-timing-function:var(--appear)}
+    91%{left:60cqw;top:8cqw;height:39.2cqw;opacity:0}
+    91.1%,100%{left:6cqw;top:25.8cqw;height:3.6cqw;opacity:0}
+  }
+  @keyframes visualIn{
+    0%,41%{opacity:0;animation-timing-function:var(--appear)}
+    45%,91%{opacity:1}
+    91.1%,100%{opacity:0}
+  }
+  @keyframes quote{
+    0%,45%{translate:0 -19.4cqw;opacity:0;animation-timing-function:var(--move)}
+    53%,84%{translate:0 0;opacity:1;animation-timing-function:var(--appear)}
+    91%{translate:0 0;opacity:0}
+    91.1%,100%{translate:0 -19.4cqw;opacity:0}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .rA,.rB,.rC,.rD{display:none}
+    .kicker,.headline,.quote{animation:none;opacity:1;translate:0 0}
+    .visual{animation:none;opacity:1;left:60cqw;top:8cqw;height:39.2cqw}
+    .visual-in{animation:none;opacity:1}
+  }
+  /* Intégration en iframe (bibliothèque de composants) : la case occupe tout le cadre */
+  html.embed .frame{width:100vmin}
+</style>
+<script>if(window.self!==window.top)document.documentElement.classList.add('embed');</script>
+</head>
+<body>
+  <div class="frame">
+    <figure class="case">
+      <div class="stage">
+        <!-- Paragraphe brut -->
+        <div class="raw rA">Audit IA · PME de 10 à 100 salariés</div>
+        <div class="raw rB">Moins de saisie, plus de décisions.</div>
+        <div class="raw rC">[Schéma : facture → relance auto]</div>
+        <div class="raw rBody">Nous auditons vos process, puis<br>nous branchons des agents IA.</div>
+        <div class="raw rD">« Automatiser, ce n'est pas<br>remplacer vos équipes. C'est leur<br>rendre du temps. » — DecIA</div>
+
+        <!-- Mise en page éditoriale -->
+        <p class="fin kicker">Audit IA · PME de 10 à 100 salariés</p>
+        <h1 class="fin headline">Moins de saisie,<br>plus de <em>décisions.</em></h1>
+
+        <div class="visual" aria-hidden="true">
+          <div class="visual-in">
+            <span class="label">FLUX · RELANCES</span>
+            <span class="node">facture_0423.pdf</span>
+            <span class="link"></span>
+            <span class="node agent">Agent IA</span>
+            <span class="link"></span>
+            <span class="node">relance envoyée</span>
+          </div>
+        </div>
+
+        <figure class="fin quote">
+          <blockquote>« Automatiser, ce n'est pas remplacer vos équipes. C'est leur rendre du temps. »</blockquote>
+          <cite>DecIA — manifeste</cite>
+        </figure>
+      </div>
+
+      <figcaption class="caption">
+        <h2>Texte → mise en page</h2>
+        <span>04 · éditorial DecIA</span>
+      </figcaption>
+    </figure>
+  </div>
+</body>
+</html>

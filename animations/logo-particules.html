@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Logo en particules</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0C0D11;
+    --text:#F5F6FA;
+    --accent:#0066FF;
+    --line:rgba(245,246,250,.10);
+    --muted:rgba(245,246,250,.55);
+    --move:cubic-bezier(.6,0,.2,1);
+    --dur:8s;
+    --title:"Plus Jakarta Sans", system-ui, sans-serif;
+    --mono:"JetBrains Mono", ui-monospace, monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    display:grid;
+    place-items:center;
+    font-family:var(--mono);
+  }
+
+  /* Conteneur de référence pour les unités cqw */
+  .frame{width:min(92vmin,640px);container-type:inline-size}
+  .case{
+    width:100%;
+    aspect-ratio:1;
+    display:grid;
+    grid-template-rows:87cqw 13cqw;
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:2.4cqw;
+    overflow:hidden;
+  }
+
+  /* ---------- Scène : repère de 100 × 87 cqw ---------- */
+  .stage{position:relative;overflow:hidden}
+
+  .dot{
+    position:absolute; left:0; top:0;
+    width:.8cqw; height:.8cqw;
+    margin:-.4cqw 0 0 -.4cqw;
+    border-radius:50%;
+    background-color:var(--text);
+    opacity:.35;
+    translate:calc(var(--sx) * 1cqw) calc(var(--sy) * 1cqw);
+    animation:gather var(--dur) infinite;
+    will-change:translate;
+  }
+
+  /* ---------- Timeline (8 s, + décalage de 0 à 0,4 s par point) ----------
+     0–12 %   particules dispersées au repos
+     12–34 %  convergence (les particules de "IA" prennent l'accent)
+     34–64 %  le logo tient (2 s pleines une fois toutes les particules arrivées)
+     64–86 %  dispersion vers les positions de départ exactes
+     86–100 % repos
+  */
+  @keyframes gather{
+    0%,12%{
+      translate:calc(var(--sx) * 1cqw) calc(var(--sy) * 1cqw);
+      background-color:var(--text); opacity:.35;
+      animation-timing-function:var(--move);
+    }
+    34%,64%{
+      translate:calc(var(--tx) * 1cqw) calc(var(--ty) * 1cqw);
+      background-color:var(--c); opacity:1;
+      animation-timing-function:var(--move);
+    }
+    86%,100%{
+      translate:calc(var(--sx) * 1cqw) calc(var(--sy) * 1cqw);
+      background-color:var(--text); opacity:.35;
+    }
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .dot{
+      animation:none;
+      translate:calc(var(--tx) * 1cqw) calc(var(--ty) * 1cqw);
+      background-color:var(--c); opacity:1;
+    }
+  }
+
+  /* ---------- Titre de la case ---------- */
+  .caption{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 5cqw;
+    border-top:1px solid var(--line);
+  }
+  .caption h2{font-family:var(--title);font-weight:700;font-size:3.6cqw}
+  .caption span{font-size:2cqw;color:var(--muted)}
+  /* Intégration en iframe (bibliothèque de composants) : la case occupe tout le cadre */
+  html.embed .frame{width:100vmin}
+</style>
+<script>if(window.self!==window.top)document.documentElement.classList.add('embed');</script>
+</head>
+<body>
+  <div class="frame">
+    <figure class="case">
+      <div class="stage" id="stage" role="img" aria-label="Des particules dispersées se rassemblent pour écrire DecIA"></div>
+      <figcaption class="caption">
+        <h2>Logo en particules</h2>
+        <span>03 · identité DecIA</span>
+      </figcaption>
+    </figure>
+  </div>
+
+<script>
+(() => {
+  const N = 480;              // nombre de particules
+  const LOGO_W = 80;          // largeur du logo dans la case, en cqw
+  const STAGE_W = 100, STAGE_H = 87;
+  const STAGGER = 0.4;        // vague gauche → droite, en secondes
+
+  // Masque du logo DecIA (320 × 73 cellules), encodé en plages :
+  // 0 = vide, 1 = "Dec" (texte), 2 = "IA" (accent). Extrait du fichier logo fourni.
+  const MW = 320, MH = 73;
+  const RLE = "0207,222,027,223,041,149,0158,222,027,224,040,153,0154,222,026,226,039,156,0151,222,026,226,039,159,0148,222,025,228,038,161,0146,222,025,228,038,162,0145,222,024,230,037,164,0143,222,024,230,037,165,0142,222,023,232,036,167,0140,222,023,232,036,168,0139,222,022,234,035,169,0138,222,022,235,034,170,0137,222,021,236,034,171,0136,222,021,237,033,172,0135,222,020,238,033,173,0134,222,020,239,032,174,033,110,051,111,028,222,020,239,032,118,027,129,028,120,041,121,023,222,019,241,031,118,031,126,024,126,035,127,020,222,018,243,030,118,033,125,021,130,031,132,017,222,018,243,030,118,035,123,019,134,027,135,016,222,017,245,029,118,036,123,016,138,023,139,014,222,017,245,029,118,037,122,015,140,021,142,012,222,016,247,028,118,039,121,013,142,019,144,011,222,016,247,028,118,040,120,012,144,017,146,010,222,015,249,027,118,040,120,011,146,015,148,09,222,015,250,026,118,041,119,010,148,013,150,08,222,015,250,026,118,041,120,08,150,011,151,08,222,014,224,01,227,025,118,042,119,07,125,02,125,09,153,07,222,014,223,02,227,025,118,042,119,07,121,011,120,09,123,07,124,06,222,013,224,03,227,024,118,042,119,06,119,016,119,07,121,013,122,05,222,013,223,04,227,024,118,043,119,04,119,018,118,07,120,016,120,05,222,012,224,05,227,023,118,043,119,04,118,021,117,05,119,019,119,05,222,012,224,05,228,022,118,043,119,03,118,022,117,05,118,021,119,04,222,011,224,07,227,022,118,043,119,03,117,024,116,04,118,023,118,04,222,011,223,08,228,021,118,043,119,03,116,025,117,03,118,024,117,04,222,010,224,09,227,021,118,043,119,02,117,026,116,03,117,025,118,03,222,010,223,010,228,020,118,043,119,02,117,026,116,02,118,026,117,03,222,09,224,011,227,020,118,043,119,02,159,02,117,047,222,09,224,011,228,019,118,043,119,02,159,02,117,047,222,08,224,013,227,019,118,043,119,02,160,01,117,047,222,08,224,013,228,018,118,043,119,01,161,01,116,048,222,07,224,015,228,017,118,043,119,01,161,01,116,048,222,07,224,015,228,017,118,043,119,01,161,01,116,048,222,06,224,017,228,016,118,042,119,02,161,01,116,048,222,06,224,017,228,016,118,042,119,02,161,01,116,048,222,05,224,019,228,015,118,041,120,02,161,01,116,048,222,05,224,019,229,014,118,041,120,03,160,01,116,048,222,04,224,021,228,014,118,040,121,03,160,01,116,048,222,04,224,021,229,013,118,040,120,04,116,045,117,047,222,03,224,023,228,013,118,039,121,04,117,044,117,047,221,04,224,023,229,012,118,038,121,05,117,044,117,027,117,03,220,04,224,025,228,012,118,037,122,05,117,045,117,025,118,03,220,04,224,026,228,011,118,035,124,06,117,044,117,025,117,04,219,04,224,027,228,011,118,034,124,07,118,023,117,03,118,023,118,04,219,04,224,028,228,010,118,032,126,07,118,022,118,03,119,021,119,04,218,04,224,029,229,09,118,029,128,09,118,021,117,05,119,019,119,05,218,03,225,030,228,09,174,010,119,019,118,05,120,017,120,05,217,04,225,030,229,08,174,011,120,015,120,06,120,015,121,05,217,04,224,032,228,08,173,012,122,011,121,07,123,010,122,06,216,04,225,032,229,07,172,014,153,08,153,07,216,04,224,034,228,07,171,016,151,010,152,07,215,04,225,034,229,06,170,018,149,012,150,08,214,05,224,036,229,05,169,020,147,013,149,09,214,04,225,036,229,05,167,023,145,015,147,010,213,05,224,038,229,04,166,025,143,018,144,011,213,04,225,038,229,04,165,027,141,020,142,012,212,04,225,040,229,03,163,031,138,022,139,014,212,04,225,040,229,03,161,034,136,025,136,015,211,05,224,042,229,02,159,038,132,029,132,017,211,04,225,042,229,02,155,044,128,033,128,019,210,05,224,044,229,01,151,051,122,039,122,022,29,05,225,044,230,0106,114,047,114,026,29,05,224,046,229";
+
+  // 1. Décoder le masque
+  const grid = new Uint8Array(MW * MH);
+  let k = 0;
+  for (const run of RLE.split(",")) {
+    const v = +run[0], n = +run.slice(1);
+    grid.fill(v, k, k + n); k += n;
+  }
+
+  // 2. Échantillonner une grille : le pas le plus large qui donne au moins N points
+  let pts = [];
+  for (let step = 12; step > 1; step -= 0.05) {
+    pts = [];
+    for (let y = step / 2; y < MH; y += step)
+      for (let x = step / 2; x < MW; x += step) {
+        const v = grid[Math.floor(y) * MW + Math.floor(x)];
+        if (v) pts.push([x, y, v]);
+      }
+    if (pts.length >= N) break;
+  }
+
+  // 3. Réduire à exactement N points, répartis régulièrement
+  const targets = [];
+  for (let i = 0; i < N; i++) targets.push(pts[Math.floor(i * pts.length / N)]);
+
+  // 4. Passer en cqw et centrer le logo dans la scène
+  const scale = LOGO_W / MW;
+  const ox = (STAGE_W - LOGO_W) / 2;
+  const oy = (STAGE_H - MH * scale) / 2;
+
+  // Aléatoire reproductible : même composition à chaque ouverture
+  let seed = 20260928;
+  const rand = () => {
+    seed = seed + 0x6D2B79F5 | 0;
+    let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+
+  // 5. Créer les particules : départ aléatoire, cible calculée, décalage selon x
+  const stage = document.getElementById("stage");
+  const frag = document.createDocumentFragment();
+  targets.forEach(([x, y, v]) => {
+    const d = document.createElement("span");
+    d.className = "dot";
+    const tx = ox + x * scale, ty = oy + y * scale;
+    d.style.setProperty("--sx", (3 + rand() * 94).toFixed(2));
+    d.style.setProperty("--sy", (3 + rand() * 81).toFixed(2));
+    d.style.setProperty("--tx", tx.toFixed(2));
+    d.style.setProperty("--ty", ty.toFixed(2));
+    d.style.setProperty("--c", v === 2 ? "var(--accent)" : "var(--text)");
+    d.style.animationDelay = (tx / 100 * STAGGER).toFixed(3) + "s";
+    frag.appendChild(d);
+  });
+  stage.appendChild(frag);
+})();
+</script>
+</body>
+</html>

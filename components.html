@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#000000">
+<title>Bibliothèque de composants — DecIA</title>
+<meta name="description" content="Composants HTML réutilisables (mouvement perpétuel) aux couleurs DecIA : à sélectionner et intégrer dans vos présentations.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="assets/favicon.ico" sizes="any">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/components.css">
+<style>
+  .dc-lib-header {
+    padding: calc(var(--header-h) + var(--space-5)) 0 var(--space-4);
+  }
+  .dc-lib-header h1 {
+    font-size: clamp(1.9rem, 3.4vw, 2.7rem);
+    margin: 0.6rem 0 0.8rem;
+  }
+  .dc-lib-header p {
+    max-width: 62ch;
+  }
+  .dc-lib-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: var(--space-3);
+    padding-bottom: 140px;
+  }
+  .dc-lib-card-demo:has(.dc-motion-frame) { display: block; }
+  .dc-motion-frame {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #0C0D11;
+  }
+  .dc-motion-frame iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  .dc-motion-open {
+    display: block;
+    margin-top: 0.6rem;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.78rem;
+    color: inherit;
+    opacity: 0.7;
+    text-decoration: none;
+  }
+  .dc-motion-open:hover { opacity: 1; }
+  @media (max-width: 720px) {
+    .dc-lib-toolbar { top: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header" id="siteHeader">
+  <div class="container">
+    <a href="index.html" class="logo" aria-label="DecIA — accueil">
+      <img src="assets/logo.png" alt="DecIA" width="140" height="33">
+    </a>
+    <div class="nav-group">
+      <nav class="nav-links" aria-label="Navigation principale">
+        <a href="index.html">Site</a>
+        <a href="presentation.html">Présentation</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <div class="container">
+    <div class="dc-lib-header reveal">
+      <p class="eyebrow">Bibliothèque interne DecIA</p>
+      <h1>Composants <span class="grad-text">dynamiques</span> à mouvement perpétuel</h1>
+      <p class="lead">13 blocs HTML/CSS/JS autonomes, aux couleurs et à la typographie de decia.fr, prêts à être copiés dans vos futures présentations. Sélectionnez ceux qui vous intéressent, ou ouvrez « Voir le code » pour les récupérer un par un.</p>
+    </div>
+
+    <div class="dc-lib-toolbar" id="dcToolbar">
+      <button type="button" class="dc-lib-filter is-active" data-filter="all">Tous (13)</button>
+      <button type="button" class="dc-lib-filter" data-filter="fond">Fonds animés</button>
+      <button type="button" class="dc-lib-filter" data-filter="data">Data &amp; preuve</button>
+      <button type="button" class="dc-lib-filter" data-filter="offre">Offre &amp; CTA</button>
+      <button type="button" class="dc-lib-filter" data-filter="motion">Motion design (7)</button>
+    </div>
+
+    <div class="dc-lib-grid" id="dcGrid">
+
+      <!-- 1. Réseau de particules ------------------------------------------ -->
+      <article class="dc-lib-card" data-category="fond">
+        <div class="dc-lib-card-head">
+          <div>
+            <span class="dc-lib-tag">Fond animé</span>
+            <h3>Réseau IA (canvas)</h3>
+            <p>Particules qui dérivent et se relient : évoque la connexion et l'automatisation.</p>
+          </div>
+          <label class="dc-lib-select">
+            <input type="checkbox" data-select data-name="Réseau IA (fond canvas)">
+            Sélectionner
+          </label>
+        </div>
+        <div class="dc-lib-card-demo">
+          <div class="dc-stage" style="min-height:220px;" data-demo-source>
+            <div class="dc-network-wrap">
+              <canvas data-dc-network data-count="34"></canvas>
+            </div>
+            <div style="position:relative;z-index:1;display:flex;align-items:center;justify-content:center;height:220px;text-align:center;padding:0 1.5rem;">
+              <div>
+                <p class="eyebrow" style="margin-bottom:6px;">Réseau IA</p>
+                <h3 style="font-size:1.3rem;">Un fond qui évoque l'intelligence artificielle</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+        <details class="dc-lib-code">
+          <summary>Voir le code <button type="button" class="dc-lib-copy" data-copy>Copier</button></summary>
+          <pre><code data-code-target></code></pre>
+        </details>
+      </article>
+
+      <!-- 2. Bandeau défilant -------------------------------------------------- -->
+      <article class="dc-lib-card" data-category="data">
+        <div class="dc-lib-card-head">
+          <div>
+            <span class="dc-lib-tag">Data &amp; preuve</span>
+            <h3>Bandeau d'automatisations</h3>
+            <p>Défilement infini des tâches automatisables. Se met en pause au survol.</p>
+          </div>
+          <label class="dc-lib-select">
+            <input type="checkbox" data-select data-name="Bandeau défilant d'automatisations">
+            Sélectionner
+          </label>
+        </div>
+        <div class="dc-lib-card-demo">
+          <div class="dc-stage" data-demo-source>
+            <div class="dc-marquee">
+              <div class="dc-marquee-track">
+                <span class="dc-marquee-chip"><span class="dot"></span>Devis auto</span>
+                <span class="dc-marquee-chip"><span class="dot"></span>Relances impayés</span>
+                <span class="dc-marquee-chip"><span class="dot"></span>Tri de mails</span>
+                <span class="dc-marquee-chip"><span class="dot"></span>Prise de RDV</span>
+                <span class="dc-marquee-chip"><span class="dot"></span>Comptes rendus</span>
+                <span class="dc-marquee-chip"><span class="dot"></span>Veille &amp; recherche IA</span>
+                <span class="dc-marquee-chip"><span class="dot"></span>Facturation</span>
+                <span class="dc-marquee-chip" aria-hidden="true"><span class="dot"></span>Devis auto</span>
+                <span class="dc-marquee-chip" aria-hidden="true"><span class="dot"></span>Relances impayés</span>
+                <span class="dc-marquee-chip" aria-hidden="true"><span class="dot"></span>Tri de mails</span>
+                <span class="dc-marquee-chip" aria-hidden="true"><span class="dot"></span>Prise de RDV</span>
+                <span class="dc-marquee-chip" aria-hidden="true"><span class="dot"></span>Comptes rendus</span>
+                <span class="dc-marquee-chip" aria-hidden="true"><span class="dot"></span>Veille &amp; recherche IA</span>
+                <span class="dc-marquee-chip" aria-hidden="true"><span class="dot"></span>Facturation</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <details class="dc-lib-code">
+          <summary>Voir le code <button type="button" class="dc-lib-copy" data-copy>Copier</button></summary>
+          <pre><code data-code-target></code></pre>
+        </details>
+      </article>
+
+      <!-- 3. Flux en direct ---------------------------------------------------- -->
+      <article class="dc-lib-card" data-category="data">
+        <div class="dc-lib-card-head">
+          <div>
+            <span class="dc-lib-tag">Data &amp; preuve</span>
+            <h3>Flux d'automatisations « en direct »</h3>
+            <p>Chaque ligne s'illumine tour à tour, en boucle, pour suggérer une activité continue.</p>
+          </div>
+          <label class="dc-lib-select">
+            <input type="checkbox" data-select data-name="Flux d'automatisations en direct">
+            Sélectionner
+          </label>
+        </div>
+        <div class="dc-lib-card-demo">
+          <div class="dc-stage" data-demo-source>
+            <div class="dc-activity">
+              <div class="dc-activity-row"><span class="dc-status"></span><span>Devis n°2026-114 généré et envoyé</span></div>
+              <div class="dc-activity-row"><span class="dc-status"></span><span>Relance impayé programmée — client Dupont</span></div>
+              <div class="dc-activity-row"><span class="dc-status"></span><span>Compte rendu de RDV structuré</span></div>
+              <div class="dc-activity-row"><span class="dc-status"></span><span>3 mails triés et classés</span></div>
+            </div>
+          </div>
+        </div>
+        <details class="dc-lib-code">
+          <summary>Voir le code <button type="button" class="dc-lib-copy" data-copy>Copier</button></summary>
+          <pre><code data-code-target></code></pre>
+        </details>
+      </article>
+
+      <!-- 4. Comparatif avant/après --------------------------------------------- -->
+      <article class="dc-lib-card" data-category="data">
+        <div class="dc-lib-card-head">
+          <div>
+            <span class="dc-lib-tag">Data &amp; preuve</span>
+            <h3>Comparatif avant / après</h3>
+            <p>Barres animées à l'entrée dans l'écran, avec un léger balayage lumineux permanent.</p>
+          </div>
+          <label class="dc-lib-select">
+            <input type="checkbox" data-select data-name="Comparatif avant / après">
+            Sélectionner
+          </label>
+        </div>
+        <div class="dc-lib-card-demo">
+          <div class="dc-stage" data-demo-source>
+            <div class="dc-compare">
+              <div class="dc-compare-row dc-compare-row--before">
+                <span class="dc-compare-label">Avant</span>
+                <div class="dc-compare-track"><div class="dc-compare-fill"></div></div>
+              </div>
+              <div class="dc-compare-row dc-compare-row--after">
+                <span class="dc-compare-label">Avec DecIA</span>
+                <div class="dc-compare-track"><div class="dc-compare-fill"></div></div>
+              </div>
+              <p class="dc-compare-note">Exemple : rédaction d'un devis, à la main vs automatisée.</p>
+            </div>
+          </div>
+        </div>
+        <details class="dc-lib-code">
+          <summary>Voir le code <button type="button" class="dc-lib-copy" data-copy>Copier</button></summary>
+          <pre><code data-code-target></code></pre>
+        </details>
+      </article>
+
+      <!-- 5. Rotateur d'exemples ------------------------------------------------- -->
+      <article class="dc-lib-card" data-category="data">
+        <div class="dc-lib-card-head">
+          <div>
+            <span class="dc-lib-tag">Data &amp; preuve</span>
+            <h3>Rotateur de cas types</h3>
+            <p>Fait défiler automatiquement plusieurs cas d'usage par secteur (contenu réel du site).</p>
+          </div>
+          <label class="dc-lib-select">
+            <input type="checkbox" data-select data-name="Rotateur de cas types">
+            Sélectionner
+          </label>
+        </div>
+        <div class="dc-lib-card-demo">
+          <div class="dc-stage" data-demo-source>
+            <div class="dc-rotator">
+              <div class="dc-rotator-slide is-active">
+                <span class="dc-rotator-sector">Artisanat / bâtiment</span>
+                <h4>Des devis qui prenaient 2h chaque soir</h4>
+                <p>Génération automatique des devis, relance automatique des impayés.</p>
+              </div>
+              <div class="dc-rotator-slide">
+                <span class="dc-rotator-sector">Services / conseil</span>
+                <h4>Des comptes rendus jamais rédigés</h4>
+                <p>Structuration automatique des notes, extraction des prochaines actions.</p>
+              </div>
+              <div class="dc-rotator-slide">
+                <span class="dc-rotator-sector">Santé / paramédical</span>
+                <h4>Un standard saturé de prises de RDV</h4>
+                <p>Prise de rendez-vous et rappels automatisés, confirmation SMS la veille.</p>
+              </div>
+              <div class="dc-rotator-dots">
+                <span class="is-active"></span><span></span><span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <details class="dc-lib-code">
+          <summary>Voir le code <button type="button" class="dc-lib-copy" data-copy>Copier</button></summary>
+          <pre><code data-code-target></code></pre>
+        </details>
+      </article>
+
+      <!-- 6. Bouton CTA halo pulsant ------------------------------------------------ -->
+      <article class="dc-lib-card" data-category="offre">
+        <div class="dc-lib-card-head">
+          <div>
+            <span class="dc-lib-tag">Offre &amp; CTA</span>
+            <h3>Bouton CTA avec halo</h3>
+            <p>Anneau pulsant continu autour d'un bouton — attire l'œil sur l'appel à l'action.</p>
+          </div>
+          <label class="dc-lib-select">
+            <input type="checkbox" data-select data-name="Bouton CTA avec halo pulsant">
+            Sélectionner
+          </label>
+        </div>
+        <div class="dc-lib-card-demo">
+          <div class="dc-stage" style="min-height:140px;display:flex;align-items:center;justify-content:center;" data-demo-source>
+            <span class="dc-cta-glow">
+              <a href="#" class="btn btn-primary" onclick="return false;">Réserver un appel</a>
+            </span>
+          </div>
+        </div>
+        <details class="dc-lib-code">
+          <summary>Voir le code <button type="button" class="dc-lib-copy" data-copy>Copier</button></summary>
+          <pre><code data-code-target></code></pre>
+        </details>
+      </article>
+
+
+      <!-- 7. Motion : Bouton → lecteur ------------------------------------------ -->
+      <article class="dc-lib-card" data-category="motion">
+        <div class="dc-lib-card-head">
+          <div>
+            <span class="dc-lib-tag">Motion design</span>
+            <h3>Bouton → lecteur</h3>
+            <p>Un bouton « Voir la démo » s'étire et devient un lecteur vidéo, puis se replie.</p>
+          </div>
+          <label class="dc-lib-select">
+            <input type="checkbox" data-select data-name="Bouton → lecteur">
+            Sélectionner
+          </label>
+        </div>
+        <div class="dc-lib-card-demo">
+          <div class="dc-motion-frame">
+            <iframe src="animations/bouton-lecteur.html" title="Bouton → lecteur" loading="lazy" data-motion-src="animations/bouton-lecteur.html"></iframe>
+          </div>
+          <a class="dc-motion-open" href="animations/bouton-lecteur.html" target="_blank" rel="noopener">Ouvrir en plein écran →</a>
+        </div>
+        <details class="dc-lib-code">
+          <summary>Voir le code <button type="button" class="dc-lib-copy" data-copy>Copier</button></summary>
+          <pre><code data-code-target></code></pre>
+        </details>
+      </article>
+
+      <!-- 8. Motion : Logo en particules ------------------------------------------ -->
+      <article class="dc-lib-card" data-category="motion">
+        <div class="dc-lib-card-head">
+          <div>
+            <span class="dc-lib-tag">Motion design</span>
+            <h3>Logo en particules</h3>
+            <p>480 points dispersés convergent pour dessiner le logo DecIA, puis se dispersent.</p>
+          </div>
+          <label class="dc-lib-select">
+            <input type="checkbox" data-select data-name="Logo en particules">
+            Sélectionner
+          </label>
+        </div>
+        <div class="dc-lib-card-demo">
+          <div class="dc-motion-frame">
+            <iframe src="animations/logo-particules.html" title="Logo en particules" loading="lazy" data-motion-src="animations/logo-particules.html"></iframe>
+          </div>
+          <a class="dc-motion-open" href="animations/logo-particules.html" target="_blank" rel="noopener">Ouvrir en plein écran →</a>
+        </div>
+        <details class="dc-lib-code">
+          <summary>Voir le code <button type="button" class="dc-lib-copy" data-copy>Copier</button></summary>
+          <pre><code data-code-target></code></pre>
+        </details>
+      </article>
+
+      <!-- 9. Motion : Texte → mise en page ------------------------------------------ -->
+      <article class="dc-lib-card" data-category="motion">
+        <div class="dc-lib-card-head">
+          <div>
+            <span class="dc-lib-tag">Motion design</span>
+            <h3>Texte → mise en page</h3>
+            <p>Un paragraphe brut se réorganise en mise en page éditoriale, élément par élément.</p>
+          </div>
+          <label class="dc-lib-select">
+            <input type="checkbox" data-select data-name="Texte → mise en page">
+            Sélectionner
+          </label>
+        </div>
+        <div class="dc-lib-card-demo">
+          <div class="dc-motion-frame">
+            <iframe src="animations/texte-mise-en-page.html" title="Texte → mise en page" loading="lazy" data-motion-src="animations/texte-mise-en-page.html"></iframe>
+          </div>
+          <a class="dc-motion-open" href="animations/texte-mise-en-page.html" target="_blank" rel="noopener">Ouvrir en plein écran →</a>
+        </div>
+        <details class="dc-lib-code">
+          <summary>Voir le code <button type="button" class="dc-lib-copy" data-copy>Copier</button></summary>
+          <pre><code data-code-target></code></pre>
+        </details>
+      </article>
+
+      <!-- 10. Motion : Onglets → panneaux ------------------------------------------ -->
+      <article class="dc-lib-card" data-category="motion">
+        <div class="dc-lib-card-head">
+          <div>
+            <span class="dc-lib-tag">Motion design</span>
+            <h3>Onglets → panneaux</h3>
+            <p>Un indicateur glisse d'onglet en onglet ; le panneau chiffré change en fondu.</p>
+          </div>
+          <label class="dc-lib-select">
+            <input type="checkbox" data-select data-name="Onglets → panneaux">
+            Sélectionner
+          </label>
+        </div>
+        <div class="dc-lib-card-demo">
+          <div class="dc-motion-frame">
+            <iframe src="animations/onglets-panneaux.html" title="Onglets → panneaux" loading="lazy" data-motion-src="animations/onglets-panneaux.html"></iframe>
+          </div>
+          <a class="dc-motion-open" href="animations/onglets-panneaux.html" target="_blank" rel="noopener">Ouvrir en plein écran →</a>
+        </div>
+        <details class="dc-lib-code">
+          <summary>Voir le code <button type="button" class="dc-lib-copy" data-copy>Copier</button></summary>
+          <pre><code data-code-target></code></pre>
+        </details>
+      </article>
+
+      <!-- 11. Motion : Pile de lead magnets ------------------------------------------ -->
+      <article class="dc-lib-card" data-category="motion">
+        <div class="dc-lib-card-head">
+          <div>
+            <span class="dc-lib-tag">Motion design</span>
+            <h3>Pile de lead magnets</h3>
+            <p>Trois cartes s'ouvrent en éventail ; la carte du dessus présente chaque ressource.</p>
+          </div>
+          <label class="dc-lib-select">
+            <input type="checkbox" data-select data-name="Pile de lead magnets">
+            Sélectionner
+          </label>
+        </div>
+        <div class="dc-lib-card-demo">
+          <div class="dc-motion-frame">
+            <iframe src="animations/pile-lead-magnets.html" title="Pile de lead magnets" loading="lazy" data-motion-src="animations/pile-lead-magnets.html"></iframe>
+          </div>
+          <a class="dc-motion-open" href="animations/pile-lead-magnets.html" target="_blank" rel="noopener">Ouvrir en plein écran →</a>
+        </div>
+        <details class="dc-lib-code">
+          <summary>Voir le code <button type="button" class="dc-lib-copy" data-copy>Copier</button></summary>
+          <pre><code data-code-target></code></pre>
+        </details>
+      </article>
+
+      <!-- 12. Motion : Focus CRM ------------------------------------------ -->
+      <article class="dc-lib-card" data-category="motion">
+        <div class="dc-lib-card-head">
+          <div>
+            <span class="dc-lib-tag">Motion design</span>
+            <h3>Focus CRM</h3>
+            <p>Une ligne du pipeline passe au premier plan et son statut glisse vers « Signé ».</p>
+          </div>
+          <label class="dc-lib-select">
+            <input type="checkbox" data-select data-name="Focus CRM">
+            Sélectionner
+          </label>
+        </div>
+        <div class="dc-lib-card-demo">
+          <div class="dc-motion-frame">
+            <iframe src="animations/focus-crm.html" title="Focus CRM" loading="lazy" data-motion-src="animations/focus-crm.html"></iframe>
+          </div>
+          <a class="dc-motion-open" href="animations/focus-crm.html" target="_blank" rel="noopener">Ouvrir en plein écran →</a>
+        </div>
+        <details class="dc-lib-code">
+          <summary>Voir le code <button type="button" class="dc-lib-copy" data-copy>Copier</button></summary>
+          <pre><code data-code-target></code></pre>
+        </details>
+      </article>
+
+      <!-- 13. Motion : Chemins du lead ------------------------------------------ -->
+      <article class="dc-lib-card" data-category="motion">
+        <div class="dc-lib-card-head">
+          <div>
+            <span class="dc-lib-tag">Motion design</span>
+            <h3>Chemins du lead</h3>
+            <p>Un point lumineux parcourt le parcours du lead, par le haut puis par le bas.</p>
+          </div>
+          <label class="dc-lib-select">
+            <input type="checkbox" data-select data-name="Chemins du lead">
+            Sélectionner
+          </label>
+        </div>
+        <div class="dc-lib-card-demo">
+          <div class="dc-motion-frame">
+            <iframe src="animations/chemins-du-lead.html" title="Chemins du lead" loading="lazy" data-motion-src="animations/chemins-du-lead.html"></iframe>
+          </div>
+          <a class="dc-motion-open" href="animations/chemins-du-lead.html" target="_blank" rel="noopener">Ouvrir en plein écran →</a>
+        </div>
+        <details class="dc-lib-code">
+          <summary>Voir le code <button type="button" class="dc-lib-copy" data-copy>Copier</button></summary>
+          <pre><code data-code-target></code></pre>
+        </details>
+      </article>
+    </div>
+  </div>
+</main>
+
+<div class="dc-lib-summary" id="dcSummary">
+  <span><strong id="dcCount">0</strong> composant(s) sélectionné(s)</span>
+  <button type="button" class="btn btn-secondary" id="dcCopyAll" style="padding:0.5rem 1rem;font-size:0.82rem;">Copier le code sélectionné</button>
+  <button type="button" class="btn btn-primary" id="dcClear" style="padding:0.5rem 1rem;font-size:0.82rem;">Réinitialiser</button>
+</div>
+
+<script src="js/main.js"></script>
+<script src="js/components.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  // Remplit chaque bloc "Voir le code" avec le HTML réel du composant.
+  document.querySelectorAll(".dc-lib-card").forEach(function (card) {
+    var source = card.querySelector("[data-demo-source]");
+    var target = card.querySelector("[data-code-target]");
+    var motion = card.querySelector("[data-motion-src]");
+    if (motion && target) {
+      // Animations autonomes : on récupère le fichier HTML complet.
+      var file = motion.getAttribute("data-motion-src");
+      target.textContent = "<!-- Fichier : " + file + " -->";
+      fetch(file).then(function (r) { return r.text(); }).then(function (html) {
+        target.textContent = html.trim();
+      }).catch(function () {
+        target.textContent = "<!-- Ouvrez " + file + " pour récupérer le code (fichier HTML autonome). -->";
+      });
+      return;
+    }
+    if (source && target) {
+      target.textContent = source.outerHTML
+        .split("\n")
+        .map(function (line) { return line.replace(/^\s{0,4}/, ""); })
+        .join("\n")
+        .trim();
+    }
+  });
+
+  // Copier le code d'un seul composant.
+  document.querySelectorAll("[data-copy]").forEach(function (btn) {
+    btn.addEventListener("click", function (e) {
+      e.preventDefault();
+      var code = btn.closest("details").querySelector("[data-code-target]").textContent;
+      navigator.clipboard.writeText(code).then(function () {
+        var original = btn.textContent;
+        btn.textContent = "Copié !";
+        setTimeout(function () { btn.textContent = original; }, 1500);
+      });
+    });
+  });
+
+  // Filtres par catégorie.
+  var filters = document.querySelectorAll(".dc-lib-filter");
+  var cards = document.querySelectorAll(".dc-lib-card");
+  filters.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      filters.forEach(function (b) { b.classList.remove("is-active"); });
+      btn.classList.add("is-active");
+      var cat = btn.getAttribute("data-filter");
+      cards.forEach(function (card) {
+        card.style.display = (cat === "all" || card.getAttribute("data-category") === cat) ? "" : "none";
+      });
+    });
+  });
+
+  // Sélection + résumé flottant.
+  var selected = new Map();
+  var summary = document.getElementById("dcSummary");
+  var countEl = document.getElementById("dcCount");
+
+  function refreshSummary() {
+    countEl.textContent = selected.size;
+    summary.classList.toggle("is-visible", selected.size > 0);
+  }
+
+  document.querySelectorAll("[data-select]").forEach(function (checkbox) {
+    checkbox.addEventListener("change", function () {
+      var card = checkbox.closest(".dc-lib-card");
+      var name = checkbox.getAttribute("data-name");
+      var code = card.querySelector("[data-code-target]");
+      if (checkbox.checked) {
+        selected.set(name, code);
+        card.classList.add("is-selected");
+      } else {
+        selected.delete(name);
+        card.classList.remove("is-selected");
+      }
+      refreshSummary();
+    });
+  });
+
+  document.getElementById("dcCopyAll").addEventListener("click", function () {
+    var parts = [];
+    selected.forEach(function (codeEl, name) {
+      parts.push("<!-- ===== " + name + " ===== -->\n" + codeEl.textContent);
+    });
+    navigator.clipboard.writeText(parts.join("\n\n")).then(function () {
+      var btn = document.getElementById("dcCopyAll");
+      var original = btn.textContent;
+      btn.textContent = "Copié !";
+      setTimeout(function () { btn.textContent = original; }, 1500);
+    });
+  });
+
+  document.getElementById("dcClear").addEventListener("click", function () {
+    document.querySelectorAll("[data-select]").forEach(function (cb) {
+      cb.checked = false;
+      cb.closest(".dc-lib-card").classList.remove("is-selected");
+    });
+    selected.clear();
+    refreshSummary();
+  });
+})();
+</script>
+</body>
+</html>

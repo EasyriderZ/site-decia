@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Focus CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0C0D11;
+    --text:#F5F6FA;
+    --accent:#0066FF;
+    --surface:#16181E;
+    --row:rgba(245,246,250,.035);
+    --focus:#16233D;            /* surface éclaircie, teintée d'accent */
+    --line:rgba(245,246,250,.10);
+    --muted:rgba(245,246,250,.55);
+    --move:cubic-bezier(.6,0,.2,1);
+    --appear:cubic-bezier(.2,.8,.2,1);
+    --dur:8s;
+    --title:"Plus Jakarta Sans", system-ui, sans-serif;
+    --mono:"JetBrains Mono", ui-monospace, monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    display:grid;
+    place-items:center;
+    font-family:var(--mono);
+  }
+
+  /* Conteneur de référence pour les unités cqw */
+  .frame{width:min(92vmin,640px);container-type:inline-size}
+  .case{
+    width:100%;
+    aspect-ratio:1;
+    display:grid;
+    grid-template-rows:87cqw 13cqw;
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:2.4cqw;
+    overflow:hidden;
+  }
+  .stage{position:relative}
+
+  /* ---------- Liste pipeline ---------- */
+  .list{
+    position:absolute;
+    left:8cqw; top:13cqw;
+    width:84cqw;
+    padding:3.4cqw;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:1.8cqw;
+  }
+  .head{
+    display:flex; justify-content:space-between; align-items:baseline;
+    padding:0 1cqw 2.6cqw;
+    font-size:1.8cqw;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+  .rows{display:flex;flex-direction:column;gap:1.4cqw}
+
+  .row{
+    position:relative;
+    display:flex; align-items:center; gap:2.4cqw;
+    height:11.4cqw;
+    padding:0 2.4cqw;
+    background:var(--row);
+    border:1px solid transparent;
+    border-radius:1.4cqw;
+  }
+  .row.dim{animation:dim var(--dur) infinite}
+  .row.hero{z-index:1;animation:hero var(--dur) infinite}
+
+  .avatar{
+    flex:none;
+    width:6.4cqw; height:6.4cqw;
+    display:flex; align-items:center; justify-content:center;
+    border:1px solid rgba(245,246,250,.16);
+    border-radius:1.2cqw;
+    font-size:2cqw; font-weight:500;
+    color:var(--muted);
+  }
+  .who{flex:1;min-width:0}
+  .who strong{display:block;font-size:2.6cqw;font-weight:500;white-space:nowrap}
+  .who span{display:block;margin-top:.5cqw;font-size:1.8cqw;color:var(--muted);white-space:nowrap}
+
+  .pill{
+    flex:none;
+    position:relative;
+    width:20cqw; height:5cqw;
+    border:1px solid rgba(245,246,250,.18);
+    border-radius:2.5cqw;
+    overflow:hidden;
+    font-size:1.9cqw; font-weight:500;
+  }
+  .pill span{
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    white-space:nowrap;
+  }
+  .hero .pill{animation:pill var(--dur) infinite}
+  .hero .from{animation:from var(--dur) infinite}
+  .hero .to{opacity:0;translate:0 100%;animation:to var(--dur) infinite}
+
+  /* ---------- Titre de la case ---------- */
+  .caption{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 5cqw;
+    border-top:1px solid var(--line);
+  }
+  .caption h2{font-family:var(--title);font-weight:700;font-size:3.6cqw}
+  .caption span{font-size:2cqw;color:var(--muted)}
+
+  /* ---------- Timeline (8 s) ----------
+     0–10 %   liste au repos
+     10–18 %  la 4e ligne passe au premier plan
+     18–24 %  les autres lignes s'estompent
+     28–35 %  le statut glisse : Proposition → Signé
+     35–75 %  pause
+     75–81 %  les autres lignes reviennent
+     81–88 %  la 4e ligne se repose
+     88–95 %  le statut revient : Signé → Proposition
+     95–100 % repos
+  */
+  @keyframes hero{
+    0%,10%{
+      scale:1; background:var(--row); border-color:transparent;
+      box-shadow:0 0 0 rgba(0,0,0,0);
+      animation-timing-function:var(--move);
+    }
+    18%,81%{
+      scale:1.035; background:var(--focus); border-color:rgba(0,102,255,.45);
+      box-shadow:0 1.6cqw 4.5cqw rgba(0,0,0,.55);
+      animation-timing-function:var(--move);
+    }
+    88%,100%{
+      scale:1; background:var(--row); border-color:transparent;
+      box-shadow:0 0 0 rgba(0,0,0,0);
+    }
+  }
+  @keyframes dim{
+    0%,18%{opacity:1;animation-timing-function:var(--appear)}
+    24%,75%{opacity:.32;animation-timing-function:var(--appear)}
+    81%,100%{opacity:1}
+  }
+  @keyframes from{
+    0%,28%{translate:0 0;opacity:1;animation-timing-function:var(--move)}
+    35%,88%{translate:0 -100%;opacity:0;animation-timing-function:var(--move)}
+    95%,100%{translate:0 0;opacity:1}
+  }
+  @keyframes to{
+    0%,28%{translate:0 100%;opacity:0;animation-timing-function:var(--move)}
+    35%,88%{translate:0 0;opacity:1;animation-timing-function:var(--move)}
+    95%,100%{translate:0 100%;opacity:0}
+  }
+  @keyframes pill{
+    0%,28%{background:transparent;border-color:rgba(245,246,250,.18);animation-timing-function:var(--move)}
+    35%,88%{background:var(--accent);border-color:var(--accent);animation-timing-function:var(--move)}
+    95%,100%{background:transparent;border-color:rgba(245,246,250,.18)}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .row,.pill,.pill span{animation:none!important}
+  }
+  /* Intégration en iframe (bibliothèque de composants) : la case occupe tout le cadre */
+  html.embed .frame{width:100vmin}
+</style>
+<script>if(window.self!==window.top)document.documentElement.classList.add('embed');</script>
+</head>
+<body>
+  <div class="frame">
+    <figure class="case">
+      <div class="stage">
+        <div class="list">
+          <div class="head"><span>Pipeline · septembre</span><span>4 prospects</span></div>
+          <div class="rows">
+            <div class="row dim">
+              <span class="avatar">ML</span>
+              <div class="who"><strong>Menuiserie Lefort</strong><span>Menuiserie · 24 salariés</span></div>
+              <span class="pill"><span>Découverte</span></span>
+            </div>
+            <div class="row dim">
+              <span class="avatar">CV</span>
+              <div class="who"><strong>Cabinet Vasseur</strong><span>Expertise comptable · 12 salariés</span></div>
+              <span class="pill"><span>Audit en cours</span></span>
+            </div>
+            <div class="row dim">
+              <span class="avatar">TH</span>
+              <div class="who"><strong>Transports Hamel</strong><span>Logistique · 58 salariés</span></div>
+              <span class="pill"><span>Relance</span></span>
+            </div>
+            <div class="row hero">
+              <span class="avatar">GM</span>
+              <div class="who"><strong>Garage Moreau</strong><span>Réparation auto · 15 salariés</span></div>
+              <span class="pill"><span class="from">Proposition</span><span class="to">Signé</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <figcaption class="caption">
+        <h2>Focus CRM</h2>
+        <span>07 · pipeline DecIA</span>
+      </figcaption>
+    </figure>
+  </div>
+</body>
+</html>

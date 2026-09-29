@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pile de lead magnets</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0C0D11;
+    --text:#F5F6FA;
+    --accent:#0066FF;
+    --surface:#16181E;
+    --line:rgba(245,246,250,.10);
+    --muted:rgba(245,246,250,.55);
+    --move:cubic-bezier(.6,0,.2,1);
+    --appear:cubic-bezier(.2,.8,.2,1);
+    --dur:9s;
+    --title:"Plus Jakarta Sans", system-ui, sans-serif;
+    --mono:"JetBrains Mono", ui-monospace, monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    display:grid;
+    place-items:center;
+    font-family:var(--mono);
+  }
+
+  /* Conteneur de référence pour les unités cqw */
+  .frame{width:min(92vmin,640px);container-type:inline-size}
+  .case{
+    width:100%;
+    aspect-ratio:1;
+    display:grid;
+    grid-template-rows:87cqw 13cqw;
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:2.4cqw;
+    overflow:hidden;
+  }
+  .stage{position:relative;overflow:hidden}
+
+  /* ---------- Pile ---------- */
+  .deck{
+    position:absolute;
+    left:31cqw; top:15.5cqw;
+    width:38cqw; height:52cqw;
+  }
+  .card{
+    position:absolute; inset:0;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:1.6cqw;
+    padding:2.6cqw;
+    transform-origin:50% 115%;
+    overflow:hidden;
+  }
+  .card.left {translate:-1.2cqw .8cqw;rotate:-3deg;animation:fanLeft var(--dur) infinite}
+  .card.right{translate:1.2cqw .8cqw;rotate:3deg;animation:fanRight var(--dur) infinite}
+  .card.top{box-shadow:0 1.5cqw 4cqw rgba(0,0,0,.45)}
+
+  /* Cartes du dessous : maquette neutre de document */
+  .ghost > *{opacity:.5}
+  .ghost .g-thumb{height:21cqw;border-radius:1.2cqw;background:rgba(245,246,250,.08)}
+  .ghost .g-line{height:1.4cqw;border-radius:.7cqw;background:rgba(245,246,250,.12);margin-top:2cqw}
+  .ghost .g-line.s{width:60%}
+
+  /* Ressources de la carte du dessus */
+  .res{
+    position:absolute; inset:2.6cqw;
+    display:flex; flex-direction:column;
+    opacity:0;
+  }
+  .r1{opacity:1;animation:r1 var(--dur) infinite}
+  .r2{animation:r2 var(--dur) infinite}
+  .r3{animation:r3 var(--dur) infinite}
+
+  .thumb{
+    flex:none;
+    height:21cqw;
+    border-radius:1.2cqw;
+    background:rgba(245,246,250,.04);
+    border:1px solid var(--line);
+    position:relative;
+    overflow:hidden;
+  }
+  .tag{
+    margin-top:2.4cqw;
+    font-size:1.7cqw;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+  .res h3{
+    margin-top:.9cqw;
+    font-family:var(--title);
+    font-weight:700;
+    font-size:3.3cqw;
+    line-height:1.2;
+  }
+  .res p{
+    margin-top:1.2cqw;
+    font-size:1.9cqw;
+    line-height:1.45;
+    color:var(--muted);
+  }
+  .cta{
+    margin-top:auto;
+    font-size:1.9cqw;
+    font-weight:500;
+    color:var(--accent);
+  }
+
+  /* Vignette 1 : check-list */
+  .check{position:absolute;inset:3cqw 3.4cqw;display:flex;flex-direction:column;justify-content:space-between}
+  .check div{display:flex;align-items:center;gap:1.8cqw}
+  .check b{flex:none;width:2.2cqw;height:2.2cqw;border:1px solid rgba(245,246,250,.3);border-radius:.5cqw}
+  .check b.on{background:var(--accent);border-color:var(--accent)}
+  .check i{height:1.2cqw;border-radius:.6cqw;background:rgba(245,246,250,.2)}
+
+  /* Vignette 2 : tableur */
+  .sheet{
+    position:absolute;inset:3cqw 3.4cqw;
+    display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;grid-auto-rows:1fr;gap:.6cqw;
+  }
+  .sheet i{border-radius:.4cqw;background:rgba(245,246,250,.08)}
+  .sheet i.h{background:rgba(245,246,250,.18)}
+  .sheet i.a{background:var(--accent)}
+
+  /* Vignette 3 : vidéo */
+  .video{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+  .video b{
+    width:7cqw;height:7cqw;border-radius:50%;background:var(--accent);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .video b::after{
+    content:"";width:2cqw;height:2.4cqw;margin-left:.4cqw;background:var(--text);
+    clip-path:polygon(0 0,100% 50%,0 100%);
+  }
+  .video span{
+    position:absolute;right:1.6cqw;bottom:1.4cqw;
+    font-size:1.6cqw;color:var(--muted);
+  }
+
+  /* ---------- Titre de la case ---------- */
+  .caption{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 5cqw;
+    border-top:1px solid var(--line);
+  }
+  .caption h2{font-family:var(--title);font-weight:700;font-size:3.6cqw}
+  .caption span{font-size:2cqw;color:var(--muted)}
+
+  /* ---------- Timeline (9 s) ----------
+     0–8 %      pile fermée au repos
+     8–18 %     ouverture en éventail (-12°, 0°, 12°)
+     18–40 %    ressource 1
+     40–46 %    fondu vers la ressource 2   (2 s après)
+     46–62 %    ressource 2
+     62–68 %    fondu vers la ressource 3   (2 s après)
+     68–84 %    ressource 3, pause
+     84–94 %    la pile se referme
+     94–100 %   retour à la ressource 1, pile fermée
+  */
+  @keyframes fanLeft{
+    0%,8%{translate:-1.2cqw .8cqw;rotate:-3deg;animation-timing-function:var(--move)}
+    18%,84.4%{translate:-15cqw 1.6cqw;rotate:-12deg;animation-timing-function:var(--move)}
+    94.4%,100%{translate:-1.2cqw .8cqw;rotate:-3deg}
+  }
+  @keyframes fanRight{
+    0%,8%{translate:1.2cqw .8cqw;rotate:3deg;animation-timing-function:var(--move)}
+    18%,84.4%{translate:15cqw 1.6cqw;rotate:12deg;animation-timing-function:var(--move)}
+    94.4%,100%{translate:1.2cqw .8cqw;rotate:3deg}
+  }
+  @keyframes r1{
+    0%,40%{opacity:1;animation-timing-function:var(--appear)}
+    42.8%,96.7%{opacity:0;animation-timing-function:var(--appear)}
+    99.5%,100%{opacity:1}
+  }
+  @keyframes r2{
+    0%,42.8%{opacity:0;animation-timing-function:var(--appear)}
+    46.1%,62.2%{opacity:1;animation-timing-function:var(--appear)}
+    65%,100%{opacity:0}
+  }
+  @keyframes r3{
+    0%,65%{opacity:0;animation-timing-function:var(--appear)}
+    68.3%,94.4%{opacity:1;animation-timing-function:var(--appear)}
+    96.7%,100%{opacity:0}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .card.left{animation:none;translate:-15cqw 1.6cqw;rotate:-12deg}
+    .card.right{animation:none;translate:15cqw 1.6cqw;rotate:12deg}
+    .res{animation:none}
+  }
+  /* Intégration en iframe (bibliothèque de composants) : la case occupe tout le cadre */
+  html.embed .frame{width:100vmin}
+</style>
+<script>if(window.self!==window.top)document.documentElement.classList.add('embed');</script>
+</head>
+<body>
+  <div class="frame">
+    <figure class="case">
+      <div class="stage">
+        <div class="deck">
+          <div class="card left ghost" aria-hidden="true">
+            <div class="g-thumb"></div><div class="g-line"></div><div class="g-line"></div><div class="g-line s"></div>
+          </div>
+          <div class="card right ghost" aria-hidden="true">
+            <div class="g-thumb"></div><div class="g-line"></div><div class="g-line"></div><div class="g-line s"></div>
+          </div>
+
+          <div class="card top">
+            <div class="res r1">
+              <div class="thumb">
+                <div class="check">
+                  <div><b class="on"></b><i style="width:70%"></i></div>
+                  <div><b></b><i style="width:55%"></i></div>
+                  <div><b></b><i style="width:80%"></i></div>
+                  <div><b></b><i style="width:45%"></i></div>
+                </div>
+              </div>
+              <p class="tag">Guide PDF · 12 pages</p>
+              <h3>Audit IA en 30 minutes</h3>
+              <p>Repérez les 5 tâches à automatiser en priorité.</p>
+              <span class="cta">Télécharger →</span>
+            </div>
+
+            <div class="res r2">
+              <div class="thumb">
+                <div class="sheet">
+                  <i class="h"></i><i class="h"></i><i class="h"></i><i class="h"></i>
+                  <i></i><i></i><i></i><i></i>
+                  <i></i><i></i><i></i><i></i>
+                  <i></i><i></i><i></i><i class="a"></i>
+                </div>
+              </div>
+              <p class="tag">Modèle · tableur</p>
+              <h3>Calculateur de temps gagné</h3>
+              <p>Chiffrez le ROI d'une automatisation en 3 champs.</p>
+              <span class="cta">Récupérer le modèle →</span>
+            </div>
+
+            <div class="res r3">
+              <div class="thumb">
+                <div class="video"><b></b><span>45:00</span></div>
+              </div>
+              <p class="tag">Webinaire · replay</p>
+              <h3>Un agent de relance en direct</h3>
+              <p>45 min pour voir un agent IA traiter des factures.</p>
+              <span class="cta">Voir le replay →</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <figcaption class="caption">
+        <h2>Pile de lead magnets</h2>
+        <span>06 · ressources DecIA</span>
+      </figcaption>
+    </figure>
+  </div>
+</body>
+</html>
