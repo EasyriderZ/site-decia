@@ -4,17 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#000000">
-<script>
-  /* Applique le thème mémorisé avant le premier rendu, pour éviter un flash
-     sombre -> clair au chargement (page seule concernée, clé dédiée). */
-  (function () {
-    try {
-      if (localStorage.getItem('decia-formation-theme') === 'light') {
-        document.documentElement.setAttribute('data-theme', 'light');
-      }
-    } catch (e) {}
-  })();
-</script>
 <title>Formation IA pour dirigeants et équipes | DecIA</title>
 <meta name="description" content="Trois formations IA pour TPE et PME : IA au quotidien pour les équipes, IA pour les dirigeants (ROI, souveraineté, charte IA) et formation sur mesure adaptée à votre métier.">
 <link rel="icon" href="assets/favicon.ico" sizes="any">
@@ -183,25 +172,8 @@
   .day-card li::before { content: "—"; color: var(--text-mute); flex-shrink: 0; }
   @media (max-width: 760px) { .day-split { grid-template-columns: 1fr; } }
 
-  /* ---- Table "Ce que couvre la formation / Contenu" (formation 01) ---- */
-  #quotidien .process-table .row.head span { color: var(--accent); }
-
-  /* ---- Pictogrammes "flashy" (variantes de couleur) ---- */
-  .flash-green.icon-mute, .flash-green.icon, .flash-green.check { background: rgba(52, 211, 153, 0.16) !important; }
-  .flash-green svg { stroke: #34d399 !important; }
-  .flash-amber.icon-mute, .flash-amber.icon { background: rgba(255, 176, 32, 0.16) !important; }
-  .flash-amber svg { stroke: #ffb020 !important; }
-  .flash-violet.icon-mute, .flash-violet.icon { background: rgba(167, 139, 250, 0.16) !important; }
-  .flash-violet svg { stroke: #a78bfa !important; }
-  .flash-cyan.icon-mute, .flash-cyan.icon { background: rgba(34, 211, 238, 0.16) !important; }
-  .flash-cyan svg { stroke: #22d3ee !important; }
-  .flash-pink.icon-mute, .flash-pink.icon { background: rgba(255, 79, 163, 0.16) !important; }
-  .flash-pink svg { stroke: #ff4fa3 !important; }
-  .flash-coral.icon-mute, .flash-coral.icon { background: rgba(251, 113, 133, 0.16) !important; }
-  .flash-coral svg { stroke: #fb7185 !important; }
-  .chip.flash-green svg { stroke: #34d399; }
-  .chip.flash-amber svg { stroke: #ffb020; }
-  .chip.flash-violet svg { stroke: #a78bfa; }
+  /* Les pictogrammes "flashy" et le bleu des labels de tableau sont
+     désormais définis dans css/style.css (site entier). */
 
   /* ---- Carte "IA pour les dirigeants" mise en avant ---- */
   .step.is-featured {
@@ -230,75 +202,6 @@
   #contact { position: relative; overflow: hidden; }
   #contact .container { position: relative; z-index: 1; }
 
-  /* ==========================================================
-     MODE CLAIR (page Formation uniquement)
-     Le header et le footer gardent leur identité sombre dans les
-     deux modes : le logo DecIA est blanc et illisible sur fond clair.
-     ========================================================== */
-  html[data-theme="light"] {
-    --bg: #f7f8fb;
-    --panel: #eef0f5;
-    --card: #ffffff;
-    --card-hover: #f2f4f9;
-    --border: rgba(15, 23, 42, 0.10);
-    --border-strong: rgba(15, 23, 42, 0.20);
-    --text: #14161f;
-    --text-soft: #4b4f5e;
-    --text-mute: #767b8c;
-    --accent: #2563eb;
-    --grad-soft: linear-gradient(135deg, rgba(37, 99, 235, 0.10), rgba(59, 36, 252, 0.10));
-    --success: #059669;
-    --shadow-glow: 0 14px 30px rgba(37, 99, 235, 0.25);
-  }
-
-  /* Header/footer : on repointe les variables vers leurs valeurs sombres
-     d'origine à l'intérieur de ces deux blocs, pour que tout ce qui les
-     compose (texte, bordures, logo) reste lisible sans dupliquer chaque
-     règle. */
-  html[data-theme="light"] .site-header,
-  html[data-theme="light"] .site-footer {
-    --bg: #000000;
-    --panel: #0c0d11;
-    --card: #111319;
-    --border: rgba(255, 255, 255, 0.09);
-    --border-strong: rgba(255, 255, 255, 0.16);
-    --text: #f5f6fa;
-    --text-soft: #c8c9cc;
-    --text-mute: #6c7288;
-    --accent: #5c9cff;
-  }
-  html[data-theme="light"] .site-header {
-    background: rgba(4, 5, 8, 0.92) !important;
-    border-bottom: 1px solid var(--border);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-  }
-  html[data-theme="light"] .site-footer { background: var(--bg); }
-
-  /* Le réseau de particules (bleu translucide) devient peu lisible sur
-     fond clair : on le masque plutôt que d'aller retoucher les couleurs
-     codées en dur dans js/components.js (partagé avec d'autres pages). */
-  html[data-theme="light"] .dc-network-wrap { display: none; }
-
-  /* ---- Bouton de bascule clair / sombre ---- */
-  .theme-toggle {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    border: 1px solid var(--border);
-    background: var(--card);
-    flex-shrink: 0;
-    transition: border-color 0.3s ease;
-  }
-  .theme-toggle:hover { border-color: var(--border-strong); }
-  .theme-toggle svg { width: 17px; height: 17px; stroke: var(--text-soft); }
-  .theme-toggle .icon-moon { display: none; }
-  html[data-theme="light"] .theme-toggle .icon-sun { display: none; }
-  html[data-theme="light"] .theme-toggle .icon-moon { display: inline-flex; }
-
   /* ---- Barre de progression de lecture ---- */
   .reading-progress {
     position: fixed;
@@ -324,15 +227,13 @@
     <div class="nav-group">
       <nav class="nav-links" aria-label="Navigation principale">
         <a href="index.html#offre">Solutions</a>
-        <a href="index.html#comment">Méthode</a>
+        <a href="audit.html">Audit</a>
         <a href="formation.html">Formation</a>
-        <a href="index.html#apropos">Pourquoi DecIA</a>
+        <a href="etudes-de-cas.html">Étude de cas</a>
+        <a href="ressources.html">Ressources</a>
+        <a href="index.html#apropos">A propos</a>
       </nav>
-      <a href="index.html#contact" class="btn btn-primary">Réserver un appel</a>
-      <button type="button" class="theme-toggle" id="themeToggle" aria-pressed="false" aria-label="Activer le mode clair">
-        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-      </button>
+      <a href="rendez-vous.html" class="btn btn-primary">Réserver un appel</a>
       <button type="button" class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="mobileNav" aria-label="Ouvrir le menu">
         <span></span><span></span><span></span>
       </button>
@@ -340,10 +241,12 @@
   </div>
   <nav class="mobile-nav" id="mobileNav" data-open="false" aria-label="Navigation mobile">
     <a href="index.html#offre">Solutions</a>
-    <a href="index.html#comment">Méthode</a>
+    <a href="audit.html">Audit</a>
     <a href="formation.html">Formation</a>
-    <a href="index.html#apropos">Pourquoi DecIA</a>
-    <a href="index.html#contact" class="btn btn-primary">Réserver un appel</a>
+    <a href="etudes-de-cas.html">Étude de cas</a>
+    <a href="ressources.html">Ressources</a>
+    <a href="index.html#apropos">A propos</a>
+    <a href="rendez-vous.html" class="btn btn-primary">Réserver un appel</a>
   </nav>
 </header>
 
@@ -366,7 +269,7 @@
         </div>
         <div class="hero-link-row" style="justify-content:center;margin-top:26px;">
           <span class="dc-cta-glow">
-            <a href="index.html#contact" class="btn btn-primary">Parler de vos besoins de formation</a>
+            <a href="rendez-vous.html" class="btn btn-primary">Parler de vos besoins de formation</a>
           </span>
         </div>
       </div>
@@ -707,18 +610,59 @@
        CTA FINAL
        ========================================================== -->
   <section id="contact" class="section-pad">
-    <div class="dc-network-wrap"><canvas data-dc-network data-count="36"></canvas></div>
-    <div class="container" style="max-width:760px;">
-      <div class="final-cta reveal">
-        <p class="eyebrow">Dernière étape</p>
-        <h2>Quelle formation correspond à votre équipe ?</h2>
-        <p class="lead">Un échange de 20 minutes suffit pour identifier la formation la plus adaptée à votre entreprise, ou construire un programme sur mesure.</p>
-        <ul class="final-checks">
-          <li><span class="check flash-green" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg></span>Échange gratuit, sans engagement</li>
-          <li><span class="check flash-green" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg></span>Programme adapté à vos métiers et vos outils</li>
-          <li><span class="check flash-green" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg></span>Réponse sous 24h ouvrées</li>
-        </ul>
-        <a href="index.html#contact" class="btn btn-primary" style="margin-top:var(--space-3);">Parler de mon projet de formation</a>
+    <div class="container">
+      <div class="cta-rich reveal">
+        <div class="cta-text">
+          <span class="badge"><svg viewBox="0 0 24 24" width="10" height="10" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg>Réponse sous 24h ouvrées</span>
+          <h2>Quelle formation correspond à votre équipe ?</h2>
+          <p>Un échange de 20 minutes suffit pour identifier la formation la plus adaptée à votre entreprise, ou construire un programme sur mesure.</p>
+          <a href="rendez-vous.html" class="btn btn-primary">Parler de mon projet de formation</a>
+          <p class="cta-note">Échange gratuit, sans engagement</p>
+          <div class="avatars-row">
+            <span class="avatars" aria-hidden="true">
+              <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span>
+              <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 21V7l8-4 8 4v14"/><path d="M9 21v-6h6v6"/></svg></span>
+              <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg></span>
+            </span>
+            <span class="txt">15 entreprises accompagnées ces 3 derniers mois</span>
+          </div>
+        </div>
+
+        <div class="cta-inner">
+          <div class="ci-head">
+            <span class="label">Déroulé des 20 min</span>
+            <span class="pill">Gratuit</span>
+          </div>
+          <div class="ci-steps">
+            <div class="ci-step">
+              <span class="num">1</span>
+              <div>
+                <h5>Vous décrivez votre équipe</h5>
+                <p>Métiers, niveau IA actuel, outils utilisés</p>
+              </div>
+            </div>
+            <div class="ci-step">
+              <span class="num">2</span>
+              <div>
+                <h5>Nous construisons le programme</h5>
+                <p>Contenu adapté à vos métiers et vos outils</p>
+              </div>
+            </div>
+            <div class="ci-step">
+              <span class="num">3</span>
+              <div>
+                <h5>Vous repartez avec un programme prêt</h5>
+                <p>Dates, contenu, format présentiel ou distanciel</p>
+              </div>
+            </div>
+          </div>
+          <div class="ci-result"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Vous repartez avec : programme adapté + planning proposé</div>
+          <div class="ci-tags">
+            <span>Réponse 24h</span>
+            <span>Sur mesure</span>
+            <span>Sans engagement</span>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -736,9 +680,11 @@
         <div class="footer-col">
           <h4>Navigation</h4>
           <a href="index.html#offre">Solutions</a>
-          <a href="index.html#comment">Méthode</a>
+          <a href="audit.html">Audit</a>
           <a href="formation.html">Formation</a>
-          <a href="index.html#apropos">Pourquoi DecIA</a>
+          <a href="etudes-de-cas.html">Étude de cas</a>
+          <a href="ressources.html">Ressources</a>
+          <a href="index.html#apropos">A propos</a>
         </div>
         <div class="footer-col">
           <h4>Contact</h4>
@@ -748,7 +694,7 @@
         <div class="footer-col">
           <h4>Suivez-nous</h4>
           <div class="footer-social">
-            <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 11v5M8 8v.01M12 16v-3a2 2 0 0 1 4 0v3M12 13v3"/></svg></a>
+            <a href="https://www.linkedin.com/company/deciafr/about/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 11v5M8 8v.01M12 16v-3a2 2 0 0 1 4 0v3M12 13v3"/></svg></a>
           </div>
         </div>
       </div>
@@ -763,34 +709,6 @@
 <script src="js/components.js"></script>
 <script src="js/main.js"></script>
 <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
-<script>
-(function () {
-  "use strict";
-  var btn = document.getElementById('themeToggle');
-  if (!btn) return;
-
-  function apply(theme) {
-    if (theme === 'light') {
-      document.documentElement.setAttribute('data-theme', 'light');
-      btn.setAttribute('aria-pressed', 'true');
-      btn.setAttribute('aria-label', 'Activer le mode sombre');
-    } else {
-      document.documentElement.removeAttribute('data-theme');
-      btn.setAttribute('aria-pressed', 'false');
-      btn.setAttribute('aria-label', 'Activer le mode clair');
-    }
-  }
-
-  var current = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
-  apply(current);
-
-  btn.addEventListener('click', function () {
-    current = current === 'light' ? 'dark' : 'light';
-    apply(current);
-    try { localStorage.setItem('decia-formation-theme', current); } catch (e) {}
-  });
-})();
-</script>
 <script>
 (function () {
   "use strict";

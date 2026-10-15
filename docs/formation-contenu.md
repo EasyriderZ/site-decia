@@ -6,9 +6,8 @@
 > pas le HTML/CSS. Pour le rendu réel, voir `formation.html` + `css/style.css`
 > dans le dépôt. Contenu source : page Notion « Formation Decia ».
 >
-> Dernière mise à jour : 2026-09-26 (bloc « Et après la formation ? »
-> supprimé, CTA final repointé vers le calendrier, pictogrammes tous
-> colorés, carte charte IA remplacée par un diagramme en étoile).
+> Dernière mise à jour : 2026-09-30 (mode clair/sombre retiré de la page —
+> elle reste exclusivement en thème sombre).
 
 **Titre (balise `<title>`)** : Formation IA pour dirigeants et équipes | DecIA
 **Meta description** : Trois formations IA pour TPE et PME : IA au quotidien pour les équipes, IA pour les dirigeants (ROI, souveraineté, charte IA) et formation sur mesure adaptée à votre métier.
@@ -177,15 +176,9 @@ Page enrichie avec les composants animés de `css/components.css` / `js/componen
 - Bloc « Et après la formation ? » (funnel Formation → Audit → Automatisation) retiré de la page — jugé redondant. L'alternance de fond gris/noir a été réajustée en conséquence (le CTA final passe de `section-pad alt` à `section-pad` simple pour garder l'alternance correcte).
 - Barre de progression de lecture (3px, dégradé de marque) fixée en haut de la page, se remplit selon l'avancement du scroll — JS pur, sans dépendance.
 
-### Bascule mode clair / sombre (2026-09-25)
+### Bascule mode clair / sombre — ajoutée puis retirée (2026-09-25 → 2026-09-30)
 
-Bouton (icône soleil/lune) ajouté dans le header, à côté du menu burger — page Formation uniquement (pas de propagation aux autres pages).
-
-- Préférence mémorisée dans `localStorage` (clé `decia-formation-theme`), lue par un petit script bloquant en tout début de `<head>` pour éviter un flash sombre → clair au chargement.
-- Le thème clair redéfinit les variables CSS globales (`--bg`, `--card`, `--text`, `--accent`, `--success`...) dans le `<style>` propre à `formation.html` — rien n'est touché dans `css/style.css` partagé, donc aucun risque de fuite vers les autres pages même si elles lisaient la même clé (elles ne le font pas).
-- **Le header et le footer restent volontairement sombres dans les deux modes** : le logo `assets/logo.png` a le mot « Dec » en blanc, illisible sur fond clair, et il n'existe pas de variante sombre du logo. Les variables sont re-pointées vers leurs valeurs sombres d'origine à l'intérieur de `.site-header` et `.site-footer`.
-- Le réseau de particules animé (`dc-network-wrap`) de la section CTA finale est masqué en mode clair : ses couleurs sont codées en dur (bleu translucide) dans `js/components.js` et deviendraient à peine visibles sur fond clair.
-- Piste future si un mode clair site entier est décidé : fournir un logo avec un texte sombre (ou une variante SVG avec `currentColor`) pour ne plus avoir à figer le header/footer en sombre.
+Un bouton (icône soleil/lune) avait été ajouté dans le header pour basculer la page en thème clair, avec préférence mémorisée dans `localStorage` (clé `decia-formation-theme`). **Retiré le 2026-09-30** à la demande de l'utilisateur : bouton, variables CSS du thème clair, re-pointage sombre du header/footer, script de détection et de bascule — tout a été supprimé. La page est de nouveau exclusivement en thème sombre, comme le reste du site.
 
 ## Pistes d'évolution futures
 

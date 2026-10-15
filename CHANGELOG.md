@@ -3,6 +3,125 @@
 Historique des évolutions du site, par date. Pas de numéros de version : on
 documente ce qui change et pourquoi, dans l'ordre chronologique.
 
+## 2026-10-06
+
+### Ajouté — formulaire de contact Brevo en bas de `presentation.html`
+Nouvelle slide 8 « Parlez-nous de votre projet » (après la slide HubSpot de
+test) avec l'iframe Brevo « DecIA - Contact site web » (prénom, nom, email,
+téléphone, besoin, description du projet).
+- Point de navigation « Contact » ajouté, compteurs de slides passés de
+  `/ 07` à `/ 08`.
+- Carte à fond clair (comme la slide HubSpot), iframe en largeur max 540px
+  et hauteur 900px (au lieu des 305px fournis : le formulaire est plus
+  haut, sinon il défile à l'intérieur).
+- Le bouton du formulaire s'intitule « S'INSCRIRE » et le texte parle de
+  newsletter : à modifier dans Brevo si ce formulaire sert de contact.
+
+## 2026-10-05
+
+### Ajouté — page `diagnostic.html` (Diagnostic Flash offert)
+Nouvelle page de conversion : hero (« Votre PME perd 10h par semaine… » +
+bouton d'ancre vers le formulaire), 3 colonnes « fait pour vous si »,
+3 livrables numérotés (cartographie, chiffrage en €, par quoi commencer),
+« Comment ça se passe » en 3 étapes reliées, section formulaire +
+calendrier, « Pourquoi DecIA ? » (logo-mark, Dreux) et FAQ de 3 questions.
+Header/footer actuels du site ; styles spécifiques en `<style>` dans la page.
+- Le CTA du header pointe vers `#formulaire` (comme `rendez-vous.html`).
+- Formulaire : iframe Brevo (`sibforms.com`) intégrée dans une carte à fond
+  clair (largeur max 540px, hauteur 305px comme fourni). ATTENTION : le
+  formulaire fourni est un formulaire « Newsletter » (email seul), pas un
+  formulaire de qualification — à remplacer quand le bon sera prêt. La
+  redirection vers l'agenda après validation se règle dans Brevo.
+- Page pas encore liée depuis la navigation du site.
+- Texte fourni repris tel quel, sauf « Basés a Dreux » corrigé en « à Dreux ».
+
+## 2026-10-04
+
+### Ajouté — formulaire HubSpot (test) en bas de `presentation.html`
+Nouvelle slide 7 « Laissez-nous vos coordonnées » à la suite du CTA final,
+contenant le formulaire HubSpot embarqué (portail EU1, id
+`743cc07f-904c-428a-a7ff-a915a529f27e`, script `js-eu1.hsforms.net`).
+- Point de navigation « Formulaire » ajouté au menu latéral, compteurs de
+  slides passés de `/ 06` à `/ 07`.
+- Le formulaire est affiché sur une carte à fond clair (`#f5f6fa`) : ses
+  textes sont sombres et définis côté HubSpot, donc illisibles sur le fond
+  noir du site. Pour un rendu sombre, il faudra régler le thème dans
+  l'éditeur de formulaires HubSpot.
+- Statut : test, non relié au reste du site (pas de lien depuis index.html).
+
+## 2026-09-30 (4)
+
+### Ajouté — Mini logo IA dans la section « Pourquoi DecIA »
+Le placeholder `[Photo]` de l'avatar rond de la section « Pourquoi DecIA »
+(`index.html#apropos`) est remplacé par le mini logo (le symbole « IA »
+seul, sans le texte « Dec »), fourni par l'utilisateur. Image détourée et
+recadrée depuis l'original (fond transparent conservé), enregistrée dans
+`assets/logo-mark.png`.
+
+## 2026-09-30 (3)
+
+### Retiré — Mode clair/sombre de `formation.html`
+Le bouton de bascule clair/sombre ajouté récemment dans le header de
+`formation.html` est retiré à la demande de l'utilisateur : bouton
+soleil/lune, script de détection en tête de `<head>`, variables CSS du
+thème clair, re-pointage sombre du header/footer, et script de bascule en
+bas de page — tout est supprimé. La page repasse exclusivement en thème
+sombre, comme le reste du site.
+
+## 2026-09-30 (2)
+
+### Modifié — Nouvelle navigation du header (6 liens)
+Le menu principal passe de 4 à 6 liens sur les 7 pages qui partagent le
+header commun (`index.html`, `methode.html`, `audit.html`,
+`etudes-de-cas.html`, `formation.html`, `confidentialite.html`,
+`mentions-legales.html`) :
+- **Solution** (renommé depuis « Solutions ») → `#offre`
+- **Audit** (nouveau) → `audit.html`
+- **Formation** → `formation.html` (inchangé)
+- **Étude de cas** (nouveau dans le header) → `etudes-de-cas.html`
+- **Ressources** (nouveau) → `ressources.html`
+- **A propos** (renommé depuis « Pourquoi DecIA ») → `#apropos`
+
+« Méthode » disparaît du header (la page `methode.html` reste en ligne et
+accessible depuis le contenu d'`index.html`, juste plus dans le menu).
+
+### Modifié — Footer aligné sur le nouveau header
+La colonne « Navigation » du footer des 7 mêmes pages reprend exactement les
+6 mêmes liens que le header (Solution / Audit / Formation / Étude de cas /
+Ressources / A propos), à la place de l'ancienne liste (Solutions / Méthode /
+Formation / Pourquoi DecIA / FAQ). Le lien FAQ disparaît du footer avec
+cet alignement.
+
+### Ajouté — `ressources.html` (page placeholder)
+Nouvelle page pour accueillir le futur lien « Ressources » du menu, en
+attendant le développement complet de la section. Contient dès maintenant
+une carte vers `Guide des Automatisations IA.html` (qui existait déjà mais
+n'était lié nulle part) et une carte « D'autres ressources arrivent »
+pour signaler que d'autres contenus sont à venir.
+
+## 2026-09-30
+
+### Modifié — Généralisation des pictogrammes colorés et des labels bleus à tout le site
+Les traitements visuels validés sur `formation.html` (pictogrammes colorés,
+labels de tableau en bleu accent) sont étendus à `index.html`, `methode.html`,
+`audit.html` et `presentation.html`.
+- Les classes utilitaires `.flash-green/amber/violet/cyan/pink/coral`
+  (fond + couleur de trait pour `.icon`, `.icon-mute`, `.check`, les chips)
+  sont déplacées de `formation.html` vers `css/style.css` — disponibles sur
+  tout le site désormais. Suppression du bloc dupliqué dans `formation.html`.
+- Tous les pictogrammes précédemment en bleu accent uniforme (`benefit-card`,
+  `illustration-card`, `context-card`, `pillar-card`, `callout-card`,
+  `process-table`, `timeline-day`, `tools-table`, `autonomy-card`,
+  `ticket-body`) reçoivent une couleur variée et pensée par section — jamais
+  au hasard, jamais plus de 6 teintes par page.
+- Labels mono uppercase des tables/comparatifs passés en bleu accent
+  (`--accent`) au lieu de `--text-mute` : `.process-table .row.head span`,
+  `.tools-table .t-row.head span`, `.timeline-day .sub` (règles partagées,
+  donc effet sur `methode.html` ET `formation.html`).
+- `etudes-de-cas.html` n'a pas de pictogrammes (contenu texte uniquement) —
+  rien à changer sur cette page. `components.html` (bibliothèque interne)
+  non touché par cette passe.
+
 ## 2026-09-28
 
 ### Ajouté — 7 animations « motion design » dans la bibliothèque de composants
