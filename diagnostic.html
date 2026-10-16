@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <title>Diagnostic IA offert — 3 processus automatisables en 45 min | DecIA</title>
 <meta name="description" content="En 45 minutes, DecIA identifie 3 processus automatisables dans votre PME et vous remet une fiche chiffrée. Offert, sans pitch. Basés à Dreux, nous intervenons en Centre-Val de Loire.">
@@ -13,355 +13,222 @@
 <link rel="manifest" href="assets/site.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&family=Plus+Jakarta+Sans:wght@600;700;800&family=DM+Sans:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/site.css">
 <style>
-  /* ---- Ligne de preuve sous le bouton du hero ---- */
-  .diag-proof {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    flex-wrap: wrap;
-    max-width: none;
-    margin: 0 auto;
-    font-size: 0.86rem;
-    color: var(--text-soft);
-  }
-  .diag-proof svg { width: 15px; height: 15px; stroke: var(--success); flex-shrink: 0; }
+.diag-proof{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;font-size:13.5px;color:var(--soft);font-weight:600;margin-top:10px}
+.diag-proof svg{width:15px;height:15px;stroke:#18B89E;flex-shrink:0}
 
-  /* ---- Titre de section centré ---- */
-  .section-head.center { max-width: 720px; margin-left: auto; margin-right: auto; text-align: center; }
+.benefit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.benefit{background:var(--card);border:var(--cardb);box-shadow:var(--cardsh);border-radius:22px;padding:28px;transition:transform .3s ease}
+.benefit:hover{transform:translateY(-5px)}
+.benefit .tile{width:46px;height:46px;margin-bottom:16px}
+.benefit .tile svg{width:52%;height:52%}
+.benefit p{font-size:14px;color:var(--cardink);opacity:.85;font-weight:600;line-height:1.55;margin:0}
 
-  /* ---- Comment ça se passe : 3 étapes reliées ---- */
-  .flow {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-3);
-    counter-reset: flow;
-  }
-  .flow-step {
-    position: relative;
-    padding: var(--space-3);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    background: var(--card);
-  }
-  .flow-step .num {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    background: var(--grad);
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 0.9rem;
-    margin-bottom: 18px;
-  }
-  .flow-step h3 { font-size: 1.02rem; margin-bottom: 0.4rem; }
-  .flow-step p { font-size: 0.9rem; }
-  .flow-step:not(:last-child)::after {
-    content: "→";
-    position: absolute;
-    top: 28px;
-    right: -22px;
-    width: 20px;
-    text-align: center;
-    color: var(--text-mute);
-  }
+.onum-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.onum{background:var(--card);border:var(--cardb);box-shadow:var(--cardsh);border-radius:22px;padding:30px 26px;transition:transform .3s ease}
+.onum:hover{transform:translateY(-5px)}
+.onum .num{width:44px;height:44px;font-size:17px;background:linear-gradient(135deg,#FF6A13,#FF9A3D);margin-bottom:16px}
+.onum h3{font-size:17px;color:var(--cardink);margin-bottom:8px;letter-spacing:-.02em}
+.onum p{font-size:13.5px;color:var(--cardink);opacity:.75;font-weight:600;line-height:1.5;margin:0}
 
-  /* ---- Formulaire + calendrier ---- */
-  .diag-form-wrap { max-width: 760px; margin: 0 auto; }
-  .diag-form-wrap .section-head { margin-bottom: var(--space-3); }
-  .diag-form-card {
-    padding: var(--space-3);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    background: #f5f6fa;
-    min-height: 220px;
-  }
-  .diag-form-frame {
-    display: block;
-    margin: 0 auto;
-    width: 100%;
-    max-width: 540px;
-    border: 0;
-  }
-  .diag-micro {
-    margin: 16px auto 0;
-    text-align: center;
-    font-size: 0.82rem;
-    color: var(--text-mute);
-    max-width: none;
-  }
+.flow-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.flow-step{background:var(--card);border:var(--cardb);box-shadow:var(--cardsh);border-radius:22px;padding:28px;position:relative}
+.flow-step .num{width:38px;height:38px;font-size:15px;background:linear-gradient(135deg,#0A6CFF,#1A4FF0);margin-bottom:14px}
+.flow-step h3{font-size:16px;color:var(--cardink);margin-bottom:6px;letter-spacing:-.02em}
+.flow-step p{font-size:13px;color:var(--cardink);opacity:.7;font-weight:600;margin:0}
+.flow-step:not(:last-child)::after{content:'→';position:absolute;top:30px;right:-26px;color:var(--soft);font-size:18px;font-weight:800}
 
-  @media (max-width: 860px) {
-    .flow { grid-template-columns: 1fr; }
-    .flow-step:not(:last-child)::after { display: none; }
-  }
+.form-card{max-width:600px;margin:0 auto;background:#fff;border-radius:28px;padding:32px;box-shadow:0 30px 60px rgba(6,10,60,.12)}
+.form-card iframe{display:block;margin:0 auto;width:100%;max-width:540px;border:0}
+.form-micro{text-align:center;font-size:12.5px;color:var(--soft);margin-top:18px;max-width:none}
+
+.about2{display:flex;gap:26px;align-items:flex-start;max-width:760px;margin:0 auto}
+.about2 .avatar{width:84px;height:84px;border-radius:28%;background:var(--card);border:var(--cardb);box-shadow:var(--cardsh);flex:none;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.about2 .avatar img{width:70%}
+.about2 p{font-size:14px;color:var(--cardink);opacity:.85;font-weight:600;line-height:1.6}
+
+@media (max-width:860px){
+  .benefit-grid,.onum-grid,.flow-grid{grid-template-columns:1fr}
+  .flow-step:not(:last-child)::after{display:none}
+  .about2{flex-direction:column;align-items:center;text-align:center}
+}
 </style>
 </head>
-<body>
+<body id="top">
 
-<header class="site-header" id="siteHeader">
-  <div class="container">
-    <a href="index.html#top" class="logo" aria-label="DecIA — accueil">
-      <img src="assets/logo.png" alt="DecIA" width="140" height="33">
-    </a>
-    <div class="nav-group">
-      <nav class="nav-links" aria-label="Navigation principale">
-        <a href="index.html#offre">Solutions</a>
-        <a href="audit.html">Audit</a>
-        <a href="formation.html">Formation</a>
-        <a href="etudes-de-cas.html">Étude de cas</a>
-        <a href="ressources.html">Ressources</a>
-      </nav>
-      <a href="#formulaire" class="btn btn-primary">Obtenir mon diagnostic</a>
-      <button type="button" class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="mobileNav" aria-label="Ouvrir le menu">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
+<header class="hdr" id="hdr" data-theme="sombre">
+  <div class="pill">
+    <a class="brand" href="index.html#top" aria-label="DecIA — accueil"><img class="lw" src="assets/logo.png" alt="DecIA"><img class="ld" src="assets/logo-dark.png" alt="DecIA"></a>
+    <nav class="links" aria-label="Navigation principale">
+      <a href="index.html#offre">Solutions</a>
+      <a href="audit.html">Audit</a>
+      <a href="formation.html">Formation</a>
+      <a href="etudes-de-cas.html">Étude de cas</a>
+      <a href="ressources.html">Ressources</a>
+    </nav>
+    <a class="btn sm" href="#formulaire">Obtenir mon diagnostic</a>
+    <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
   </div>
-  <nav class="mobile-nav" id="mobileNav" data-open="false" aria-label="Navigation mobile">
-    <a href="index.html#offre">Solutions</a>
-    <a href="audit.html">Audit</a>
-    <a href="formation.html">Formation</a>
-    <a href="etudes-de-cas.html">Étude de cas</a>
-    <a href="ressources.html">Ressources</a>
-    <a href="#formulaire" class="btn btn-primary">Obtenir mon diagnostic</a>
-  </nav>
+  <div class="mobmenu" id="mobmenu">
+    <a href="index.html#offre">Solutions</a><a href="audit.html">Audit</a><a href="formation.html">Formation</a><a href="etudes-de-cas.html">Étude de cas</a><a href="ressources.html">Ressources</a>
+    <a href="#formulaire" style="background:#F6511D;text-align:center;margin-top:6px">Obtenir mon diagnostic</a>
+  </div>
 </header>
 
-<main id="top">
+<main>
 
-  <!-- ==========================================================
-       1. HERO
-       ========================================================== -->
-  <section class="hero" style="padding:160px 0 90px;">
-    <div class="hero-glow" aria-hidden="true"></div>
-    <div class="container">
-      <div class="hero-inner reveal">
-        <h1>Votre PME perd <span class="grad-text">10h par semaine</span> à cause de tâches que l'IA fait déjà.</h1>
-        <p class="lead">En 45 min, on identifie 3 processus automatisables chez vous. Vous repartez avec une fiche chiffrée. Offert, sans pitch.</p>
-        <div class="hero-actions">
-          <a href="#formulaire" class="btn btn-primary">Obtenir mon diagnostic</a>
-        </div>
-        <p class="diag-proof"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2"><path d="M20 6 9 17l-5-5"/></svg>23 diagnostics réalisés en Centre-Val de Loire - 4.9/5 de satisfaction - 0 spam</p>
+<!-- ===== HERO — fond sombre ===== -->
+<section class="sheet t-sombre hero" data-theme="sombre" style="z-index:1">
+  <div class="container">
+    <div class="hero-inner">
+      <h1 class="h rv">Votre PME perd <span class="gt">10h par semaine</span> <span class="serif" style="font-size:1.05em">à cause de tâches que l’IA fait déjà.</span></h1>
+      <p class="lead rv" style="--d:.06s;margin-left:auto;margin-right:auto">En 45 min, on identifie 3 processus automatisables chez vous. Vous repartez avec une fiche chiffrée. Offert, sans pitch.</p>
+      <div class="actions rv" style="--d:.1s;justify-content:center;margin-bottom:0">
+        <a class="btn" href="#formulaire">Obtenir mon diagnostic</a>
+      </div>
+      <p class="diag-proof rv" style="--d:.14s"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>23 diagnostics réalisés en Centre-Val de Loire · 4.9/5 de satisfaction · 0 spam</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== C'EST POUR VOUS SI — fond blanc ===== -->
+<section class="sheet t-blanc" data-theme="blanc" style="z-index:2">
+  <div class="container">
+    <div class="head" style="text-align:center;margin-left:auto;margin-right:auto">
+      <h2 class="h rv">Ce diagnostic est fait pour vous si :</h2>
+    </div>
+    <div class="benefit-grid">
+      <div class="benefit rv">
+        <div class="tile" style="background:linear-gradient(160deg,#fff,#FFE9F3)"><svg viewBox="0 0 24 24" fill="none" stroke="#FF4FA3" stroke-width="1.8"><circle cx="8" cy="8" r="3.2"/><path d="M2.5 20c0-3.3 2.5-6 5.5-6s5.5 2.7 5.5 6"/><circle cx="17" cy="9.5" r="2.6"/><path d="M15 14c2.8.3 5 2.7 5 6"/></svg></div>
+        <p>Vous êtes dirigeant d’une PME de 10 à 200 personnes et vos équipes croulent sous l’admin, les devis, le SAV, le reporting.</p>
+      </div>
+      <div class="benefit rv" style="--d:.06s">
+        <div class="tile" style="background:linear-gradient(160deg,#fff,#FFF6E0)"><svg viewBox="0 0 24 24" fill="none" stroke="#F5B700" stroke-width="1.8"><path d="M4 4h16v12H7l-3 3V4z"/></svg></div>
+        <p>Vous avez déjà testé ChatGPT mais vous ne voyez pas de ROI concret sur votre business.</p>
+      </div>
+      <div class="benefit rv" style="--d:.12s">
+        <div class="tile" style="background:linear-gradient(160deg,#fff,#E6F0FF)"><svg viewBox="0 0 24 24" fill="none" stroke="#0A6CFF" stroke-width="1.8"><path d="M9 4 4 6v14l5-2 6 2 5-2V4l-5 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg></div>
+        <p>Vous voulez une feuille de route claire, pas un projet IA à 50k€ sur 6 mois.</p>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- ==========================================================
-       2. C'EST POUR VOUS SI
-       ========================================================== -->
-  <section class="section-pad alt">
-    <div class="container">
-      <div class="section-head center reveal">
-        <h2>Ce diagnostic est fait pour vous si :</h2>
+<!-- ===== CE QUE VOUS OBTENEZ — fond bleu ===== -->
+<section class="sheet t-bleu" data-theme="bleu" style="z-index:3">
+  <div class="container">
+    <div class="head" style="text-align:center;margin-left:auto;margin-right:auto">
+      <h2 class="h rv">À la fin des 45 min, vous avez ça :</h2>
+    </div>
+    <div class="onum-grid">
+      <div class="onum rv">
+        <div class="num">01</div>
+        <h3>La cartographie de 3 tâches</h3>
+        <p>Le détail exact de 3 tâches chez vous où l’IA vous fait gagner du temps immédiatement. Ex : tri des mails SAV, pré-remplissage de devis, compte-rendu de réunion.</p>
       </div>
-      <div class="benefits stagger">
-        <div class="benefit-card reveal">
-          <div class="icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="8" cy="8" r="3.2"/><path d="M2.5 20c0-3.3 2.5-6 5.5-6s5.5 2.7 5.5 6"/><circle cx="17" cy="9.5" r="2.6"/><path d="M15 14c2.8.3 5 2.7 5 6"/></svg>
-          </div>
-          <p>Vous êtes dirigeant d'une PME de 10 à 200 personnes et vos équipes croulent sous l'admin, les devis, le SAV, le reporting.</p>
-        </div>
-        <div class="benefit-card reveal">
-          <div class="icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 4h16v12H7l-3 3V4z"/></svg>
-          </div>
-          <p>Vous avez déjà testé ChatGPT mais vous ne voyez pas de ROI concret sur votre business.</p>
-        </div>
-        <div class="benefit-card reveal">
-          <div class="icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M9 4 4 6v14l5-2 6 2 5-2V4l-5 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg>
-          </div>
-          <p>Vous voulez une feuille de route claire, pas un projet IA à 50k€ sur 6 mois.</p>
-        </div>
+      <div class="onum rv" style="--d:.06s">
+        <div class="num">02</div>
+        <h3>Le chiffrage en €</h3>
+        <p>Pour chaque tâche : temps actuel vs temps avec IA. Ex : 6h/semaine gagnées = 9 360 € / an économisés.</p>
+      </div>
+      <div class="onum rv" style="--d:.12s">
+        <div class="num">03</div>
+        <h3>Par quoi commencer lundi</h3>
+        <p>Notre reco priorisée. Quel outil, quel coût (souvent &lt; 30€/mois), quel risque. Sans coder.</p>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- ==========================================================
-       3. CE QUE VOUS OBTENEZ
-       ========================================================== -->
-  <section class="section-pad">
-    <div class="container">
-      <div class="section-head center reveal">
-        <h2>À la fin des 45 min, vous avez ça :</h2>
+<!-- ===== COMMENT ÇA SE PASSE — fond sombre ===== -->
+<section class="sheet t-sombre" data-theme="sombre" style="z-index:4">
+  <div class="container">
+    <div class="head" style="text-align:center;margin-left:auto;margin-right:auto">
+      <h2 class="h rv">Comment ça se passe ?</h2>
+    </div>
+    <div class="flow-grid">
+      <div class="flow-step rv">
+        <div class="num">1</div>
+        <h3>Le formulaire</h3>
+        <p>Vous remplissez le formulaire ci-dessous (2 min). Ça nous permet de préparer.</p>
       </div>
-      <div class="steps stagger">
-        <div class="step reveal">
-          <div class="step-num">01</div>
-          <h3>La cartographie de 3 tâches</h3>
-          <p>Le détail exact de 3 tâches chez vous où l'IA vous fait gagner du temps immédiatement. Ex: tri des mails SAV, pré-remplissage de devis, compte-rendu de réunion.</p>
-        </div>
-        <div class="step reveal">
-          <div class="step-num">02</div>
-          <h3>Le chiffrage en €</h3>
-          <p>Pour chaque tâche : Temps actuel vs Temps avec IA. Ex: 6h/semaine gagnées = 9 360€ / an économisés.</p>
-        </div>
-        <div class="step reveal">
-          <div class="step-num">03</div>
-          <h3>Par quoi commencer lundi</h3>
-          <p>Notre reco priorisée. Quel outil, quel coût (souvent &lt; 30€/mois), quel risque. Sans coder.</p>
-        </div>
+      <div class="flow-step rv" style="--d:.06s">
+        <div class="num">2</div>
+        <h3>Le créneau</h3>
+        <p>Vous choisissez votre créneau. On se voit en visio ou en présentiel.</p>
+      </div>
+      <div class="flow-step rv" style="--d:.12s">
+        <div class="num">3</div>
+        <h3>La fiche</h3>
+        <p>Vous recevez votre fiche 1 page dans les 24h.</p>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- ==========================================================
-       4. COMMENT ÇA SE PASSE
-       ========================================================== -->
-  <section class="section-pad alt">
-    <div class="container">
-      <div class="section-head center reveal">
-        <h2>Comment ça se passe ?</h2>
-      </div>
-      <div class="flow stagger">
-        <div class="flow-step reveal">
-          <div class="num">1</div>
-          <h3>Le formulaire</h3>
-          <p>Vous remplissez le formulaire ci-dessous (2 min). Ça me permet de préparer.</p>
-        </div>
-        <div class="flow-step reveal">
-          <div class="num">2</div>
-          <h3>Le créneau</h3>
-          <p>Vous choisissez votre créneau. On se voit en visio ou en présentiel.</p>
-        </div>
-        <div class="flow-step reveal">
-          <div class="num">3</div>
-          <h3>La fiche</h3>
-          <p>Vous recevez votre fiche 1 page dans les 24h.</p>
-        </div>
+<!-- ===== FORMULAIRE — fond blanc ===== -->
+<section class="sheet t-blanc" data-theme="blanc" style="z-index:5" id="formulaire">
+  <div class="container">
+    <div class="head" style="text-align:center;margin-left:auto;margin-right:auto">
+      <h2 class="h rv">Réservez votre Diagnostic Flash — Offert</h2>
+      <p class="lead rv" style="--d:.06s;margin-left:auto;margin-right:auto">2 min pour nous donner du contexte, puis vous choisissez l’heure. Réponse garantie sous 24h.</p>
+    </div>
+    <div class="form-card rv" style="--d:.1s">
+      <!-- Formulaire Brevo (sibforms) « Qualification Diag IA ». La redirection vers l'agenda
+           après validation se règle dans Brevo (formulaire > Confirmation > URL de redirection). -->
+      <iframe title="Formulaire de demande de diagnostic" width="540" height="305" src="https://69a6cd00.sibforms.com/v2/serve/MUIFAFCdezvY0l1kofTAc440KFIfZKBVO-gQ4t5txnlyuFB3MusL-2w5l6Ky3CN6XbrenChmv2-lXD2NTNdp4wtwLAxlQ6BLN7NTU0vC_zsyPEEs7vxCCLfO94L1U27n57Fu53ADz_m9ZTTZ6yTWCZWPg761QYw2rHJ3XG4z9TqNPn1f2b9NA6Jh4iQ2yawvBjIgP4jUA9zTeGHgtA==" frameborder="0" scrolling="auto" allowfullscreen></iframe>
+    </div>
+    <p class="form-micro rv" style="--d:.14s">En cliquant, vous serez redirigé vers notre agenda. Vos données ne servent qu’à préparer le diag. Pas de newsletter.</p>
+  </div>
+</section>
+
+<!-- ===== POURQUOI DECIA — fond bleu ===== -->
+<section class="sheet t-bleu" data-theme="bleu" style="z-index:6">
+  <div class="container">
+    <div class="head" style="text-align:center;margin-left:auto;margin-right:auto">
+      <h2 class="h rv">Pourquoi DecIA ?</h2>
+    </div>
+    <div class="about2 rv">
+      <div class="avatar"><img src="assets/logo-mark.png" alt=""></div>
+      <div>
+        <p>DecIA est né d’un constat simple : la plupart des PME entendent parler d’IA depuis des mois sans savoir par où commencer, ni à qui faire confiance. Nous ne vendons pas une technologie à la mode — nous passons du temps dans vos processus réels, avec vos équipes, avant de proposer quoi que ce soit. Chaque projet est mené à votre rythme, avec des résultats mesurables à chaque étape.</p>
+        <p style="margin-top:14px">Basés à Dreux, nous intervenons sur place chez les PME de la région.</p>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- ==========================================================
-       5. FORMULAIRE + CALENDRIER
-       ========================================================== -->
-  <section id="formulaire" class="section-pad">
-    <div class="container">
-      <div class="diag-form-wrap">
-        <div class="section-head center reveal">
-          <h2>Réservez votre Diagnostic Flash - Offert</h2>
-          <p class="lead" style="margin:0 auto;">2 min pour me donner du contexte, puis vous choisissez l'heure. Réponse garantie sous 24h.</p>
-        </div>
-
-        <div class="diag-form-card reveal">
-          <!-- Formulaire Brevo (sibforms) « Qualification Diag IA ». La redirection vers l'agenda
-               après validation se règle dans Brevo (formulaire > Confirmation > URL de redirection). -->
-          <iframe class="diag-form-frame" title="Formulaire de demande de diagnostic" width="540" height="305" src="https://69a6cd00.sibforms.com/v2/serve/MUIFAFCdezvY0l1kofTAc440KFIfZKBVO-gQ4t5txnlyuFB3MusL-2w5l6Ky3CN6XbrenChmv2-lXD2NTNdp4wtwLAxlQ6BLN7NTU0vC_zsyPEEs7vxCCLfO94L1U27n57Fu53ADz_m9ZTTZ6yTWCZWPg761QYw2rHJ3XG4z9TqNPn1f2b9NA6Jh4iQ2yawvBjIgP4jUA9zTeGHgtA==" frameborder="0" scrolling="auto" allowfullscreen></iframe>
-        </div>
-
-        <p class="diag-micro">En cliquant, vous serez redirigé vers mon agenda. Vos données ne servent qu'à préparer le diag. Pas de newsletter.</p>
-      </div>
+<!-- ===== FAQ — fond sombre ===== -->
+<section class="sheet t-sombre" data-theme="sombre" style="z-index:7;padding-bottom:170px" id="faq">
+  <div class="container faqwrap">
+    <div>
+      <div class="eyebrow rv"><i><svg viewBox="0 0 24 24"><path d="M12 1.5C13 8 16 11 22.5 12 16 13 13 16 12 22.5 11 16 8 13 1.5 12 8 11 11 8 12 1.5z" fill="#fff"/></svg></i>Questions fréquentes</div>
+      <h2 class="h rv" style="--d:.06s">Les questions que vous vous posez probablement</h2>
     </div>
-  </section>
-
-  <!-- ==========================================================
-       6. POURQUOI DECIA
-       ========================================================== -->
-  <section class="section-pad alt">
-    <div class="container">
-      <div class="section-head reveal">
-        <h2>Pourquoi DecIA ?</h2>
-      </div>
-      <div class="about reveal">
-        <div class="avatar" aria-hidden="true">
-          <img src="assets/logo-mark.png" alt="" style="object-fit:contain;padding:20px;">
-        </div>
-        <div>
-          <p>DecIA est né d'un constat simple : la plupart des PME entendent parler d'IA depuis des mois sans savoir par où commencer, ni à qui faire confiance. Nous ne vendons pas une technologie à la mode — nous passons du temps dans vos processus réels, avec vos équipes, avant de proposer quoi que ce soit. Chaque projet est mené à votre rythme, avec des résultats mesurables à chaque étape.</p>
-          <p style="margin-top:var(--space-2);">Basés à Dreux, nous intervenons sur place chez les PME de la région.</p>
-        </div>
-      </div>
+    <div class="faq">
+      <div class="q card rv open"><button><span>Ça va nous prendre combien de temps à mettre en place ?</span><i class="pm"><svg viewBox="0 0 24 24"><path d="M12 4v16M4 12h16" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg></i></button><div class="a"><p>Moins de 3 jours pour le premier quick win. On vise l’utile, pas le parfait.</p></div></div>
+      <div class="q card rv" style="--d:.05s"><button><span>On doit recruter / coder ?</span><i class="pm"><svg viewBox="0 0 24 24"><path d="M12 4v16M4 12h16" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg></i></button><div class="a"><p>Non. 90% des gains se font avec des outils no-code existants.</p></div></div>
+      <div class="q card rv" style="--d:.1s"><button><span>C’est vraiment offert ?</span><i class="pm"><svg viewBox="0 0 24 24"><path d="M12 4v16M4 12h16" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg></i></button><div class="a"><p>Oui. C’est notre porte d’entrée. Si vous voulez que nous déployions, on en parle. Sinon vous gardez la fiche.</p></div></div>
     </div>
-  </section>
-
-  <!-- ==========================================================
-       7. FAQ
-       ========================================================== -->
-  <section id="faq" class="section-pad">
-    <div class="container">
-      <div class="section-head reveal">
-        <p class="eyebrow">Questions fréquentes</p>
-        <h2>Les questions que vous vous posez probablement</h2>
-      </div>
-      <div class="faq-list reveal">
-        <div class="faq-item" data-open="false">
-          <button class="faq-question">
-            <span>Ça va nous prendre combien de temps à mettre en place ?</span>
-            <span class="plus" aria-hidden="true"></span>
-          </button>
-          <div class="faq-answer">
-            <p>Moins de 3 jours pour le premier quick win. On vise l'utile, pas le parfait.</p>
-          </div>
-        </div>
-        <div class="faq-item" data-open="false">
-          <button class="faq-question">
-            <span>On doit recruter / coder ?</span>
-            <span class="plus" aria-hidden="true"></span>
-          </button>
-          <div class="faq-answer">
-            <p>Non. 90% des gains se font avec des outils no-code existants.</p>
-          </div>
-        </div>
-        <div class="faq-item" data-open="false">
-          <button class="faq-question">
-            <span>C'est vraiment offert ?</span>
-            <span class="plus" aria-hidden="true"></span>
-          </button>
-          <div class="faq-answer">
-            <p>Oui. C'est ma porte d'entrée. Si vous voulez que je déploie, on en parle. Sinon vous gardez la fiche.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+  </div>
+</section>
 
 </main>
 
-<footer class="site-footer">
+<footer>
   <div class="container">
-    <div class="footer-top">
-      <div class="footer-brand">
-        <a href="index.html#top" class="logo"><img src="assets/logo.png" alt="DecIA" width="110" height="26"></a>
-        <p style="text-align:left;">L'intelligence artificielle utile aux entreprises.<br>Audit · Automatisation · Agents IA · Formation<br>Plus d'efficacité. Moins de tâches inutiles.</p>
-      </div>
-      <div class="footer-cols">
-        <div class="footer-col">
-          <h4>Navigation</h4>
-          <a href="index.html#offre">Solutions</a>
-          <a href="audit.html">Audit</a>
-          <a href="formation.html">Formation</a>
-          <a href="etudes-de-cas.html">Étude de cas</a>
-          <a href="ressources.html">Ressources</a>
-        </div>
-        <div class="footer-col">
-          <h4>Contact</h4>
-          <p>contact@decia.fr</p>
-          <p><a href="tel:+33689180195">+33 6 89 18 01 95</a></p>
-        </div>
-        <div class="footer-col">
-          <h4>Suivez-nous</h4>
-          <div class="footer-social">
-            <a href="https://www.linkedin.com/company/deciafr/about/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 11v5M8 8v.01M12 16v-3a2 2 0 0 1 4 0v3M12 13v3"/></svg></a>
-          </div>
-        </div>
-      </div>
+    <div class="ft">
+      <div><a href="index.html#top"><img src="assets/logo.png" alt="DecIA"></a><p>L’intelligence artificielle utile aux entreprises.<br>Audit · Automatisation · Agents IA · Formation.<br>Plus d’efficacité. Moins de tâches inutiles.</p></div>
+      <div class="col" style="text-align:center;align-items:center"><h4>Navigation</h4><a href="index.html#offre">Solutions</a><a href="audit.html">Audit</a><a href="formation.html">Formation</a><a href="etudes-de-cas.html">Étude de cas</a><a href="ressources.html">Ressources</a></div>
+      <div class="col" style="text-align:center;align-items:center"><h4>Contact</h4><a href="mailto:contact@decia.fr">contact@decia.fr</a><a href="tel:+33689180195">+33 6 89 18 01 95</a></div>
+      <div class="col" style="text-align:center;align-items:center"><h4>Suivez-nous</h4><a href="https://www.linkedin.com/company/deciafr/about/" aria-label="LinkedIn" style="display:inline-flex"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 11v5M8 8v.01M12 16v-3a2 2 0 0 1 4 0v3M12 13v3"/></svg></a></div>
     </div>
-    <div class="footer-bottom">
-      <span>© <span id="year">2026</span> DecIA. Tous droits réservés.</span>
-      <span><a href="mentions-legales.html">Mentions légales</a> · <a href="confidentialite.html">Confidentialité</a></span>
-    </div>
+    <div class="fb"><span>© 2026 DecIA. Tous droits réservés.</span><span><a href="mentions-legales.html">Mentions légales</a> · <a href="confidentialite.html">Confidentialité</a></span></div>
   </div>
 </footer>
 
-<script src="js/main.js"></script>
-<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+<script src="js/site.js"></script>
 </body>
 </html>

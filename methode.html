@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <title>Notre méthode — terrain, pas de théorie | DecIA</title>
 <meta name="description" content="La méthode terrain DecIA : observer vos outils réels, construire les automatisations en 4 jours sans rien changer, puis vous rendre autonome. Exemples concrets et chantiers récents.">
@@ -13,524 +13,380 @@
 <link rel="manifest" href="assets/site.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
-</head>
-<body>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&family=Plus+Jakarta+Sans:wght@600;700;800&family=DM+Sans:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/site.css">
+<style>
+/* ===== Hero 2 colonnes ===== */
+.hero2{display:grid;grid-template-columns:1.1fr .9fr;gap:60px;align-items:center;text-align:left;padding:190px 0 140px}
+.hero2 h1{font-size:clamp(2.1rem,4vw,3rem);line-height:1.1;margin:14px 0 18px}
+.hero2 .lead{margin:0 0 28px;max-width:52ch}
+.hero2 .chips{justify-content:flex-start;margin-bottom:26px}
+.hero2 .actions{justify-content:flex-start}
+.hero2 .hint{display:block;margin-top:10px;font-size:12.5px;color:var(--soft);font-weight:600}
 
-<header class="site-header" id="siteHeader">
-  <div class="container">
-    <a href="index.html#top" class="logo" aria-label="DecIA — accueil">
-      <img src="assets/logo.png" alt="DecIA" width="140" height="33">
-    </a>
-    <div class="nav-group">
-      <nav class="nav-links" aria-label="Navigation principale">
-        <a href="index.html#offre">Solutions</a>
-        <a href="audit.html">Audit</a>
-        <a href="formation.html">Formation</a>
-        <a href="etudes-de-cas.html">Étude de cas</a>
-        <a href="ressources.html">Ressources</a>
-      </nav>
-      <a href="rendez-vous.html" class="btn btn-primary">Réserver un appel</a>
-      <button type="button" class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="mobileNav" aria-label="Ouvrir le menu">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
+/* ===== Panneau "approche en 3 étapes" (repris du composant panel) ===== */
+.panel{background:rgba(255,255,255,.95);color:#0B1020;border-radius:32px;padding:30px;box-shadow:0 46px 80px rgba(0,0,0,.4)}
+.panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+.panel-head .label{font-family:"DM Sans",sans-serif;font-size:13px;font-weight:700;color:#5F7396}
+.panel-head .pill{background:rgba(24,184,158,.12);color:#18B89E;font-size:12px;font-weight:800;padding:6px 14px;border-radius:20px}
+.panel-steps{display:flex;flex-direction:column;gap:18px;margin-bottom:20px}
+.panel-step{display:flex;gap:14px;align-items:flex-start}
+.panel-step .num{width:30px;height:30px;font-size:14px;background:linear-gradient(135deg,#FF6A13,#FF9A3D)}
+.panel-step h5,.panel-step h4{font-size:14.5px;font-weight:800;margin-bottom:2px}
+.panel-step p{font-size:12.5px;color:#5F7396;font-weight:600;margin:0}
+.panel-result{display:flex;align-items:center;gap:10px;background:rgba(10,108,255,.06);border-radius:14px;padding:12px 16px;font-size:13px;font-weight:700;color:#0B1020}
+.panel-result svg{stroke:#0A66FF;width:18px;height:18px;flex:none}
+
+/* ===== Tableau "process" (réutilisé étape 1) ===== */
+.ftable{background:var(--card);border:var(--cardb);box-shadow:var(--cardsh);border-radius:24px;overflow:hidden}
+.frow{display:grid;grid-template-columns:1fr 1.5fr;gap:24px;padding:20px 26px;border-bottom:1px solid rgba(128,128,160,.15);align-items:center}
+.frow:last-child{border-bottom:none}
+.frow .f-issue{display:flex;align-items:center;gap:12px;font-weight:700;font-size:14.5px;color:var(--cardink)}
+.frow .f-issue .tile{width:36px;height:36px;flex:none;border-radius:10px}
+.frow .f-issue .tile svg{width:58%;height:58%}
+.frow .f-desc{font-size:13px;color:var(--cardink);opacity:.7;font-weight:600;line-height:1.55}
+.frow.three{grid-template-columns:1fr .5fr 1.2fr}
+@media (max-width:760px){.frow{grid-template-columns:1fr}.frow.three{grid-template-columns:1fr}}
+
+.callout{display:flex;gap:16px;align-items:flex-start;background:var(--card);border:var(--cardb);box-shadow:var(--cardsh);border-radius:24px;padding:24px 28px;margin-bottom:26px}
+.callout .tile{width:44px;height:44px;flex:none}
+.callout .tile svg{width:52%;height:52%}
+.callout p{font-size:14px;color:var(--cardink);font-weight:600;margin:0;opacity:.85}
+.callout p strong{opacity:1}
+
+/* ===== Déploiement en 3 jours ===== */
+.days-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.day2{background:var(--card);border:var(--cardb);box-shadow:var(--cardsh);border-radius:22px;padding:24px}
+.day2.highlight{border:2px solid #18B89E}
+.day2 .tile{width:40px;height:40px;margin-bottom:14px}
+.day2 .tile svg{width:52%;height:52%}
+.day2 h4{font-size:16px;color:var(--cardink);margin-bottom:2px}
+.day2 .sub{display:block;font-family:"DM Sans",sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:#0A66FF;margin-bottom:10px}
+.day2 p{font-size:13px;color:var(--cardink);opacity:.75;font-weight:600;line-height:1.5;margin:0}
+@media (max-width:860px){.days-grid{grid-template-columns:1fr}}
+
+/* ===== Mini-cartes autonomie ===== */
+.mini-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.mini-card{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:var(--cardb);box-shadow:var(--cardsh);border-radius:18px;padding:18px 20px}
+.mini-card .tile{width:40px;height:40px;flex:none}
+.mini-card .tile svg{width:52%;height:52%}
+.mini-card h4{font-size:14.5px;margin-bottom:4px;color:var(--cardink)}
+.mini-card p{font-size:12.5px;color:var(--cardink);opacity:.7;font-weight:600;margin:0}
+@media (max-width:860px){.mini-grid{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.mini-grid{grid-template-columns:1fr}}
+
+/* ===== Mockup message modifiable ===== */
+.msg{background:var(--card);border:var(--cardb);box-shadow:var(--cardsh);border-radius:24px;padding:28px;margin-top:26px}
+.msg-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.msg-head h4{font-size:15px;color:var(--cardink)}
+.msg-head .pill{background:rgba(10,108,255,.08);color:#0A66FF;font-size:11.5px;font-weight:800;padding:5px 12px;border-radius:20px}
+.msg-label{font-family:"DM Sans",sans-serif;font-size:11px;color:var(--cardink);opacity:.5;margin-bottom:8px}
+.msg-text{background:rgba(128,128,160,.08);border-radius:14px;padding:16px 18px;font-size:13.5px;color:var(--cardink);opacity:.9;font-weight:600;line-height:1.55;margin-bottom:14px}
+.msg-actions{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.msg-actions .mbtn{display:inline-flex;align-items:center;gap:6px;background:#0A66FF;color:#fff;font-size:12px;font-weight:700;padding:8px 14px;border-radius:12px}
+.msg-actions .mbtn svg{width:14px;height:14px}
+.msg-actions .hint{font-size:11.5px;color:var(--cardink);opacity:.5;font-weight:600}
+.msg ul{display:flex;flex-direction:column;gap:8px}
+.msg li{display:flex;gap:8px;font-size:13px;color:var(--cardink);opacity:.8;font-weight:600}
+.msg li svg{width:16px;height:16px;flex:none;stroke:#18B89E}
+.note-box{background:rgba(255,106,19,.07);border:1px solid rgba(255,106,19,.22);border-radius:18px;padding:18px 22px;margin-top:22px;font-size:13.5px;color:var(--cardink);opacity:.9;font-weight:600}
+
+/* ===== Chantiers — tickets ===== */
+.tickets{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.ticket{background:var(--card);border:var(--cardb);box-shadow:var(--cardsh);border-radius:24px;overflow:hidden;transition:transform .3s ease}
+.ticket:hover{transform:translateY(-6px)}
+.ticket-head{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:1px solid rgba(128,128,160,.14)}
+.ticket-head .id{font-family:"DM Sans",sans-serif;font-size:12px;font-weight:700;color:var(--cardink);opacity:.6}
+.ticket-head .pill{background:rgba(24,184,158,.1);color:#18B89E;font-size:11px;font-weight:800;padding:5px 12px;border-radius:20px}
+.ticket-body{padding:22px}
+.t-top{display:flex;gap:12px;align-items:center;margin-bottom:18px}
+.t-top .tile{width:40px;height:40px;flex:none}
+.t-top .tile svg{width:52%;height:52%}
+.t-top h4{font-size:15px;color:var(--cardink)}
+.t-top .sub{display:block;font-size:11.5px;color:var(--cardink);opacity:.55;font-weight:600;margin-top:2px}
+.t-compare{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.t-box{padding:12px 14px;border-radius:12px;font-size:12.5px;font-weight:600;color:var(--cardink)}
+.t-box.before{background:rgba(255,106,19,.08)}
+.t-box.after{background:rgba(24,184,158,.1)}
+.t-box .lbl{display:block;font-family:"DM Sans",sans-serif;font-size:10px;text-transform:uppercase;letter-spacing:.06em;opacity:.6;margin-bottom:3px}
+.ticket-footer{display:flex;align-items:center;justify-content:space-between}
+.ticket-footer .pill{background:rgba(10,108,255,.08);color:#0A66FF;font-size:11.5px;font-weight:800;padding:6px 14px;border-radius:20px}
+.ticket-footer .note{font-size:11px;color:var(--cardink);opacity:.5;font-weight:600}
+@media (max-width:980px){.tickets{grid-template-columns:1fr}}
+
+/* ===== CTA — panneau "déroulé des 30 min" ===== */
+.cta .panel{box-shadow:0 46px 80px rgba(0,0,0,.4)}
+.cta .note{margin-top:14px;font-size:12.5px;color:rgba(255,255,255,.65);font-weight:600}
+
+@media (max-width:900px){.hero2{grid-template-columns:1fr;text-align:center}.hero2 .chips,.hero2 .actions{justify-content:center}}
+</style>
+</head>
+<body id="top">
+
+<header class="hdr" id="hdr" data-theme="sombre">
+  <div class="pill">
+    <a class="brand" href="index.html#top" aria-label="DecIA — accueil"><img class="lw" src="assets/logo.png" alt="DecIA"><img class="ld" src="assets/logo-dark.png" alt="DecIA"></a>
+    <nav class="links" aria-label="Navigation principale">
+      <a href="index.html#offre">Solutions</a>
+      <a href="audit.html">Audit</a>
+      <a href="formation.html">Formation</a>
+      <a href="etudes-de-cas.html">Étude de cas</a>
+      <a href="ressources.html">Ressources</a>
+    </nav>
+    <a class="btn sm" href="rendez-vous.html">Réserver un appel</a>
+    <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
   </div>
-  <nav class="mobile-nav" id="mobileNav" data-open="false" aria-label="Navigation mobile">
-    <a href="index.html#offre">Solutions</a>
-    <a href="audit.html">Audit</a>
-    <a href="formation.html">Formation</a>
-    <a href="etudes-de-cas.html">Étude de cas</a>
-    <a href="ressources.html">Ressources</a>
-    <a href="rendez-vous.html" class="btn btn-primary">Réserver un appel</a>
-  </nav>
+  <div class="mobmenu" id="mobmenu">
+    <a href="index.html#offre">Solutions</a><a href="audit.html">Audit</a><a href="formation.html">Formation</a><a href="etudes-de-cas.html">Étude de cas</a><a href="ressources.html">Ressources</a>
+    <a href="rendez-vous.html" style="background:#F6511D;text-align:center;margin-top:6px">Réserver un appel</a>
+  </div>
 </header>
 
-<main id="top">
+<main>
 
-  <!-- ==========================================================
-       HERO — texte + carte "notre approche en 3 étapes"
-       ========================================================== -->
-  <section class="method-hero">
-    <div class="hero-glow" aria-hidden="true"></div>
-    <div class="container">
-      <div class="hero-split">
-        <div class="reveal">
-          <p class="eyebrow">Notre méthode</p>
-          <h1>On ne commence pas par un outil.<span class="muted-line">On commence par vous.</span></h1>
-          <p class="lead">Pas de théorie. Nous observons comment vous travaillez vraiment — avec votre téléphone, vos mails, vos documents — et nous supprimons ce qui vous fait perdre du temps.</p>
-          <div class="chip-row">
-            <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg>Vos outils actuels</span>
-            <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M9 2v4M15 2v4M7 8h10v4a5 5 0 0 1-5 5 5 5 0 0 1-5-5V8z"/><path d="M12 17v5"/></svg>Connexion WhatsApp</span>
-            <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Zéro saisie manuelle</span>
-          </div>
-          <div class="hero-link-row">
-            <a href="#illustrations" class="btn btn-secondary">Voir 3 cas concrets →</a>
-            <span class="hint">Exemples issus de nos accompagnements</span>
-          </div>
+<!-- ===== HERO — fond sombre ===== -->
+<section class="sheet t-sombre" data-theme="sombre" style="z-index:1">
+  <div class="container hero2">
+    <div class="rv">
+      <div class="eyebrow"><i><svg viewBox="0 0 24 24"><path d="M12 1.5C13 8 16 11 22.5 12 16 13 13 16 12 22.5 11 16 8 13 1.5 12 8 11 11 8 12 1.5z" fill="#fff"/></svg></i>Notre méthode</div>
+      <h1 class="h">On ne commence pas par un outil.<br><span class="serif" style="font-size:1.05em">On commence par vous.</span></h1>
+      <p class="lead">Pas de théorie. Nous observons comment vous travaillez vraiment — avec votre téléphone, vos mails, vos documents — et nous supprimons ce qui vous fait perdre du temps.</p>
+      <div class="chips">
+        <span class="chip"><i style="--c:#0A6CFF"></i>Vos outils actuels</span>
+        <span class="chip"><i style="--c:#6F8CFF"></i>Connexion WhatsApp</span>
+        <span class="chip"><i style="--c:#18B89E"></i>Zéro saisie manuelle</span>
+      </div>
+      <div class="actions"><a class="btn ghost" href="#illustrations">Voir 3 cas concrets</a></div>
+      <span class="hint">Exemples issus de nos accompagnements</span>
+    </div>
+
+    <div class="panel rv" style="--d:.1s">
+      <div class="panel-head"><span class="label">Notre approche en 3 étapes</span><span class="pill">Méthode terrain</span></div>
+      <div class="panel-steps">
+        <div class="panel-step"><span class="num">1</span><div><h4>Comprendre votre fonctionnement réel</h4><p>Observation de vos outils et identification des tâches répétitives</p></div></div>
+        <div class="panel-step"><span class="num">2</span><div><h4>Construire et brancher sur l’existant</h4><p>Vous gardez vos outils, nous ajoutons les automatisations</p></div></div>
+        <div class="panel-step"><span class="num">3</span><div><h4>Vous restez autonome</h4><p>15 min de prise en main, modification simple sans dépendance</p></div></div>
+      </div>
+      <div class="panel-result"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9"/></svg>Aucun nouveau logiciel à apprendre. Nous nous adaptons à vos habitudes.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ILLUSTRATIONS CONCRÈTES — fond blanc ===== -->
+<section class="sheet t-blanc" data-theme="blanc" style="z-index:2" id="illustrations">
+  <div class="container">
+    <div class="head">
+      <div class="eyebrow rv"><i><svg viewBox="0 0 24 24"><path d="M12 1.5C13 8 16 11 22.5 12 16 13 13 16 12 22.5 11 16 8 13 1.5 12 8 11 11 8 12 1.5z" fill="#fff"/></svg></i>Illustrations concrètes</div>
+      <h2 class="h rv" style="--d:.06s"><span class="gt">Concrètement,</span> <span class="serif" style="font-size:1.05em">à quoi ça ressemble ?</span></h2>
+      <p class="lead rv" style="--d:.12s">Trois automatisations déployées récemment, avec des outils que vous utilisez déjà.</p>
+    </div>
+    <div class="cases">
+      <article class="case card rv"><span class="tag pillk"><i><svg viewBox="0 0 24 24"><path d="M12 1.5C13 8 16 11 22.5 12 16 13 13 16 12 22.5 11 16 8 13 1.5 12 8 11 11 8 12 1.5z" fill="#fff"/></svg></i>Le plus demandé</span>
+        <div class="tile" style="width:64px;height:64px"><svg viewBox="0 0 24 24" fill="none" stroke="#F5B700" stroke-width="1.8"><path d="M4 4h16v12H7l-3 3V4z"/></svg></div>
+        <h3>De la photo WhatsApp au devis envoyé</h3>
+        <div class="ba"><div class="lb"><i></i>Avant — 45 min</div><p>Un client envoie une photo sur WhatsApp. Le soir, vous cherchez les références, les prix, vous mettez en forme le devis sur Word. 45 minutes.</p></div>
+        <div class="ba af"><div class="lb"><i></i>Après — 3 min</div><p>La photo arrive, l’IA l’analyse, retrouve les prix dans votre catalogue et prépare le devis dans votre Gmail. Vous relisez et validez en 3 minutes.</p></div>
+        <div class="res"><div class="big gt">7h gagnées / semaine</div><small>Chauffagiste — Yvelines</small></div></article>
+      <article class="case card rv" style="--d:.06s">
+        <div class="tile" style="width:64px;height:64px"><svg viewBox="0 0 24 24" fill="none" stroke="#0A6CFF" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div>
+        <h3>Les factures fournisseurs qui se classent seules</h3>
+        <div class="ba"><div class="lb"><i></i>Avant — Saisie manuelle</div><p>Factures dans la boîte mail, sur le bureau, en photo. Saisie manuelle le week-end.</p></div>
+        <div class="ba af"><div class="lb"><i></i>Après — Automatique</div><p>Transfert automatique vers votre Drive. Extraction du HT, TVA, échéance. Envoi vers Pennylane / Henrri. Alerte si doublon.</p></div>
+        <div class="res"><div class="big gt">0 saisie manuelle</div><small>Contrôle conservé</small></div></article>
+      <article class="case card rv" style="--d:.12s">
+        <div class="tile" style="width:64px;height:64px"><svg viewBox="0 0 24 24" fill="none" stroke="#18B89E" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+        <h3>Les devis qui ne restent pas sans réponse</h3>
+        <div class="ba"><div class="lb"><i></i>Avant — 30% sans suite</div><p>Devis envoyé, pas le temps de relancer. 30% de devis sans suite.</p></div>
+        <div class="ba af"><div class="lb"><i></i>Après — Relances structurées</div><p>Relance SMS personnalisée à J+3, email à J+7, rappel automatique dans votre agenda si pas de réponse.</p></div>
+        <div class="res"><div class="big gt">+22% de devis signés</div><small>Suivi sans surcharge</small></div></article>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ÉTAPE 1 — fond bleu ===== -->
+<section class="sheet t-bleu" data-theme="bleu" style="z-index:3" id="etape-1">
+  <div class="container">
+    <div class="head">
+      <div class="eyebrow rv"><i><svg viewBox="0 0 24 24"><path d="M12 1.5C13 8 16 11 22.5 12 16 13 13 16 12 22.5 11 16 8 13 1.5 12 8 11 11 8 12 1.5z" fill="#fff"/></svg></i>Étape 1</div>
+      <h2 class="h rv" style="--d:.06s"><span class="gt">Comprendre votre</span> <span class="serif" style="font-size:1.05em">fonctionnement réel</span></h2>
+      <p class="lead rv" style="--d:.12s">Pas de questionnaire standardisé. Nous observons directement la manière dont vous travaillez au quotidien, avec vos outils existants.</p>
+    </div>
+
+    <div class="callout rv" style="--d:.1s">
+      <div class="tile" style="background:linear-gradient(160deg,#fff,#EEE6FF)"><svg viewBox="0 0 24 24" fill="none" stroke="#6F8CFF" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg></div>
+      <p><strong>Objectif :</strong> identifier avec précision les tâches chronophages et répétitives pour les traiter en priorité.</p>
+    </div>
+    <div class="chips rv" style="--d:.12s;justify-content:flex-start;margin-bottom:28px">
+      <span class="chip"><i style="--c:#0A6CFF"></i>1h d’observation</span>
+      <span class="chip"><i style="--c:#18B89E"></i>100% concret</span>
+    </div>
+
+    <div class="ftable rv" style="--d:.16s">
+      <div class="frow">
+        <div class="f-issue"><div class="tile" style="background:linear-gradient(160deg,#fff,#E6F0FF)"><svg viewBox="0 0 24 24" fill="none" stroke="#0A6CFF" stroke-width="1.8"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg></div>Nous observons vos outils du quotidien</div>
+        <div class="f-desc">Vos 3 applications les plus utilisées, vos échanges, vos habitudes</div>
+      </div>
+      <div class="frow">
+        <div class="f-issue"><div class="tile" style="background:linear-gradient(160deg,#fff,#E6FAF5)"><svg viewBox="0 0 24 24" fill="none" stroke="#18B89E" stroke-width="1.8"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></div>Nous identifions les tâches répétitives</div>
+        <div class="f-desc">Vous nous indiquez les 5 tâches les plus chronophages de votre semaine</div>
+      </div>
+      <div class="frow">
+        <div class="f-issue"><div class="tile" style="background:linear-gradient(160deg,#fff,#FFE9F3)"><svg viewBox="0 0 24 24" fill="none" stroke="#FF4FA3" stroke-width="1.8"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg></div>Nous ciblons 1 priorité</div>
+        <div class="f-desc">Celle qui vous fait perdre le plus d’heures, nous commençons par elle</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ÉTAPE 2 — fond sombre ===== -->
+<section class="sheet t-sombre" data-theme="sombre" style="z-index:4" id="etape-2">
+  <div class="container">
+    <div class="head">
+      <div class="eyebrow rv"><i><svg viewBox="0 0 24 24"><path d="M12 1.5C13 8 16 11 22.5 12 16 13 13 16 12 22.5 11 16 8 13 1.5 12 8 11 11 8 12 1.5z" fill="#fff"/></svg></i>Étape 2</div>
+      <h2 class="h rv" style="--d:.06s"><span class="gt">Construire et brancher</span> <span class="serif" style="font-size:1.05em">sur l’existant</span></h2>
+      <p class="lead rv" style="--d:.12s">Aucun changement d’outils nécessaire. Nous connectons vos applications actuelles et ajoutons l’automatisation en arrière-plan.</p>
+    </div>
+
+    <div class="panel rv" style="--d:.1s;margin-bottom:28px">
+      <div class="panel-head"><span class="label">Déploiement type en 4 jours</span><span class="pill">Vous continuez de travailler</span></div>
+      <div class="days-grid">
+        <div class="day2"><div class="tile" style="background:linear-gradient(160deg,#fff,#E6F0FF)"><svg viewBox="0 0 24 24" fill="none" stroke="#0A6CFF" stroke-width="1.8"><path d="M9 2v4M15 2v4M7 8h10v4a5 5 0 0 1-5 5 5 5 0 0 1-5-5V8z"/><path d="M12 17v5"/></svg></div><h4>Jour 1</h4><span class="sub">Connexion — 30 min</span><p>Nous connectons Gmail, WhatsApp, Drive, votre logiciel de facturation. Vous gardez tout.</p></div>
+        <div class="day2"><div class="tile" style="background:linear-gradient(160deg,#fff,#EEE6FF)"><svg viewBox="0 0 24 24" fill="none" stroke="#6F8CFF" stroke-width="1.8"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg></div><h4>Jour 2-3</h4><span class="sub">Construction</span><p>Nous assemblons l’automatisation. Vous continuez de travailler. Aucune interruption.</p></div>
+        <div class="day2 highlight"><div class="tile" style="background:linear-gradient(160deg,#fff,#E6FAF5)"><svg viewBox="0 0 24 24" fill="none" stroke="#18B89E" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></div><h4>Jour 4</h4><span class="sub">Test en conditions réelles</span><p>Nous testons ensemble sur un cas client réel. Vous validez. Ajustements si nécessaire.</p></div>
+      </div>
+    </div>
+
+    <div class="ftable rv" style="--d:.16s">
+      <div class="frow three">
+        <div class="f-issue"><div class="tile" style="background:linear-gradient(160deg,#fff,#E6FAF5)"><svg viewBox="0 0 24 24" fill="none" stroke="#18B89E" stroke-width="1.8"><path d="M4 4h16v12H7l-3 3V4z"/></svg></div>WhatsApp</div>
+        <div class="f-desc" style="color:#18B89E;font-weight:800">Oui, conservé</div>
+        <div class="f-desc">Lecture automatique des photos et messages</div>
+      </div>
+      <div class="frow three">
+        <div class="f-issue"><div class="tile" style="background:linear-gradient(160deg,#fff,#FFEDE2)"><svg viewBox="0 0 24 24" fill="none" stroke="#FF6A13" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="m4 6 8 7 8-7"/></svg></div>Gmail</div>
+        <div class="f-desc" style="color:#18B89E;font-weight:800">Oui, conservé</div>
+        <div class="f-desc">Tri, classement et pré-rédaction</div>
+      </div>
+      <div class="frow three">
+        <div class="f-issue"><div class="tile" style="background:linear-gradient(160deg,#fff,#FFF6E0)"><svg viewBox="0 0 24 24" fill="none" stroke="#F5B700" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div>Logiciel de facturation</div>
+        <div class="f-desc" style="color:#18B89E;font-weight:800">Oui, conservé</div>
+        <div class="f-desc">Remplissage automatique des données</div>
+      </div>
+      <div class="frow three">
+        <div class="f-issue"><div class="tile" style="background:linear-gradient(160deg,#fff,#EEE6FF)"><svg viewBox="0 0 24 24" fill="none" stroke="#6F8CFF" stroke-width="1.8"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg></div>Drive / Documents</div>
+        <div class="f-desc" style="color:#18B89E;font-weight:800">Oui, conservé</div>
+        <div class="f-desc">Classement par client et par date</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ÉTAPE 3 — fond blanc ===== -->
+<section class="sheet t-blanc" data-theme="blanc" style="z-index:5" id="etape-3">
+  <div class="container">
+    <div class="head">
+      <div class="eyebrow rv"><i><svg viewBox="0 0 24 24"><path d="M12 1.5C13 8 16 11 22.5 12 16 13 13 16 12 22.5 11 16 8 13 1.5 12 8 11 11 8 12 1.5z" fill="#fff"/></svg></i>Étape 3</div>
+      <h2 class="h rv" style="--d:.06s"><span class="gt">Vous restez</span> <span class="serif" style="font-size:1.05em">autonome</span></h2>
+      <p class="lead rv" style="--d:.12s">Nous ne vous laissons pas avec un système complexe. L’objectif est que vous puissiez l’utiliser et le faire évoluer sans dépendance.</p>
+    </div>
+
+    <div class="mini-grid">
+      <div class="mini-card rv"><div class="tile" style="background:linear-gradient(160deg,#fff,#E6F0FF)"><svg viewBox="0 0 24 24" fill="none" stroke="#0A6CFF" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div><div><h4>Prise en main</h4><p>Explication en 15 minutes, pas de manuel de 50 pages. Interface claire, actions explicites.</p></div></div>
+      <div class="mini-card rv" style="--d:.06s"><div class="tile" style="background:linear-gradient(160deg,#fff,#EEE6FF)"><svg viewBox="0 0 24 24" fill="none" stroke="#6F8CFF" stroke-width="1.8"><rect x="2" y="5" width="14" height="14" rx="2"/><path d="m16 9 6-3v12l-6-3"/></svg></div><div><h4>Modification simple</h4><p>Vidéo Loom de 5 min. Vous pouvez modifier un texte, un prix, un délai vous-même.</p></div></div>
+      <div class="mini-card rv" style="--d:.12s"><div class="tile" style="background:linear-gradient(160deg,#fff,#E6FAF5)"><svg viewBox="0 0 24 24" fill="none" stroke="#18B89E" stroke-width="1.8"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></div><div><h4>Évolution</h4><p>Les automatisations évoluent avec votre activité : nouveau service, tarif, message.</p></div></div>
+    </div>
+
+    <div class="msg rv" style="--d:.16s">
+      <div class="msg-head"><h4>Exemple — Message de relance J+3</h4><span class="pill">Vous êtes propriétaire</span></div>
+      <p class="msg-label"># Modèle modifiable</p>
+      <p class="msg-text">Bonjour [Prénom], avez-vous eu le temps de consulter le devis pour [chantier] ? Je reste disponible demain pour en discuter si vous le souhaitez.</p>
+      <div class="msg-actions"><span class="mbtn"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>Modifier</span><span class="hint">Modification directe, prise d’effet immédiate</span></div>
+      <ul>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>Vous pouvez interrompre l’automatisation en 1 clic</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>Modification d’un prix : mise à jour sur l’ensemble des devis</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>Aucun abonnement caché, l’automatisation vous appartient</li>
+      </ul>
+    </div>
+
+    <p class="note-box rv" style="--d:.2s"><strong>Cas vécu :</strong> Un menuisier souhaitait remplacer une formule de politesse. Il a effectué la modification en 20 secondes, depuis son téléphone, sans assistance.</p>
+  </div>
+</section>
+
+<!-- ===== CHANTIERS RÉCENTS — fond bleu ===== -->
+<section class="sheet t-bleu" data-theme="bleu" style="z-index:6" id="chantiers">
+  <div class="container">
+    <div class="head">
+      <div class="eyebrow rv"><i><svg viewBox="0 0 24 24"><path d="M12 1.5C13 8 16 11 22.5 12 16 13 13 16 12 22.5 11 16 8 13 1.5 12 8 11 11 8 12 1.5z" fill="#fff"/></svg></i>Chantiers récents</div>
+      <h2 class="h rv" style="--d:.06s"><span class="gt">Format ticket</span> <span class="serif" style="font-size:1.05em">— suivi terrain.</span></h2>
+    </div>
+    <div class="tickets">
+      <div class="ticket rv">
+        <div class="ticket-head"><span class="id">#042 — Électricien</span><span class="pill">Déployé en 4j</span></div>
+        <div class="ticket-body">
+          <div class="t-top"><div class="tile" style="background:linear-gradient(160deg,#fff,#FFF6E0)"><svg viewBox="0 0 24 24" fill="none" stroke="#F5B700" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9"/></svg></div><div><h4>De 12h à 2h de paperasse / semaine</h4><span class="sub">WhatsApp + Devis auto</span></div></div>
+          <div class="t-compare"><div class="t-box before"><span class="lbl">Avant</span>Devis rédigés le soir</div><div class="t-box after"><span class="lbl">Après</span>Photo → devis en 3 min</div></div>
+          <div class="ticket-footer"><span class="pill">10h / semaine</span><span class="note">Accompagnement réel</span></div>
         </div>
-
-        <div class="mini-card reveal">
-          <div class="mini-head">
-            <p class="eyebrow">Notre approche en 3 étapes</p>
-            <span class="pill">Méthode terrain</span>
-          </div>
-          <div class="mini-steps">
-            <div class="mini-step">
-              <span class="num">1</span>
-              <div>
-                <h4>Comprendre votre fonctionnement réel</h4>
-                <p>Observation de vos outils et identification des tâches répétitives</p>
-              </div>
-            </div>
-            <div class="mini-step">
-              <span class="num">2</span>
-              <div>
-                <h4>Construire et brancher sur l'existant</h4>
-                <p>Vous gardez vos outils, nous ajoutons les automatisations</p>
-              </div>
-            </div>
-            <div class="mini-step">
-              <span class="num">3</span>
-              <div>
-                <h4>Vous restez autonome</h4>
-                <p>15 min de prise en main, modification simple sans dépendance</p>
-              </div>
-            </div>
-          </div>
-          <div class="callout-card dark" style="margin-top:0;">
-            <span class="icon flash-green" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span>
-            <p style="margin:0;">Aucun nouveau logiciel à apprendre. Nous nous adaptons à vos habitudes de travail.</p>
-          </div>
+      </div>
+      <div class="ticket rv" style="--d:.06s">
+        <div class="ticket-head"><span class="id">#041 — Agence immobilière</span><span class="pill">Déployé en 3j</span></div>
+        <div class="ticket-body">
+          <div class="t-top"><div class="tile" style="background:linear-gradient(160deg,#fff,#E6F0FF)"><svg viewBox="0 0 24 24" fill="none" stroke="#0A6CFF" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="m4 6 8 7 8-7"/></svg></div><div><h4>80 emails triés / jour</h4><span class="sub">Gmail + Agent de tri</span></div></div>
+          <div class="t-compare"><div class="t-box before"><span class="lbl">Avant</span>Boîte de réception saturée</div><div class="t-box after"><span class="lbl">Après</span>Tri + brouillons auto 80%</div></div>
+          <div class="ticket-footer"><span class="pill">1h30 / jour</span><span class="note">Accompagnement réel</span></div>
+        </div>
+      </div>
+      <div class="ticket rv" style="--d:.12s">
+        <div class="ticket-head"><span class="id">#040 — Menuiserie</span><span class="pill">Déployé en 2j</span></div>
+        <div class="ticket-body">
+          <div class="t-top"><div class="tile" style="background:linear-gradient(160deg,#fff,#FFE9F3)"><svg viewBox="0 0 24 24" fill="none" stroke="#FF4FA3" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></div><div><h4>Relances impayés automatisées</h4><span class="sub">Facturation + SMS</span></div></div>
+          <div class="t-compare"><div class="t-box before"><span class="lbl">Avant</span>Relances oubliées, trésorerie tendue</div><div class="t-box after"><span class="lbl">Après</span>Relance J+3 / J+7 auto</div></div>
+          <div class="ticket-footer"><span class="pill">+4 200€ encaissés</span><span class="note">Accompagnement réel</span></div>
         </div>
       </div>
     </div>
-  </section>
+    <p class="lead rv" style="text-align:center;margin:36px auto 0;color:#fff;opacity:.9">12 accompagnements par mois maximum</p>
+  </div>
+</section>
 
-  <!-- ==========================================================
-       ILLUSTRATIONS CONCRÈTES — 3 avant/après
-       ========================================================== -->
-  <section id="illustrations" class="section-pad alt">
-    <div class="container">
-      <div class="section-head reveal">
-        <p class="eyebrow">Illustrations concrètes</p>
-        <h2>Concrètement, à quoi ça ressemble ?</h2>
-        <p class="lead">Trois automatisations déployées récemment, avec des outils que vous utilisez déjà.</p>
-      </div>
-      <div class="illustration-grid stagger">
-        <div class="illustration-card reveal">
-          <div class="top-row">
-            <span class="icon flash-amber" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 4h16v12H7l-3 3V4z"/></svg></span>
-            <span class="tag">Le plus demandé</span>
-          </div>
-          <h3>De la photo WhatsApp au devis envoyé</h3>
-          <div class="il-compare">
-            <div class="il-block before">
-              <span class="label"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Avant — 45 min</span>
-              <p>Un client envoie une photo sur WhatsApp. Le soir, vous cherchez les références, les prix, vous mettez en forme le devis sur Word. 45 minutes.</p>
-            </div>
-            <div class="il-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 4v16M6 14l6 6 6-6"/></svg></div>
-            <div class="il-block after">
-              <span class="label"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg>Après — 3 min</span>
-              <p>La photo arrive, l'IA l'analyse, retrouve les prix dans votre catalogue et prépare le devis dans votre Gmail. Vous relisez et validez en 3 minutes.</p>
-            </div>
-          </div>
-          <div class="il-footer">
-            <strong>7h gagnées / semaine</strong>
-            <span>Chauffagiste — Yvelines</span>
-          </div>
+<!-- ===== CTA — fond sombre ===== -->
+<section class="sheet t-sombre" data-theme="sombre" style="z-index:7;padding-bottom:170px" id="contact">
+  <div class="container cta">
+    <div>
+      <div class="pillk rv" style="margin-bottom:30px"><i><svg viewBox="0 0 24 24"><path d="M12 1.5C13 8 16 11 22.5 12 16 13 13 16 12 22.5 11 16 8 13 1.5 12 8 11 11 8 12 1.5z" fill="#fff"/></svg></i>12 accompagnements par mois maximum</div>
+      <h2 class="h rv" style="--d:.06s"><span class="gt">Vous souhaitez voir cette méthode</span><span class="serif">appliquée à votre activité ?</span></h2>
+      <p class="sub rv" style="--d:.12s">30 minutes. Vous venez avec un cas concret (devis, factures, emails). Nous vous montrons en direct comment l’automatiser. Vous repartez avec votre Top 3 des tâches automatisables, même si nous ne travaillons pas ensemble.</p>
+      <a class="btn rv" style="--d:.18s" href="rendez-vous.html">Réserver un échange de 30 minutes</a>
+      <p class="note rv" style="--d:.2s">Sans engagement — 12 accompagnements par mois maximum</p>
+    </div>
+    <div class="rv" style="--d:.15s">
+      <div class="panel">
+        <div class="panel-head"><span class="label">Déroulé des 30 min</span><span class="pill">Gratuit</span></div>
+        <div class="panel-steps">
+          <div class="panel-step"><span class="num">1</span><div><h5>Vous présentez un cas concret</h5><p>Exemple : « Mes devis WhatsApp me prennent mes soirées »</p></div></div>
+          <div class="panel-step"><span class="num">2</span><div><h5>Nous le modélisons en direct</h5><p>Schéma du branchement : photo → prix → Gmail. En direct.</p></div></div>
+          <div class="panel-step"><span class="num">3</span><div><h5>Vous repartez avec votre Top 3</h5><p>Liste priorisée + estimation du temps récupérable, même sans suite.</p></div></div>
         </div>
-
-        <div class="illustration-card reveal">
-          <div class="top-row">
-            <span class="icon flash-cyan" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
-            <span class="tag">0 saisie</span>
-          </div>
-          <h3>Les factures fournisseurs qui se classent seules</h3>
-          <div class="il-compare">
-            <div class="il-block before">
-              <span class="label"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Avant — Saisie manuelle</span>
-              <p>Factures dans la boîte mail, sur le bureau, en photo. Saisie manuelle le week-end.</p>
-            </div>
-            <div class="il-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 4v16M6 14l6 6 6-6"/></svg></div>
-            <div class="il-block after">
-              <span class="label"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg>Après — Automatique</span>
-              <p>Transfert automatique vers votre Drive. Extraction du HT, TVA, échéance. Envoi vers Pennylane / Henrri. Alerte si doublon.</p>
-            </div>
-          </div>
-          <div class="il-footer">
-            <strong>0 saisie manuelle</strong>
-            <span>Contrôle conservé</span>
-          </div>
-        </div>
-
-        <div class="illustration-card reveal">
-          <div class="top-row">
-            <span class="icon flash-green" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span>
-            <span class="tag">+ CA</span>
-          </div>
-          <h3>Les devis qui ne restent pas sans réponse</h3>
-          <div class="il-compare">
-            <div class="il-block before">
-              <span class="label"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Avant — 30% sans suite</span>
-              <p>Devis envoyé, pas le temps de relancer. 30% de devis sans suite.</p>
-            </div>
-            <div class="il-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 4v16M6 14l6 6 6-6"/></svg></div>
-            <div class="il-block after">
-              <span class="label"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg>Après — Relances structurées</span>
-              <p>Relance SMS personnalisée à J+3, email à J+7, rappel automatique dans votre agenda si pas de réponse.</p>
-            </div>
-          </div>
-          <div class="il-footer">
-            <strong>+22% de devis signés</strong>
-            <span>Suivi sans surcharge</span>
-          </div>
-        </div>
+        <div class="panel-result"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Vous repartez avec : schéma + estimation temps gagné</div>
       </div>
     </div>
-  </section>
-
-  <!-- ==========================================================
-       ÉTAPE 1 — Comprendre votre fonctionnement réel
-       ========================================================== -->
-  <section id="etape-1" class="section-pad">
-    <div class="container">
-      <div class="section-head reveal">
-        <div class="step-badge"><span class="num">1</span><p class="eyebrow">Étape 1</p></div>
-        <h2>Comprendre votre fonctionnement réel</h2>
-        <p class="lead">Pas de questionnaire standardisé. Nous observons directement la manière dont vous travaillez au quotidien, avec vos outils existants.</p>
-      </div>
-      <div class="step-detail">
-        <div class="reveal">
-          <div class="objectif-box">
-            <span class="icon-mute flash-violet" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg></span>
-            <p><strong>Objectif :</strong> identifier avec précision les tâches chronophages et répétitives pour les traiter en priorité.</p>
-          </div>
-          <div class="chip-row" style="margin-bottom:0;">
-            <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>1h d'observation</span>
-            <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>100% concret</span>
-          </div>
-        </div>
-        <div class="process-table reveal">
-          <div class="row head"><span>Ce que nous faisons</span><span>Comment</span></div>
-          <div class="row">
-            <div class="cell-main">
-              <span class="icon-mute flash-cyan" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg></span>
-              <strong>Nous observons vos outils du quotidien</strong>
-            </div>
-            <div class="cell-desc">Vos 3 applications les plus utilisées, vos échanges, vos habitudes</div>
-          </div>
-          <div class="row">
-            <div class="cell-main">
-              <span class="icon-mute flash-green" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></span>
-              <strong>Nous identifions les tâches répétitives</strong>
-            </div>
-            <div class="cell-desc">Vous nous indiquez les 5 tâches les plus chronophages de votre semaine</div>
-          </div>
-          <div class="row">
-            <div class="cell-main">
-              <span class="icon-mute flash-pink" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg></span>
-              <strong>Nous ciblons 1 priorité</strong>
-            </div>
-            <div class="cell-desc">Celle qui vous fait perdre le plus d'heures, nous commençons par elle</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ==========================================================
-       ÉTAPE 2 — Construire et brancher sur l'existant
-       ========================================================== -->
-  <section id="etape-2" class="section-pad alt">
-    <div class="container">
-      <div class="section-head reveal">
-        <div class="step-badge"><span class="num">2</span><p class="eyebrow">Étape 2</p></div>
-        <h2>Construire et brancher sur l'existant</h2>
-        <p class="lead">Aucun changement d'outils nécessaire. Nous connectons vos applications actuelles et ajoutons l'automatisation en arrière-plan.</p>
-      </div>
-
-      <div class="timeline-panel reveal">
-        <div class="panel-head">
-          <span class="label">Déploiement type en 4 jours</span>
-          <span class="pill">Vous continuez de travailler</span>
-        </div>
-        <div class="timeline-days">
-          <div class="timeline-day">
-            <span class="icon-mute flash-cyan" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M9 2v4M15 2v4M7 8h10v4a5 5 0 0 1-5 5 5 5 0 0 1-5-5V8z"/><path d="M12 17v5"/></svg></span>
-            <h4>Jour 1</h4>
-            <span class="sub">Connexion — 30 min</span>
-            <p>Nous connectons Gmail, WhatsApp, Drive, votre logiciel de facturation. Vous gardez tout.</p>
-          </div>
-          <div class="timeline-day">
-            <span class="icon-mute flash-violet" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg></span>
-            <h4>Jour 2-3</h4>
-            <span class="sub">Construction</span>
-            <p>Nous assemblons l'automatisation. Vous continuez de travailler. Aucune interruption.</p>
-          </div>
-          <div class="timeline-day highlight">
-            <span class="icon-mute flash-green" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></span>
-            <h4>Jour 4</h4>
-            <span class="sub">Test en conditions réelles</span>
-            <p>Nous testons ensemble sur un cas client réel. Vous validez. Ajustements si nécessaire.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="tools-table reveal">
-        <div class="t-row head"><span>Vos outils actuels</span><span>On les conserve</span><span>Ce que nous ajoutons</span></div>
-        <div class="t-row">
-          <span class="t-name"><span class="icon-mute flash-green" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 4h16v12H7l-3 3V4z"/></svg></span>WhatsApp</span>
-          <span class="t-kept"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Oui</span>
-          <span class="t-add">Lecture automatique des photos et messages</span>
-        </div>
-        <div class="t-row">
-          <span class="t-name"><span class="icon-mute flash-coral" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="m4 6 8 7 8-7"/></svg></span>Gmail</span>
-          <span class="t-kept"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Oui</span>
-          <span class="t-add">Tri, classement et pré-rédaction</span>
-        </div>
-        <div class="t-row">
-          <span class="t-name"><span class="icon-mute flash-amber" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>Logiciel de facturation</span>
-          <span class="t-kept"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Oui</span>
-          <span class="t-add">Remplissage automatique des données</span>
-        </div>
-        <div class="t-row">
-          <span class="t-name"><span class="icon-mute flash-violet" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg></span>Drive / Documents</span>
-          <span class="t-kept"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Oui</span>
-          <span class="t-add">Classement par client et par date</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ==========================================================
-       ÉTAPE 3 — Vous restez autonome
-       ========================================================== -->
-  <section id="etape-3" class="section-pad">
-    <div class="container">
-      <div class="section-head reveal">
-        <div class="step-badge"><span class="num">3</span><p class="eyebrow">Étape 3</p></div>
-        <h2>Vous restez autonome</h2>
-        <p class="lead">Nous ne vous laissons pas avec un système complexe. L'objectif est que vous puissiez l'utiliser et le faire évoluer sans dépendance.</p>
-      </div>
-
-      <div class="autonomy-grid stagger">
-        <div class="autonomy-card reveal">
-          <span class="icon-mute flash-cyan" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span>
-          <div>
-            <h4>Prise en main</h4>
-            <p>Explication en 15 minutes, pas de manuel de 50 pages. Interface claire, actions explicites.</p>
-          </div>
-        </div>
-        <div class="autonomy-card reveal">
-          <span class="icon-mute flash-violet" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="2" y="5" width="14" height="14" rx="2"/><path d="m16 9 6-3v12l-6-3"/></svg></span>
-          <div>
-            <h4>Modification simple</h4>
-            <p>Vidéo Loom de 5 min. Vous pouvez modifier un texte, un prix, un délai vous-même, en toute autonomie.</p>
-          </div>
-        </div>
-        <div class="autonomy-card reveal">
-          <span class="icon-mute flash-green" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></span>
-          <div>
-            <h4>Évolution</h4>
-            <p>Les automatisations évoluent avec votre activité. Ajout d'un nouveau service, changement de tarif, adaptation du message.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="message-mock reveal">
-        <div class="m-head">
-          <h4>Exemple — Message de relance J+3</h4>
-          <span class="pill">Vous êtes propriétaire</span>
-        </div>
-        <div class="m-body">
-          <p class="m-label"># Modèle modifiable</p>
-          <p class="m-text">Bonjour [Prénom], avez-vous eu le temps de consulter le devis pour [chantier] ? Je reste disponible demain pour en discuter si vous le souhaitez.</p>
-          <div class="m-actions">
-            <span class="btn-mini"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>Modifier</span>
-            <span class="hint">Modification directe, prise d'effet immédiate</span>
-          </div>
-        </div>
-        <ul class="m-checks">
-          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Vous pouvez interrompre l'automatisation en 1 clic</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Modification d'un prix : mise à jour sur l'ensemble des devis</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Aucun abonnement caché, l'automatisation vous appartient</li>
-        </ul>
-      </div>
-
-      <p class="note-box reveal"><strong>Cas vécu :</strong> Un menuisier souhaitait remplacer une formule de politesse. Il a effectué la modification en 20 secondes, depuis son téléphone, sans assistance.</p>
-    </div>
-  </section>
-
-  <!-- ==========================================================
-       CHANTIERS RÉCENTS — format ticket
-       ========================================================== -->
-  <section id="chantiers" class="section-pad alt">
-    <div class="container">
-      <div class="section-head reveal">
-        <p class="eyebrow">Chantiers récents</p>
-        <h2>Format ticket — suivi terrain.</h2>
-      </div>
-      <div class="ticket-grid stagger">
-        <div class="ticket-card reveal">
-          <div class="ticket-head"><span class="id">#042 — Électricien</span><span class="pill">Déployé en 4j</span></div>
-          <div class="ticket-body">
-            <div class="t-top">
-              <span class="icon-mute flash-amber" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span>
-              <div>
-                <h4>De 12h à 2h de paperasse / semaine</h4>
-                <span class="sub">WhatsApp + Devis auto</span>
-              </div>
-            </div>
-            <div class="ticket-compare">
-              <div class="box before"><span class="label">Avant</span>Devis rédigés le soir</div>
-              <div class="box after"><span class="label">Après</span>Photo → devis en 3 min</div>
-            </div>
-            <div class="ticket-footer"><span class="pill">10h / semaine</span><span class="note">Accompagnement réel</span></div>
-          </div>
-        </div>
-
-        <div class="ticket-card reveal">
-          <div class="ticket-head"><span class="id">#041 — Agence immobilière</span><span class="pill">Déployé en 3j</span></div>
-          <div class="ticket-body">
-            <div class="t-top">
-              <span class="icon-mute flash-cyan" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="m4 6 8 7 8-7"/></svg></span>
-              <div>
-                <h4>80 emails triés / jour</h4>
-                <span class="sub">Gmail + Agent de tri</span>
-              </div>
-            </div>
-            <div class="ticket-compare">
-              <div class="box before"><span class="label">Avant</span>Boîte de réception saturée</div>
-              <div class="box after"><span class="label">Après</span>Tri + brouillons auto 80%</div>
-            </div>
-            <div class="ticket-footer"><span class="pill">1h30 / jour</span><span class="note">Accompagnement réel</span></div>
-          </div>
-        </div>
-
-        <div class="ticket-card reveal">
-          <div class="ticket-head"><span class="id">#040 — Menuiserie</span><span class="pill">Déployé en 2j</span></div>
-          <div class="ticket-body">
-            <div class="t-top">
-              <span class="icon-mute flash-pink" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
-              <div>
-                <h4>Relances impayés automatisées</h4>
-                <span class="sub">Facturation + SMS</span>
-              </div>
-            </div>
-            <div class="ticket-compare">
-              <div class="box before"><span class="label">Avant</span>Relances oubliées, trésorerie tendue</div>
-              <div class="box after"><span class="label">Après</span>Relance J+3 / J+7 auto</div>
-            </div>
-            <div class="ticket-footer"><span class="pill">+4 200€ encaissés</span><span class="note">Accompagnement réel</span></div>
-          </div>
-        </div>
-      </div>
-      <p class="lead" style="text-align:center;margin:2rem auto 0;">12 accompagnements par mois maximum</p>
-    </div>
-  </section>
-
-  <!-- ==========================================================
-       CTA FINAL — texte + carte "déroulé des 30 min"
-       ========================================================== -->
-  <section id="contact" class="section-pad">
-    <div class="container">
-      <div class="cta-rich reveal">
-        <div class="cta-text">
-          <span class="badge"><svg viewBox="0 0 24 24" width="10" height="10" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg>12 accompagnements par mois maximum</span>
-          <h2>Vous souhaitez voir cette méthode appliquée à votre activité ?</h2>
-          <p>30 minutes. Vous venez avec un cas concret (devis, factures, emails). Nous vous montrons en direct comment l'automatiser. Vous repartez avec votre Top 3 des tâches automatisables, même si nous ne travaillons pas ensemble.</p>
-          <a href="rendez-vous.html" class="btn btn-primary">Réserver un échange de 30 minutes</a>
-          <p class="cta-note">Sans engagement — 12 accompagnements par mois maximum</p>
-          <div class="avatars-row">
-            <span class="avatars" aria-hidden="true">
-              <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span>
-              <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 21V7l8-4 8 4v14"/><path d="M9 21v-6h6v6"/></svg></span>
-              <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg></span>
-            </span>
-            <span class="txt">23 entreprises accompagnées ces 3 derniers mois</span>
-          </div>
-        </div>
-
-        <div class="cta-inner">
-          <div class="ci-head">
-            <span class="label">Déroulé des 30 min</span>
-            <span class="pill">Gratuit</span>
-          </div>
-          <div class="ci-steps">
-            <div class="ci-step">
-              <span class="num">1</span>
-              <div>
-                <h5>Vous présentez un cas concret</h5>
-                <p>Exemple : « Mes devis WhatsApp me prennent mes soirées »</p>
-              </div>
-            </div>
-            <div class="ci-step">
-              <span class="num">2</span>
-              <div>
-                <h5>Nous le modélisons en direct</h5>
-                <p>Schéma du branchement : photo → prix → Gmail. En direct.</p>
-              </div>
-            </div>
-            <div class="ci-step">
-              <span class="num">3</span>
-              <div>
-                <h5>Vous repartez avec votre Top 3</h5>
-                <p>Liste priorisée + estimation du temps récupérable, même sans suite.</p>
-              </div>
-            </div>
-          </div>
-          <div class="ci-result"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Vous repartez avec : schéma + estimation temps gagné</div>
-          <div class="ci-tags">
-            <span>Enregistrement</span>
-            <span>Schéma détaillé</span>
-            <span>Top 3 priorités</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+  </div>
+</section>
 
 </main>
 
-<footer class="site-footer">
+<footer>
   <div class="container">
-    <div class="footer-top">
-      <div class="footer-brand">
-        <a href="index.html#top" class="logo"><img src="assets/logo.png" alt="DecIA" width="110" height="26"></a>
-        <p style="text-align:left;">L'intelligence artificielle utile aux entreprises.<br>Audit · Automatisation · Agents IA · Formation<br>Plus d'efficacité. Moins de tâches inutiles.</p>
-      </div>
-      <div class="footer-cols">
-        <div class="footer-col">
-          <h4>Navigation</h4>
-          <a href="index.html#offre">Solutions</a>
-          <a href="audit.html">Audit</a>
-          <a href="formation.html">Formation</a>
-          <a href="etudes-de-cas.html">Étude de cas</a>
-          <a href="ressources.html">Ressources</a>
-        </div>
-        <div class="footer-col">
-          <h4>Contact</h4>
-          <p>contact@decia.fr</p>
-          <p><a href="tel:+33689180195">+33 6 89 18 01 95</a></p>
-        </div>
-        <div class="footer-col">
-          <h4>Suivez-nous</h4>
-          <div class="footer-social">
-            <a href="https://www.linkedin.com/company/deciafr/about/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 11v5M8 8v.01M12 16v-3a2 2 0 0 1 4 0v3M12 13v3"/></svg></a>
-          </div>
-        </div>
-      </div>
+    <div class="ft">
+      <div><a href="index.html#top"><img src="assets/logo.png" alt="DecIA"></a><p>L’intelligence artificielle utile aux entreprises.<br>Audit · Automatisation · Agents IA · Formation.<br>Plus d’efficacité. Moins de tâches inutiles.</p></div>
+      <div class="col" style="text-align:center;align-items:center"><h4>Navigation</h4><a href="index.html#offre">Solutions</a><a href="audit.html">Audit</a><a href="formation.html">Formation</a><a href="etudes-de-cas.html">Étude de cas</a><a href="ressources.html">Ressources</a></div>
+      <div class="col" style="text-align:center;align-items:center"><h4>Contact</h4><a href="mailto:contact@decia.fr">contact@decia.fr</a><a href="tel:+33689180195">+33 6 89 18 01 95</a></div>
+      <div class="col" style="text-align:center;align-items:center"><h4>Suivez-nous</h4><a href="https://www.linkedin.com/company/deciafr/about/" aria-label="LinkedIn" style="display:inline-flex"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 11v5M8 8v.01M12 16v-3a2 2 0 0 1 4 0v3M12 13v3"/></svg></a></div>
     </div>
-    <div class="footer-bottom">
-      <span>© <span id="year">2026</span> DecIA. Tous droits réservés.</span>
-      <span><a href="mentions-legales.html">Mentions légales</a> · <a href="confidentialite.html">Confidentialité</a></span>
-    </div>
+    <div class="fb"><span>© 2026 DecIA. Tous droits réservés.</span><span><a href="mentions-legales.html">Mentions légales</a> · <a href="confidentialite.html">Confidentialité</a></span></div>
   </div>
 </footer>
 
-<script src="js/main.js"></script>
-<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+<script src="js/site.js"></script>
 </body>
 </html>

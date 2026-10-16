@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <title>Formation IA pour dirigeants et équipes | DecIA</title>
 <meta name="description" content="Trois formations IA pour TPE et PME : IA au quotidien pour les équipes, IA pour les dirigeants (ROI, souveraineté, charte IA) et formation sur mesure adaptée à votre métier.">
@@ -13,712 +13,420 @@
 <link rel="manifest" href="assets/site.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
-<link rel="stylesheet" href="css/components.css">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&family=Plus+Jakarta+Sans:wght@600;700;800&family=DM+Sans:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/site.css">
 <style>
-  /* ---- Cartes de la gamme ---- */
-  .tier-points {
-    list-style: none;
-    margin: 16px 0 0;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .tier-points li {
-    font-size: 0.86rem;
-    color: var(--text-soft);
-    display: flex;
-    gap: 8px;
-  }
-  .tier-points li::before {
-    content: "→";
-    color: var(--accent);
-    flex-shrink: 0;
-  }
-  .tier-price {
-    margin-top: 18px;
-    padding-top: 14px;
-    border-top: 1px solid var(--border);
-    font-family: var(--font-mono);
-    font-size: 0.86rem;
-    color: var(--text);
-  }
-  .tier-price strong { color: var(--accent); font-weight: 600; }
+.reading-progress{position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,#0A6CFF,#FF6A13);z-index:110;transition:width .1s linear}
 
-  /* ---- ROI : familles d'usages ---- */
-  .roi-uses {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-2);
-    margin: var(--space-3) 0;
-  }
-  @media (max-width: 860px) { .roi-uses { grid-template-columns: 1fr 1fr; } }
+/* ===== La gamme — 3 offres ===== */
+.tier-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.tier{padding:32px 28px;display:flex;flex-direction:column;gap:14px;transition:transform .3s ease;position:relative}
+.tier:hover{transform:translateY(-6px)}
+.tier.featured{border:2px solid #FFB020}
+.tier.featured::after{content:'Formation la plus stratégique';position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#FFB020,#FF8A00);color:#1A1200;font-family:"DM Sans",sans-serif;font-size:11px;font-weight:700;padding:5px 14px;border-radius:20px;white-space:nowrap}
+.tier .num{width:46px;height:46px;font-size:18px;background:linear-gradient(135deg,#0A6CFF,#1A4FF0)}
+.tier h3{font-size:20px;letter-spacing:-.03em}
+.tier p{font-size:14px;color:#5F7396;font-weight:600;line-height:1.5}
+.tier .tags{display:flex;flex-wrap:wrap;gap:8px}
+.tier .tags span{font-size:11.5px;font-weight:700;padding:6px 12px;border-radius:20px;background:rgba(10,108,255,.07);color:#0A66FF}
+.tier ul{display:flex;flex-direction:column;gap:7px;margin-top:2px}
+.tier li{font-size:13px;color:#40506F;font-weight:600;display:flex;gap:8px}
+.tier li::before{content:'→';color:#0A66FF;flex:none}
+.tier .price{margin-top:auto;padding-top:14px;border-top:1px solid rgba(16,24,64,.08);font-family:"DM Sans",sans-serif;font-size:13px;color:#0B1020;font-weight:600}
+.tier .price b{color:#0A66FF}
+.tier .lnk{margin-top:4px;background:#0A66FF;color:#fff;font-size:13px;font-weight:700;padding:11px 20px;border-radius:14px;align-self:flex-start;transition:background .2s ease}
+.tier .lnk:hover{background:#1A4FF0}
 
-  /* ---- Grille exemple ROI ---- */
-  .roi-table {
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    background: var(--card);
-    overflow: hidden;
-    margin-top: var(--space-3);
-  }
-  .roi-row {
-    display: grid;
-    grid-template-columns: 1.3fr 0.9fr 1fr 1fr;
-    gap: 10px;
-    padding: 14px 18px;
-    border-bottom: 1px solid var(--border);
-    align-items: center;
-  }
-  .roi-row:last-child { border-bottom: none; }
-  .roi-row.head {
-    background: var(--bg);
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--text-mute);
-  }
-  .roi-row span { font-size: 0.88rem; color: var(--text-soft); }
-  .roi-row .u-name { color: var(--text); font-weight: 600; }
-  .roi-row .u-after { color: var(--success); }
-  @media (max-width: 700px) {
-    .roi-row { grid-template-columns: 1fr 1fr; row-gap: 4px; }
-    .roi-row.head { display: none; }
-    .roi-row span::before { content: attr(data-label) " : "; color: var(--text-mute); }
-  }
-  .roi-caption {
-    font-family: var(--font-mono);
-    font-size: 0.74rem;
-    color: var(--text-mute);
-    margin-top: 10px;
-  }
+/* ===== Callout générique (s'adapte au thème via var(--card)) ===== */
+.callout{display:flex;gap:16px;align-items:flex-start;background:var(--card);border:var(--cardb);box-shadow:var(--cardsh);border-radius:24px;padding:24px 28px;margin-bottom:26px}
+.callout .tile{width:44px;height:44px;flex:none}
+.callout .tile svg{width:52%;height:52%}
+.callout p{font-size:14px;color:var(--cardink);font-weight:600;margin:0;opacity:.85}
+.callout p strong{opacity:1}
 
-  /* ---- Charte IA : carte + diagramme en étoile ---- */
-  .charte-card {
-    padding: var(--space-4);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    background: var(--card);
-  }
-  .charte-intro { margin: 0 0 var(--space-3); max-width: none; }
-  .charte-diagram-wrap {
-    display: grid;
-    grid-template-columns: 260px 1fr;
-    gap: var(--space-4);
-    align-items: center;
-  }
-  @media (max-width: 760px) {
-    .charte-diagram-wrap { grid-template-columns: 1fr; }
-    .charte-star { max-width: 280px; margin: 0 auto; }
-  }
-  .charte-star svg { width: 100%; height: auto; display: block; }
-  .charte-spoke { stroke: var(--border-strong); stroke-width: 1.5; }
-  .charte-hub-bg { fill: var(--card); }
-  .charte-hub { fill: rgba(255, 176, 32, 0.12); stroke: #ffb020; stroke-width: 2; }
-  .charte-hub-label {
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 16px;
-    letter-spacing: 0.02em;
-    fill: #ffb020;
-  }
-  .charte-node circle { fill: var(--card); stroke: #ffb020; stroke-width: 1.5; }
-  .charte-node text {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 600;
-    fill: #ffb020;
-  }
+/* ===== Tableau "ce que couvre la formation" ===== */
+.ftable{background:var(--card);border:var(--cardb);box-shadow:var(--cardsh);border-radius:24px;overflow:hidden}
+.frow{display:grid;grid-template-columns:1fr 1.6fr;gap:24px;padding:20px 26px;border-bottom:1px solid rgba(128,128,160,.15);align-items:center}
+.frow:last-child{border-bottom:none}
+.frow .f-issue{display:flex;align-items:center;gap:12px;font-weight:700;font-size:14.5px;color:var(--cardink)}
+.frow .f-issue .tile{width:36px;height:36px;flex:none;border-radius:10px}
+.frow .f-issue .tile svg{width:58%;height:58%}
+.frow .f-desc{font-size:13px;color:var(--cardink);opacity:.7;font-weight:600;line-height:1.55}
+@media (max-width:760px){.frow{grid-template-columns:1fr}}
 
-  /* ---- Charte IA : liste des points ---- */
-  .charte-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px 24px;
-  }
-  .charte-grid .c-item { display: flex; gap: 10px; font-size: 0.88rem; color: var(--text-soft); }
-  .charte-grid .c-num {
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    color: var(--accent);
-    flex-shrink: 0;
-  }
-  @media (max-width: 480px) { .charte-grid { grid-template-columns: 1fr; } }
+/* ===== Mini-cartes (ROI / distinction) ===== */
+.mini-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:28px 0}
+.mini-card{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:var(--cardb);box-shadow:var(--cardsh);border-radius:18px;padding:18px 20px}
+.mini-card .tile{width:40px;height:40px;flex:none}
+.mini-card .tile svg{width:52%;height:52%}
+.mini-card h4{font-size:14.5px;margin-bottom:4px;color:var(--cardink)}
+.mini-card p{font-size:12.5px;color:var(--cardink);opacity:.7;font-weight:600;margin:0}
+@media (max-width:860px){.mini-grid{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.mini-grid{grid-template-columns:1fr}}
 
-  /* ---- Journée type sur mesure ---- */
-  .day-split {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-3);
-    margin-top: var(--space-3);
-  }
-  .day-card {
-    padding: var(--space-3);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    background: var(--card);
-  }
-  .day-card .d-label {
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    color: var(--accent);
-  }
-  .day-card h4 { margin: 8px 0 12px; font-size: 1rem; }
-  .day-card ul { display: flex; flex-direction: column; gap: 6px; }
-  .day-card li { font-size: 0.88rem; color: var(--text-soft); display: flex; gap: 8px; }
-  .day-card li::before { content: "—"; color: var(--text-mute); flex-shrink: 0; }
-  @media (max-width: 760px) { .day-split { grid-template-columns: 1fr; } }
+/* ===== Grille ROI chiffrée ===== */
+.roitable{background:var(--card);border:var(--cardb);box-shadow:var(--cardsh);border-radius:22px;overflow:hidden;margin-top:20px}
+.roi-head,.roi-line{display:grid;grid-template-columns:1.3fr .9fr 1fr 1fr;gap:10px;padding:14px 22px;align-items:center}
+.roi-head{font-family:"DM Sans",sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:.06em;opacity:.5;border-bottom:1px solid rgba(128,128,160,.15);color:var(--cardink)}
+.roi-line{border-bottom:1px solid rgba(128,128,160,.1);font-size:13.5px;color:var(--cardink);font-weight:600}
+.roi-line:last-child{border-bottom:none}
+.roi-line .u-name{font-weight:800}
+.roi-line .u-after{color:#18B89E;font-weight:800}
+.roi-cap{font-size:12px;color:var(--cardink);opacity:.55;margin-top:10px;font-family:"DM Sans",sans-serif}
+@media (max-width:700px){.roi-head{display:none}.roi-line{grid-template-columns:1fr 1fr;row-gap:4px}}
 
-  /* Les pictogrammes "flashy" et le bleu des labels de tableau sont
-     désormais définis dans css/style.css (site entier). */
+/* ===== Charte IA — carte + diagramme étoile ===== */
+.charte{background:var(--card);border:var(--cardb);box-shadow:var(--cardsh);border-radius:26px;padding:34px}
+.charte .intro{font-size:14px;color:var(--cardink);opacity:.85;font-weight:600;margin-bottom:24px;max-width:none}
+.charte .intro strong{opacity:1}
+.charte-wrap{display:grid;grid-template-columns:260px 1fr;gap:34px;align-items:center}
+.charte-star svg{width:100%;height:auto;display:block}
+.charte-spoke{stroke:rgba(128,128,160,.3);stroke-width:1.5}
+.charte-hub-bg{fill:var(--card)}
+.charte-hub{fill:rgba(245,183,0,.14);stroke:#F5B700;stroke-width:2}
+.charte-hub-label{font-family:"Plus Jakarta Sans",sans-serif;font-weight:800;font-size:16px;letter-spacing:.02em;fill:#F5B700}
+.charte-node circle{fill:var(--card);stroke:#F5B700;stroke-width:1.5}
+.charte-node text{font-family:"DM Sans",sans-serif;font-size:11px;font-weight:700;fill:#F5B700}
+.charte-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 22px}
+.charte-grid .c-item{display:flex;gap:10px;font-size:13px;color:var(--cardink);opacity:.8;font-weight:600}
+.charte-grid .c-num{font-family:"DM Sans",sans-serif;font-size:11px;color:#F5B700;opacity:1;flex:none;font-weight:700}
+@media (max-width:760px){.charte-wrap{grid-template-columns:1fr}.charte-star{max-width:280px;margin:0 auto}}
+@media (max-width:480px){.charte-grid{grid-template-columns:1fr}}
 
-  /* ---- Carte "IA pour les dirigeants" mise en avant ---- */
-  .step.is-featured {
-    border-color: rgba(255, 176, 32, 0.5);
-    background: linear-gradient(180deg, rgba(255, 176, 32, 0.07), var(--card) 65%);
-  }
-  .step.is-featured::after {
-    content: "Formation la plus stratégique";
-    position: absolute;
-    top: -13px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: linear-gradient(135deg, #ffb020, #ff8a00);
-    color: #1a1200;
-    font-family: var(--font-mono);
-    font-size: 0.66rem;
-    font-weight: 600;
-    letter-spacing: 0.01em;
-    padding: 5px 14px;
-    border-radius: var(--radius-pill);
-    white-space: nowrap;
-    box-shadow: 0 6px 16px rgba(255, 176, 32, 0.35);
-  }
+/* ===== Journée type sur mesure ===== */
+.day-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:16px}
+.day{background:var(--card);border:var(--cardb);box-shadow:var(--cardsh);border-radius:22px;padding:26px}
+.day .lbl{font-family:"DM Sans",sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#0A66FF;font-weight:700}
+.day h4{font-size:16px;margin:8px 0 14px;color:var(--cardink)}
+.day ul{display:flex;flex-direction:column;gap:8px}
+.day li{font-size:13px;color:var(--cardink);opacity:.75;font-weight:600;display:flex;gap:8px}
+.day li::before{content:'—';opacity:.5;flex:none}
+@media (max-width:760px){.day-grid{grid-template-columns:1fr}}
 
-  /* ---- Réseau IA en fond du CTA final ---- */
-  #contact { position: relative; overflow: hidden; }
-  #contact .container { position: relative; z-index: 1; }
+/* ===== CTA — panneau "déroulé des 20 min" (repris d'audit.html) ===== */
+.cta .panel{background:rgba(255,255,255,.95);color:#0B1020;border-radius:32px;padding:30px;box-shadow:0 46px 80px rgba(0,0,0,.4)}
+.panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+.panel-head .label{font-family:"DM Sans",sans-serif;font-size:13px;font-weight:700;color:#5F7396}
+.panel-head .pill{background:rgba(24,184,158,.12);color:#18B89E;font-size:12px;font-weight:800;padding:6px 14px;border-radius:20px}
+.panel-steps{display:flex;flex-direction:column;gap:18px;margin-bottom:20px}
+.panel-step{display:flex;gap:14px;align-items:flex-start}
+.panel-step .num{width:30px;height:30px;font-size:14px;background:linear-gradient(135deg,#FF6A13,#FF9A3D)}
+.panel-step h5{font-size:14.5px;font-weight:800;margin-bottom:2px}
+.panel-step p{font-size:12.5px;color:#5F7396;font-weight:600;margin:0}
+.panel-result{display:flex;align-items:center;gap:10px;background:rgba(10,108,255,.06);border-radius:14px;padding:12px 16px;font-size:13px;font-weight:700;color:#0B1020;margin-bottom:16px}
+.panel-result svg{stroke:#0A66FF;width:18px;height:18px;flex:none}
+.panel-tags{display:flex;flex-wrap:wrap;gap:8px}
+.panel-tags span{font-size:11.5px;font-weight:700;padding:6px 12px;border-radius:20px;background:#F3F4FF;color:#40506F}
+.cta .note{margin-top:14px;font-size:12.5px;color:rgba(255,255,255,.65);font-weight:600}
 
-  /* ---- Barre de progression de lecture ---- */
-  .reading-progress {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 3px;
-    width: 0%;
-    background: var(--grad);
-    z-index: 100;
-    transition: width 0.1s linear;
-  }
+@media (max-width:980px){.tier-grid{grid-template-columns:1fr}}
 </style>
 </head>
-<body>
+<body id="top" class="flat">
 
 <div class="reading-progress" id="readingProgress" aria-hidden="true"></div>
 
-<header class="site-header" id="siteHeader">
-  <div class="container">
-    <a href="index.html#top" class="logo" aria-label="DecIA — accueil">
-      <img src="assets/logo.png" alt="DecIA" width="140" height="33">
-    </a>
-    <div class="nav-group">
-      <nav class="nav-links" aria-label="Navigation principale">
-        <a href="index.html#offre">Solutions</a>
-        <a href="audit.html">Audit</a>
-        <a href="formation.html">Formation</a>
-        <a href="etudes-de-cas.html">Étude de cas</a>
-        <a href="ressources.html">Ressources</a>
-      </nav>
-      <a href="rendez-vous.html" class="btn btn-primary">Réserver un appel</a>
-      <button type="button" class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="mobileNav" aria-label="Ouvrir le menu">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
+<header class="hdr" id="hdr" data-theme="sombre">
+  <div class="pill">
+    <a class="brand" href="index.html#top" aria-label="DecIA — accueil"><img class="lw" src="assets/logo.png" alt="DecIA"><img class="ld" src="assets/logo-dark.png" alt="DecIA"></a>
+    <nav class="links" aria-label="Navigation principale">
+      <a href="index.html#offre">Solutions</a>
+      <a href="audit.html">Audit</a>
+      <a href="formation.html">Formation</a>
+      <a href="etudes-de-cas.html">Étude de cas</a>
+      <a href="ressources.html">Ressources</a>
+    </nav>
+    <a class="btn sm" href="rendez-vous.html">Réserver un appel</a>
+    <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
   </div>
-  <nav class="mobile-nav" id="mobileNav" data-open="false" aria-label="Navigation mobile">
-    <a href="index.html#offre">Solutions</a>
-    <a href="audit.html">Audit</a>
-    <a href="formation.html">Formation</a>
-    <a href="etudes-de-cas.html">Étude de cas</a>
-    <a href="ressources.html">Ressources</a>
-    <a href="rendez-vous.html" class="btn btn-primary">Réserver un appel</a>
-  </nav>
+  <div class="mobmenu" id="mobmenu">
+    <a href="index.html#offre">Solutions</a><a href="audit.html">Audit</a><a href="formation.html">Formation</a><a href="etudes-de-cas.html">Étude de cas</a><a href="ressources.html">Ressources</a>
+    <a href="rendez-vous.html" style="background:#F6511D;text-align:center;margin-top:6px">Réserver un appel</a>
+  </div>
 </header>
 
-<main id="top">
+<main>
 
-  <!-- ==========================================================
-       HERO
-       ========================================================== -->
-  <section class="method-hero">
-    <div class="hero-glow" aria-hidden="true"></div>
-    <div class="container">
-      <div class="hero-inner reveal" style="max-width:760px;margin:0 auto;text-align:center;">
-        <p class="eyebrow" style="display:table;margin:0 auto;">Formation IA pour les entreprises</p>
-        <h1 style="margin-top:18px;font-size:clamp(2.3rem, 4.6vw, 3.5rem);line-height:1.1;">Pourquoi <span class="grad-text">former vos équipes</span> aujourd'hui.</h1>
-        <p class="lead" style="margin:18px auto 0;">3 questions, une gamme de formation.</p>
-        <div class="chip-row" style="justify-content:center;margin-top:24px;">
-          <span class="chip flash-green"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>Que peut faire l'IA ?</span>
-          <span class="chip flash-amber"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>Sans perdre le contrôle</span>
-          <span class="chip flash-violet"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>Adaptée à mon entreprise</span>
+<!-- ===== HERO — fond sombre ===== -->
+<section class="sheet t-sombre hero" data-theme="sombre" style="z-index:1">
+  <div class="container">
+    <div class="hero-inner">
+      <div class="eyebrow rv"><i><svg viewBox="0 0 24 24"><path d="M12 1.5C13 8 16 11 22.5 12 16 13 13 16 12 22.5 11 16 8 13 1.5 12 8 11 11 8 12 1.5z" fill="#fff"/></svg></i>Formation IA pour les entreprises</div>
+      <h1 class="h rv" style="--d:.06s"><span class="gt">Pourquoi former vos équipes</span> <span class="serif" style="font-size:1.05em">aujourd’hui.</span></h1>
+      <p class="lead rv" style="--d:.1s;margin-left:auto;margin-right:auto">3 questions, une gamme de formation.</p>
+      <div class="chips rv" style="--d:.14s;margin-bottom:28px">
+        <span class="chip"><i style="--c:#18B89E"></i>Que peut faire l’IA ?</span>
+        <span class="chip"><i style="--c:#F5B700"></i>Sans perdre le contrôle</span>
+        <span class="chip"><i style="--c:#6F8CFF"></i>Adaptée à mon entreprise</span>
+      </div>
+      <div class="actions rv" style="--d:.18s;justify-content:center;margin-bottom:0">
+        <a class="btn" href="rendez-vous.html">Parler de vos besoins de formation</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== LA GAMME — fond blanc ===== -->
+<section class="sheet t-blanc" data-theme="blanc" style="z-index:2;padding-top:70px;padding-bottom:60px" id="gamme">
+  <div class="container">
+    <div class="head">
+      <div class="eyebrow rv"><i><svg viewBox="0 0 24 24"><path d="M12 1.5C13 8 16 11 22.5 12 16 13 13 16 12 22.5 11 16 8 13 1.5 12 8 11 11 8 12 1.5z" fill="#fff"/></svg></i>La gamme de formation DecIA</div>
+      <h2 class="h rv" style="--d:.06s"><span class="gt">Une formation pour chaque</span> <span class="serif" style="font-size:1.05em">niveau de décision</span></h2>
+      <p class="lead rv" style="--d:.12s">Des collaborateurs qui découvrent l’IA au dirigeant qui doit l’encadrer, jusqu’à vos cas métier spécifiques.</p>
+    </div>
+    <div class="tier-grid">
+      <article class="tier card rv">
+        <div class="num">01</div>
+        <h3>IA au quotidien</h3>
+        <p>Comprendre l’IA, découvrir ses possibilités et repartir avec des usages immédiatement applicables.</p>
+        <div class="tags"><span>3h30 – 4h</span><span>Équipes / TPE</span></div>
+        <ul>
+          <li>Comprendre</li>
+          <li>Découvrir des usages concrets</li>
+          <li>Expérimenter sur son propre métier</li>
+        </ul>
+        <p class="price">À partir de <b>900 € HT</b> / groupe</p>
+        <a class="lnk" href="#quotidien">Voir le programme</a>
+      </article>
+      <article class="tier featured card rv" style="--d:.08s">
+        <div class="num" style="background:linear-gradient(135deg,#FFB020,#FF8A00)">02</div>
+        <h3>IA pour les dirigeants</h3>
+        <p>Identifier les opportunités, mesurer le potentiel de ROI et mettre en place un cadre d’utilisation responsable de l’IA.</p>
+        <div class="tags"><span>½ à 1 journée</span><span>Dirigeants / managers</span></div>
+        <ul>
+          <li>Évaluer le ROI</li>
+          <li>Maîtriser souveraineté et confidentialité</li>
+          <li>Construire son cadre IA</li>
+        </ul>
+        <p class="price">Modèle de charte IA inclus · à partir de <b>1 200 € HT</b></p>
+        <a class="lnk" href="#dirigeants">Voir le programme</a>
+      </article>
+      <article class="tier card rv" style="--d:.16s">
+        <div class="num">03</div>
+        <h3>Formation sur mesure</h3>
+        <p>Une formation construite à partir de vos métiers, de vos outils et de vos problématiques réelles.</p>
+        <div class="tags"><span>½ à 2 jours</span><span>Équipe / entreprise</span></div>
+        <ul>
+          <li>Vos métiers, vos outils</li>
+          <li>Vos cas d’usage réels</li>
+          <li>Premiers assistants IA métier</li>
+        </ul>
+        <p class="price">Sur devis</p>
+        <a class="lnk" href="#sur-mesure">Voir le programme</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 01 — IA AU QUOTIDIEN — fond bleu ===== -->
+<section class="sheet t-blanc" data-theme="blanc" style="z-index:3;padding-top:50px;padding-bottom:50px" id="quotidien">
+  <div class="container">
+    <div class="head">
+      <div class="eyebrow rv"><i><svg viewBox="0 0 24 24"><path d="M12 1.5C13 8 16 11 22.5 12 16 13 13 16 12 22.5 11 16 8 13 1.5 12 8 11 11 8 12 1.5z" fill="#fff"/></svg></i>Formation 01</div>
+      <h2 class="h rv" style="--d:.06s"><span class="gt">IA au</span> <span class="serif" style="font-size:1.05em">quotidien</span></h2>
+      <p class="lead rv" style="--d:.12s">Comprendre l’IA, découvrir ses possibilités et repartir avec des usages immédiatement applicables. L’objectif n’est pas de former des experts en IA : c’est une formation de découverte et de prise en main.</p>
+    </div>
+
+    <div class="callout rv" style="--d:.1s">
+      <div class="tile" style="background:linear-gradient(160deg,#fff,#FFF6E0)"><svg viewBox="0 0 24 24" fill="none" stroke="#F5B700" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg></div>
+      <p><strong>Livrable :</strong> guide « Les bonnes pratiques de l’IA au quotidien » + bibliothèque de prompts de démarrage.</p>
+    </div>
+    <div class="chips rv" style="--d:.12s;justify-content:flex-start;margin-bottom:28px">
+      <span class="chip"><i style="--c:#0A6CFF"></i>3h30 à 4h</span>
+      <span class="chip"><i style="--c:#6F8CFF"></i>Présentiel ou visio interactive</span>
+      <span class="chip"><i style="--c:#18B89E"></i>8 à 10 participants</span>
+    </div>
+
+    <div class="ftable rv" style="--d:.16s">
+      <div class="frow">
+        <div class="f-issue"><div class="tile" style="background:linear-gradient(160deg,#fff,#E6F0FF)"><svg viewBox="0 0 24 24" fill="none" stroke="#0A6CFF" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>Comprendre l’IA en 30 minutes</div>
+        <div class="f-desc">IA traditionnelle vs IA générative, ChatGPT / Claude / Gemini, ce qu’elle sait et ne sait pas faire, hallucinations et vérification, limites.</div>
+      </div>
+      <div class="frow">
+        <div class="f-issue"><div class="tile" style="background:linear-gradient(160deg,#fff,#E6FAF5)"><svg viewBox="0 0 24 24" fill="none" stroke="#18B89E" stroke-width="1.8"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg></div>Découvrir les usages concrets</div>
+        <div class="f-desc">Rédiger et améliorer un email, résumer un document, préparer une réunion, créer un contenu, rechercher et structurer de l’information, gagner du temps sur l’administratif.</div>
+      </div>
+      <div class="frow">
+        <div class="f-issue"><div class="tile" style="background:linear-gradient(160deg,#fff,#FFE9F3)"><svg viewBox="0 0 24 24" fill="none" stroke="#FF4FA3" stroke-width="1.8"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></div>Apprendre à bien dialoguer avec une IA</div>
+        <div class="f-desc">Une méthode simple — Contexte → Objectif → Contraintes → Résultat attendu — avec exercices pratiques.</div>
+      </div>
+      <div class="frow">
+        <div class="f-issue"><div class="tile" style="background:linear-gradient(160deg,#fff,#FFF6E0)"><svg viewBox="0 0 24 24" fill="none" stroke="#F5B700" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></div>Atelier « mon métier »</div>
+        <div class="f-desc">Chaque participant identifie 3 tâches régulières, leur fréquence, le temps passé, la possibilité d’utiliser l’IA — et teste 1 à 2 cas réels.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 02 — IA POUR LES DIRIGEANTS — fond sombre ===== -->
+<section class="sheet t-blanc" data-theme="blanc" style="z-index:4;padding-top:50px;padding-bottom:50px" id="dirigeants">
+  <div class="container">
+    <div class="head">
+      <div class="eyebrow rv"><i><svg viewBox="0 0 24 24"><path d="M12 1.5C13 8 16 11 22.5 12 16 13 13 16 12 22.5 11 16 8 13 1.5 12 8 11 11 8 12 1.5z" fill="#fff"/></svg></i>Formation 02</div>
+      <h2 class="h rv" style="--d:.06s"><span class="gt">IA pour les</span> <span class="serif" style="font-size:1.05em">dirigeants</span></h2>
+      <p class="lead rv" style="--d:.12s">Ce n’est pas « apprendre à utiliser ChatGPT », mais comprendre ce que l’IA peut changer dans votre entreprise et comment l’encadrer. Notre formation la plus stratégique : identifier les opportunités, mesurer le ROI et mettre en place un cadre responsable.</p>
+    </div>
+
+    <h3 class="rv" style="font-size:19px;letter-spacing:-.02em;margin-bottom:8px">Où se trouve le ROI ?</h3>
+    <p class="rv" style="color:var(--soft);font-size:14px;font-weight:600;max-width:70ch">On ne parle pas uniquement de productivité. On examine six familles de gains, pour que le dirigeant commence à raisonner en ROI, pas en fascination technologique.</p>
+
+    <div class="mini-grid">
+      <div class="mini-card rv"><div class="tile" style="background:linear-gradient(160deg,#fff,#E6FAF5)"><svg viewBox="0 0 24 24" fill="none" stroke="#18B89E" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div><div><h4>Temps gagné</h4><p>Moins de tâches administratives.</p></div></div>
+      <div class="mini-card rv" style="--d:.04s"><div class="tile" style="background:linear-gradient(160deg,#fff,#E6F0FF)"><svg viewBox="0 0 24 24" fill="none" stroke="#0A6CFF" stroke-width="1.8"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></div><div><h4>Productivité</h4><p>Produire davantage avec les mêmes ressources.</p></div></div>
+      <div class="mini-card rv" style="--d:.08s"><div class="tile" style="background:linear-gradient(160deg,#fff,#EEE6FF)"><svg viewBox="0 0 24 24" fill="none" stroke="#6F8CFF" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></div><div><h4>Qualité</h4><p>Standardisation, contrôle, assistance.</p></div></div>
+      <div class="mini-card rv" style="--d:.12s"><div class="tile" style="background:linear-gradient(160deg,#fff,#FFF6E0)"><svg viewBox="0 0 24 24" fill="none" stroke="#F5B700" stroke-width="1.8"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg></div><div><h4>Commercial</h4><p>Prospection, préparation, suivi.</p></div></div>
+      <div class="mini-card rv" style="--d:.16s"><div class="tile" style="background:linear-gradient(160deg,#fff,#FFE9F3)"><svg viewBox="0 0 24 24" fill="none" stroke="#FF4FA3" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div><div><h4>Connaissance</h4><p>Exploitation des documents et données internes.</p></div></div>
+      <div class="mini-card rv" style="--d:.2s"><div class="tile" style="background:linear-gradient(160deg,#fff,#FFEDE2)"><svg viewBox="0 0 24 24" fill="none" stroke="#FF6A13" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M4 8h16"/></svg></div><div><h4>Réactivité</h4><p>Réponses plus rapides aux clients.</p></div></div>
+    </div>
+
+    <div class="roitable rv" style="--d:.1s">
+      <div class="roi-head"><span>Usage</span><span>Fréquence</span><span>Temps actuel</span><span>Temps avec l’IA</span></div>
+      <div class="roi-line"><span class="u-name" data-label="Usage">Emails</span><span data-label="Fréquence">10 / jour</span><span data-label="Temps actuel">30 min</span><span class="u-after" data-label="Temps avec l’IA">15 min</span></div>
+      <div class="roi-line"><span class="u-name" data-label="Usage">Comptes rendus</span><span data-label="Fréquence">5 / semaine</span><span data-label="Temps actuel">2 h</span><span class="u-after" data-label="Temps avec l’IA">45 min</span></div>
+      <div class="roi-line"><span class="u-name" data-label="Usage">Devis</span><span data-label="Fréquence">10 / mois</span><span data-label="Temps actuel">1 h</span><span class="u-after" data-label="Temps avec l’IA">30 min</span></div>
+    </div>
+    <p class="roi-cap rv">Grille de calcul utilisée en séance — complétée en direct avec vos propres chiffres pour obtenir votre gain annuel estimé.</p>
+
+    <h3 class="rv" style="font-size:19px;letter-spacing:-.02em;margin:34px 0 10px">Souveraineté et confidentialité</h3>
+    <p class="rv" style="color:var(--soft);font-size:14px;font-weight:600;max-width:75ch;margin-bottom:28px">Un sujet particulièrement important pour les dirigeants : où vont les données, que deviennent les documents envoyés à une IA, données personnelles et clients, propriété intellectuelle, comptes professionnels vs personnels, hébergement, dépendance aux plateformes, bonnes pratiques RGPD. Et surtout : qu’est-ce que vos collaborateurs peuvent envoyer à une IA ?</p>
+
+    <div class="charte rv">
+      <p class="intro"><strong>Livrable premium : modèle de charte IA DecIA</strong>, éditable Word / Google Docs — présenté comme un modèle interne à adapter à votre entreprise, dont la validation juridique ou RGPD peut nécessiter un professionnel compétent.</p>
+      <div class="charte-wrap">
+        <div class="charte-star" aria-hidden="true">
+          <svg viewBox="0 0 300 300">
+            <line class="charte-spoke" x1="150" y1="150" x2="150" y2="32"/>
+            <line class="charte-spoke" x1="150" y1="150" x2="226" y2="60"/>
+            <line class="charte-spoke" x1="150" y1="150" x2="266" y2="130"/>
+            <line class="charte-spoke" x1="150" y1="150" x2="252" y2="209"/>
+            <line class="charte-spoke" x1="150" y1="150" x2="190" y2="261"/>
+            <line class="charte-spoke" x1="150" y1="150" x2="110" y2="261"/>
+            <line class="charte-spoke" x1="150" y1="150" x2="48" y2="209"/>
+            <line class="charte-spoke" x1="150" y1="150" x2="34" y2="130"/>
+            <line class="charte-spoke" x1="150" y1="150" x2="74" y2="60"/>
+            <circle class="charte-hub-bg" cx="150" cy="150" r="46"/>
+            <circle class="charte-hub" cx="150" cy="150" r="46"/>
+            <text class="charte-hub-label" x="150" y="145" text-anchor="middle">CHARTE</text>
+            <text class="charte-hub-label" x="150" y="163" text-anchor="middle">IA</text>
+            <g class="charte-node"><circle cx="150" cy="32" r="17"/><text x="150" y="37" text-anchor="middle">01</text></g>
+            <g class="charte-node"><circle cx="226" cy="60" r="17"/><text x="226" y="65" text-anchor="middle">02</text></g>
+            <g class="charte-node"><circle cx="266" cy="130" r="17"/><text x="266" y="135" text-anchor="middle">03</text></g>
+            <g class="charte-node"><circle cx="252" cy="209" r="17"/><text x="252" y="214" text-anchor="middle">04</text></g>
+            <g class="charte-node"><circle cx="190" cy="261" r="17"/><text x="190" y="266" text-anchor="middle">05</text></g>
+            <g class="charte-node"><circle cx="110" cy="261" r="17"/><text x="110" y="266" text-anchor="middle">06</text></g>
+            <g class="charte-node"><circle cx="48" cy="209" r="17"/><text x="48" y="214" text-anchor="middle">07</text></g>
+            <g class="charte-node"><circle cx="34" cy="130" r="17"/><text x="34" y="135" text-anchor="middle">08</text></g>
+            <g class="charte-node"><circle cx="74" cy="60" r="17"/><text x="74" y="65" text-anchor="middle">09</text></g>
+          </svg>
         </div>
-        <div class="hero-link-row" style="justify-content:center;margin-top:26px;">
-          <span class="dc-cta-glow">
-            <a href="rendez-vous.html" class="btn btn-primary">Parler de vos besoins de formation</a>
-          </span>
+        <div class="charte-grid">
+          <span class="c-item"><span class="c-num">01</span>Objet de la charte</span>
+          <span class="c-item"><span class="c-num">02</span>Usages autorisés</span>
+          <span class="c-item"><span class="c-num">03</span>Usages interdits</span>
+          <span class="c-item"><span class="c-num">04</span>Vérification humaine</span>
+          <span class="c-item"><span class="c-num">05</span>Confidentialité</span>
+          <span class="c-item"><span class="c-num">06</span>Propriété intellectuelle</span>
+          <span class="c-item"><span class="c-num">07</span>Outils autorisés</span>
+          <span class="c-item"><span class="c-num">08</span>Responsabilités</span>
+          <span class="c-item"><span class="c-num">09</span>Évolution de la charte</span>
         </div>
       </div>
     </div>
-  </section>
 
-  <!-- ==========================================================
-       LA GAMME — 3 offres
-       ========================================================== -->
-  <section id="gamme" class="section-pad alt">
-    <div class="container">
-      <div class="section-head reveal">
-        <p class="eyebrow">La gamme de formation Decia</p>
-        <h2>Une formation pour chaque niveau de décision</h2>
-        <p class="lead">Des collaborateurs qui découvrent l'IA au dirigeant qui doit l'encadrer, jusqu'à vos cas métier spécifiques.</p>
+    <div class="chips rv" style="justify-content:flex-start;margin-top:28px;margin-bottom:0">
+      <span class="chip"><i style="--c:#0A6CFF"></i>½ journée à 1 journée</span>
+      <span class="chip"><i style="--c:#6F8CFF"></i>Dirigeants / managers</span>
+      <span class="chip"><i style="--c:#F5B700"></i>Modèle de charte IA inclus</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 03 — FORMATION SUR MESURE — fond blanc ===== -->
+<section class="sheet t-blanc" data-theme="blanc" style="z-index:5;padding-top:50px;padding-bottom:50px" id="sur-mesure">
+  <div class="container">
+    <div class="head">
+      <div class="eyebrow rv"><i><svg viewBox="0 0 24 24"><path d="M12 1.5C13 8 16 11 22.5 12 16 13 13 16 12 22.5 11 16 8 13 1.5 12 8 11 11 8 12 1.5z" fill="#fff"/></svg></i>Formation 03</div>
+      <h2 class="h rv" style="--d:.06s"><span class="gt">Formation</span> <span class="serif" style="font-size:1.05em">sur mesure</span></h2>
+      <p class="lead rv" style="--d:.12s">Pas de programme prédéfini. Une formation construite à partir de vos métiers, de vos outils et de vos problématiques.</p>
+    </div>
+
+    <div class="callout rv" style="--d:.1s">
+      <div class="tile" style="background:linear-gradient(160deg,#fff,#EEE6FF)"><svg viewBox="0 0 24 24" fill="none" stroke="#6F8CFF" stroke-width="1.8"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg></div>
+      <p><strong>Avant la formation :</strong> mini-entretien de 30 à 45 minutes avec le dirigeant pour comprendre l’entreprise, identifier les métiers et outils concernés, les difficultés, et sélectionner les cas d’usage. Le programme est ensuite construit sur mesure.</p>
+    </div>
+
+    <h3 class="rv" style="font-size:17px;letter-spacing:-.02em;margin-bottom:6px">Exemple — PME de 10 personnes</h3>
+    <div class="day-grid">
+      <div class="day rv">
+        <span class="lbl">Matin</span>
+        <h4>Comprendre l’IA</h4>
+        <ul><li>ChatGPT / Claude</li><li>Bonnes pratiques</li><li>Sécurité et confidentialité</li></ul>
       </div>
-      <div class="steps stagger">
-        <div class="step reveal">
-          <div class="step-num">01</div>
-          <h3>IA au quotidien</h3>
-          <p>Comprendre l'IA, découvrir ses possibilités et repartir avec des usages immédiatement applicables.</p>
-          <div class="chip-row" style="margin:14px 0 0;">
-            <span class="chip">3h30 – 4h</span>
-            <span class="chip">Équipes / TPE</span>
-          </div>
-          <ul class="tier-points">
-            <li>Comprendre</li>
-            <li>Découvrir des usages concrets</li>
-            <li>Expérimenter sur son propre métier</li>
-          </ul>
-          <p class="tier-price">À partir de <strong>900 € HT</strong> / groupe</p>
-          <a href="#quotidien" class="step-link">→ Voir le programme</a>
-        </div>
-        <div class="step is-featured reveal">
-          <div class="step-num">02</div>
-          <h3>IA pour les dirigeants</h3>
-          <p>Identifier les opportunités, mesurer le potentiel de ROI et mettre en place un cadre d'utilisation responsable de l'IA.</p>
-          <div class="chip-row" style="margin:14px 0 0;">
-            <span class="chip">½ à 1 journée</span>
-            <span class="chip">Dirigeants / managers</span>
-          </div>
-          <ul class="tier-points">
-            <li>Évaluer le ROI</li>
-            <li>Maîtriser souveraineté et confidentialité</li>
-            <li>Construire son cadre IA</li>
-          </ul>
-          <p class="tier-price">Modèle de charte IA inclus · à partir de <strong>1 200 € HT</strong></p>
-          <a href="#dirigeants" class="step-link">→ Voir le programme</a>
-        </div>
-        <div class="step reveal">
-          <div class="step-num">03</div>
-          <h3>Formation sur mesure</h3>
-          <p>Une formation construite à partir de vos métiers, de vos outils et de vos problématiques réelles.</p>
-          <div class="chip-row" style="margin:14px 0 0;">
-            <span class="chip">½ à 2 jours</span>
-            <span class="chip">Équipe / entreprise</span>
-          </div>
-          <ul class="tier-points">
-            <li>Vos métiers, vos outils</li>
-            <li>Vos cas d'usage réels</li>
-            <li>Premiers assistants IA métier</li>
-          </ul>
-          <p class="tier-price">Sur devis</p>
-          <a href="#sur-mesure" class="step-link">→ Voir le programme</a>
-        </div>
+      <div class="day rv" style="--d:.06s">
+        <span class="lbl">Après-midi</span>
+        <h4>Cas pratiques de l’entreprise</h4>
+        <ul><li>Emails et devis</li><li>Comptes rendus</li><li>Documentation et prospection</li><li>Création des premiers assistants IA métier</li></ul>
       </div>
     </div>
-  </section>
 
-  <!-- ==========================================================
-       01 — IA AU QUOTIDIEN
-       ========================================================== -->
-  <section id="quotidien" class="section-pad">
-    <div class="container">
-      <div class="section-head reveal">
-        <div class="step-badge"><span class="num">1</span><p class="eyebrow">Formation 01</p></div>
-        <h2>IA au quotidien</h2>
-        <p class="lead">Comprendre l'IA, découvrir ses possibilités et repartir avec des usages immédiatement applicables. L'objectif n'est pas de former des experts en IA : c'est une formation de découverte et de prise en main.</p>
-      </div>
+    <div class="chips rv" style="justify-content:flex-start;margin-top:28px;margin-bottom:0">
+      <span class="chip"><i style="--c:#0A6CFF"></i>½ à 2 jours</span>
+      <span class="chip"><i style="--c:#18B89E"></i>Équipe / entreprise</span>
+      <span class="chip"><i style="--c:#F5B700"></i>Sur devis</span>
+    </div>
+  </div>
+</section>
 
-      <div class="step-detail">
-        <div class="reveal">
-          <div class="objectif-box">
-            <span class="icon-mute flash-amber" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg></span>
-            <p><strong>Livrable :</strong> guide « Les bonnes pratiques de l'IA au quotidien » + bibliothèque de prompts de démarrage.</p>
-          </div>
-          <div class="chip-row" style="margin-bottom:0;">
-            <span class="chip flash-cyan"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>3h30 à 4h</span>
-            <span class="chip flash-violet"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg>Présentiel ou visio interactive</span>
-            <span class="chip flash-green"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>8 à 10 participants</span>
-          </div>
+<!-- ===== CTA — fond sombre ===== -->
+<section class="sheet t-sombre" data-theme="sombre" style="z-index:7;padding-top:80px;padding-bottom:80px" id="contact">
+  <div class="container cta">
+    <div>
+      <div class="pillk rv" style="margin-bottom:30px"><i><svg viewBox="0 0 24 24"><path d="M12 1.5C13 8 16 11 22.5 12 16 13 13 16 12 22.5 11 16 8 13 1.5 12 8 11 11 8 12 1.5z" fill="#fff"/></svg></i>Réponse sous 24h ouvrées</div>
+      <h2 class="h rv" style="--d:.06s"><span class="gt">Quelle formation correspond</span><span class="serif">à votre équipe ?</span></h2>
+      <p class="sub rv" style="--d:.12s">Un échange de 20 minutes suffit pour identifier la formation la plus adaptée à votre entreprise, ou construire un programme sur mesure.</p>
+      <a class="btn rv" style="--d:.18s" href="rendez-vous.html">Parler de mon projet de formation</a>
+      <p class="note rv" style="--d:.2s">Échange gratuit, sans engagement</p>
+    </div>
+    <div class="rv" style="--d:.15s">
+      <div class="panel">
+        <div class="panel-head"><span class="label">Déroulé des 20 min</span><span class="pill">Gratuit</span></div>
+        <div class="panel-steps">
+          <div class="panel-step"><span class="num">1</span><div><h5>Vous décrivez votre équipe</h5><p>Métiers, niveau IA actuel, outils utilisés</p></div></div>
+          <div class="panel-step"><span class="num">2</span><div><h5>Nous construisons le programme</h5><p>Contenu adapté à vos métiers et vos outils</p></div></div>
+          <div class="panel-step"><span class="num">3</span><div><h5>Vous repartez avec un programme prêt</h5><p>Dates, contenu, format présentiel ou distanciel</p></div></div>
         </div>
-        <div class="process-table reveal">
-          <div class="row head"><span>Ce que couvre la formation</span><span>Contenu</span></div>
-          <div class="row">
-            <div class="cell-main">
-              <span class="icon-mute flash-cyan" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span>
-              <strong>Comprendre l'IA en 30 minutes</strong>
-            </div>
-            <div class="cell-desc">IA traditionnelle vs IA générative, ChatGPT / Claude / Gemini, ce qu'elle sait et ne sait pas faire, hallucinations et vérification, limites.</div>
-          </div>
-          <div class="row">
-            <div class="cell-main">
-              <span class="icon-mute flash-green" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg></span>
-              <strong>Découvrir les usages concrets</strong>
-            </div>
-            <div class="cell-desc">Rédiger et améliorer un email, résumer un document, préparer une réunion, créer un contenu, rechercher et structurer de l'information, gagner du temps sur l'administratif.</div>
-          </div>
-          <div class="row">
-            <div class="cell-main">
-              <span class="icon-mute flash-pink" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></span>
-              <strong>Apprendre à bien dialoguer avec une IA</strong>
-            </div>
-            <div class="cell-desc">Une méthode simple — Contexte → Objectif → Contraintes → Résultat attendu — avec exercices pratiques.</div>
-          </div>
-          <div class="row">
-            <div class="cell-main">
-              <span class="icon-mute flash-amber" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M20 6 9 17l-5-5"/></svg></span>
-              <strong>Atelier « mon métier »</strong>
-            </div>
-            <div class="cell-desc">Chaque participant identifie 3 tâches régulières, leur fréquence, le temps passé, la possibilité d'utiliser l'IA — et teste 1 à 2 cas réels.</div>
-          </div>
-        </div>
+        <div class="panel-result"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Vous repartez avec : programme adapté + planning proposé</div>
+        <div class="panel-tags"><span>Réponse 24h</span><span>Sur mesure</span><span>Sans engagement</span></div>
       </div>
     </div>
-  </section>
-
-  <!-- ==========================================================
-       02 — IA POUR LES DIRIGEANTS
-       ========================================================== -->
-  <section id="dirigeants" class="section-pad alt">
-    <div class="container">
-      <div class="section-head reveal">
-        <div class="step-badge"><span class="num">2</span><p class="eyebrow">Formation 02</p></div>
-        <h2>IA pour les dirigeants</h2>
-        <p class="lead">Ce n'est pas « apprendre à utiliser ChatGPT », mais comprendre ce que l'IA peut changer dans votre entreprise et comment l'encadrer. Notre formation la plus stratégique : identifier les opportunités, mesurer le ROI et mettre en place un cadre responsable.</p>
-      </div>
-
-      <div class="reveal" style="margin-bottom:var(--space-4);">
-        <h3 style="font-size:1.1rem;margin-bottom:10px;">Où se trouve le ROI ?</h3>
-        <p style="margin-bottom:0;">On ne parle pas uniquement de productivité. On examine six familles de gains, pour que le dirigeant commence à raisonner en ROI, pas en fascination technologique.</p>
-        <div class="roi-uses stagger">
-          <div class="autonomy-card reveal">
-            <span class="icon-mute flash-green" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span>
-            <div><h4>Temps gagné</h4><p>Moins de tâches administratives.</p></div>
-          </div>
-          <div class="autonomy-card reveal">
-            <span class="icon-mute flash-cyan" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></span>
-            <div><h4>Productivité</h4><p>Produire davantage avec les mêmes ressources.</p></div>
-          </div>
-          <div class="autonomy-card reveal">
-            <span class="icon-mute flash-violet" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M20 6 9 17l-5-5"/></svg></span>
-            <div><h4>Qualité</h4><p>Standardisation, contrôle, assistance.</p></div>
-          </div>
-          <div class="autonomy-card reveal">
-            <span class="icon-mute flash-amber" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg></span>
-            <div><h4>Commercial</h4><p>Prospection, préparation, suivi.</p></div>
-          </div>
-          <div class="autonomy-card reveal">
-            <span class="icon-mute flash-pink" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>
-            <div><h4>Connaissance</h4><p>Exploitation des documents et données internes.</p></div>
-          </div>
-          <div class="autonomy-card reveal">
-            <span class="icon-mute flash-coral" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M4 8h16"/></svg></span>
-            <div><h4>Réactivité</h4><p>Réponses plus rapides aux clients.</p></div>
-          </div>
-        </div>
-
-        <div class="roi-table reveal">
-          <div class="roi-row head">
-            <span>Usage</span><span>Fréquence</span><span>Temps actuel</span><span>Temps avec l'IA</span>
-          </div>
-          <div class="roi-row">
-            <span class="u-name" data-label="Usage">Emails</span>
-            <span data-label="Fréquence">10 / jour</span>
-            <span data-label="Temps actuel">30 min</span>
-            <span class="u-after" data-label="Temps avec l'IA">15 min</span>
-          </div>
-          <div class="roi-row">
-            <span class="u-name" data-label="Usage">Comptes rendus</span>
-            <span data-label="Fréquence">5 / semaine</span>
-            <span data-label="Temps actuel">2 h</span>
-            <span class="u-after" data-label="Temps avec l'IA">45 min</span>
-          </div>
-          <div class="roi-row">
-            <span class="u-name" data-label="Usage">Devis</span>
-            <span data-label="Fréquence">10 / mois</span>
-            <span data-label="Temps actuel">1 h</span>
-            <span class="u-after" data-label="Temps avec l'IA">30 min</span>
-          </div>
-        </div>
-        <p class="roi-caption">Grille de calcul utilisée en séance — complétée en direct avec vos propres chiffres pour obtenir votre gain annuel estimé.</p>
-      </div>
-
-      <div class="reveal" style="margin-bottom:var(--space-4);">
-        <h3 style="font-size:1.1rem;margin-bottom:10px;">Souveraineté et confidentialité</h3>
-        <p>Un sujet particulièrement important pour les dirigeants : où vont les données, que deviennent les documents envoyés à une IA, données personnelles et clients, propriété intellectuelle, comptes professionnels vs personnels, hébergement, dépendance aux plateformes, bonnes pratiques RGPD. Et surtout : qu'est-ce que vos collaborateurs peuvent envoyer à une IA ?</p>
-      </div>
-
-      <div class="charte-card reveal">
-        <p class="charte-intro"><strong>Livrable premium : modèle de charte IA Decia</strong>, éditable Word / Google Docs — présenté comme un modèle interne à adapter à votre entreprise, dont la validation juridique ou RGPD peut nécessiter un professionnel compétent.</p>
-        <div class="charte-diagram-wrap">
-          <div class="charte-star" aria-hidden="true">
-            <svg viewBox="0 0 300 300">
-              <line class="charte-spoke" x1="150" y1="150" x2="150" y2="32"/>
-              <line class="charte-spoke" x1="150" y1="150" x2="226" y2="60"/>
-              <line class="charte-spoke" x1="150" y1="150" x2="266" y2="130"/>
-              <line class="charte-spoke" x1="150" y1="150" x2="252" y2="209"/>
-              <line class="charte-spoke" x1="150" y1="150" x2="190" y2="261"/>
-              <line class="charte-spoke" x1="150" y1="150" x2="110" y2="261"/>
-              <line class="charte-spoke" x1="150" y1="150" x2="48" y2="209"/>
-              <line class="charte-spoke" x1="150" y1="150" x2="34" y2="130"/>
-              <line class="charte-spoke" x1="150" y1="150" x2="74" y2="60"/>
-
-              <circle class="charte-hub-bg" cx="150" cy="150" r="46"/>
-              <circle class="charte-hub" cx="150" cy="150" r="46"/>
-              <text class="charte-hub-label" x="150" y="145" text-anchor="middle">CHARTE</text>
-              <text class="charte-hub-label" x="150" y="163" text-anchor="middle">IA</text>
-
-              <g class="charte-node"><circle cx="150" cy="32" r="17"/><text x="150" y="37" text-anchor="middle">01</text></g>
-              <g class="charte-node"><circle cx="226" cy="60" r="17"/><text x="226" y="65" text-anchor="middle">02</text></g>
-              <g class="charte-node"><circle cx="266" cy="130" r="17"/><text x="266" y="135" text-anchor="middle">03</text></g>
-              <g class="charte-node"><circle cx="252" cy="209" r="17"/><text x="252" y="214" text-anchor="middle">04</text></g>
-              <g class="charte-node"><circle cx="190" cy="261" r="17"/><text x="190" y="266" text-anchor="middle">05</text></g>
-              <g class="charte-node"><circle cx="110" cy="261" r="17"/><text x="110" y="266" text-anchor="middle">06</text></g>
-              <g class="charte-node"><circle cx="48" cy="209" r="17"/><text x="48" y="214" text-anchor="middle">07</text></g>
-              <g class="charte-node"><circle cx="34" cy="130" r="17"/><text x="34" y="135" text-anchor="middle">08</text></g>
-              <g class="charte-node"><circle cx="74" cy="60" r="17"/><text x="74" y="65" text-anchor="middle">09</text></g>
-            </svg>
-          </div>
-          <div class="charte-grid">
-            <span class="c-item"><span class="c-num">01</span>Objet de la charte</span>
-            <span class="c-item"><span class="c-num">02</span>Usages autorisés</span>
-            <span class="c-item"><span class="c-num">03</span>Usages interdits</span>
-            <span class="c-item"><span class="c-num">04</span>Vérification humaine</span>
-            <span class="c-item"><span class="c-num">05</span>Confidentialité</span>
-            <span class="c-item"><span class="c-num">06</span>Propriété intellectuelle</span>
-            <span class="c-item"><span class="c-num">07</span>Outils autorisés</span>
-            <span class="c-item"><span class="c-num">08</span>Responsabilités</span>
-            <span class="c-item"><span class="c-num">09</span>Évolution de la charte</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="chip-row reveal" style="margin-top:var(--space-3);margin-bottom:0;">
-        <span class="chip flash-cyan"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>½ journée à 1 journée</span>
-        <span class="chip flash-violet"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Dirigeants / managers</span>
-        <span class="chip flash-amber"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Modèle de charte IA inclus</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- ==========================================================
-       03 — FORMATION SUR MESURE
-       ========================================================== -->
-  <section id="sur-mesure" class="section-pad">
-    <div class="container">
-      <div class="section-head reveal">
-        <div class="step-badge"><span class="num">3</span><p class="eyebrow">Formation 03</p></div>
-        <h2>Formation sur mesure</h2>
-        <p class="lead">Pas de programme prédéfini. Une formation construite à partir de vos métiers, de vos outils et de vos problématiques.</p>
-      </div>
-
-      <div class="objectif-box reveal">
-        <span class="icon-mute flash-violet" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg></span>
-        <p><strong>Avant la formation :</strong> mini-entretien de 30 à 45 minutes avec le dirigeant pour comprendre l'entreprise, identifier les métiers et outils concernés, les difficultés, et sélectionner les cas d'usage. Le programme est ensuite construit sur mesure.</p>
-      </div>
-
-      <div class="reveal" style="margin-top:var(--space-4);">
-        <h3 style="font-size:1.05rem;margin-bottom:6px;">Exemple — PME de 10 personnes</h3>
-        <div class="day-split">
-          <div class="day-card">
-            <span class="d-label">Matin</span>
-            <h4>Comprendre l'IA</h4>
-            <ul>
-              <li>ChatGPT / Claude</li>
-              <li>Bonnes pratiques</li>
-              <li>Sécurité et confidentialité</li>
-            </ul>
-          </div>
-          <div class="day-card">
-            <span class="d-label">Après-midi</span>
-            <h4>Cas pratiques de l'entreprise</h4>
-            <ul>
-              <li>Emails et devis</li>
-              <li>Comptes rendus</li>
-              <li>Documentation et prospection</li>
-              <li>Création des premiers assistants IA métier</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div class="chip-row reveal" style="margin-top:var(--space-4);margin-bottom:0;">
-        <span class="chip flash-cyan"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>½ à 2 jours</span>
-        <span class="chip flash-green"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Équipe / entreprise</span>
-        <span class="chip flash-amber"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>Sur devis</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- ==========================================================
-       UNE GAMME SIMPLE À COMPRENDRE
-       ========================================================== -->
-  <section class="section-pad alt">
-    <div class="container">
-      <div class="section-head reveal">
-        <p class="eyebrow">Une distinction nette</p>
-        <h2>Trois formations, trois publics</h2>
-      </div>
-      <div class="autonomy-grid stagger">
-        <div class="autonomy-card reveal">
-          <span class="icon-mute flash-green" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></span>
-          <div>
-            <h4>IA au quotidien — pour les collaborateurs</h4>
-            <p>« Je découvre et j'utilise l'IA. »</p>
-          </div>
-        </div>
-        <div class="autonomy-card reveal">
-          <span class="icon-mute flash-amber" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg></span>
-          <div>
-            <h4>IA pour les dirigeants — pour le décideur</h4>
-            <p>« Je comprends les opportunités, les risques et le ROI. »</p>
-          </div>
-        </div>
-        <div class="autonomy-card reveal">
-          <span class="icon-mute flash-violet" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></span>
-          <div>
-            <h4>Sur mesure — pour l'entreprise</h4>
-            <p>« Je forme mes équipes sur nos problématiques réelles. »</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ==========================================================
-       CTA FINAL
-       ========================================================== -->
-  <section id="contact" class="section-pad">
-    <div class="container">
-      <div class="cta-rich reveal">
-        <div class="cta-text">
-          <span class="badge"><svg viewBox="0 0 24 24" width="10" height="10" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg>Réponse sous 24h ouvrées</span>
-          <h2>Quelle formation correspond à votre équipe ?</h2>
-          <p>Un échange de 20 minutes suffit pour identifier la formation la plus adaptée à votre entreprise, ou construire un programme sur mesure.</p>
-          <a href="rendez-vous.html" class="btn btn-primary">Parler de mon projet de formation</a>
-          <p class="cta-note">Échange gratuit, sans engagement</p>
-          <div class="avatars-row">
-            <span class="avatars" aria-hidden="true">
-              <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span>
-              <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 21V7l8-4 8 4v14"/><path d="M9 21v-6h6v6"/></svg></span>
-              <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg></span>
-            </span>
-            <span class="txt">15 entreprises accompagnées ces 3 derniers mois</span>
-          </div>
-        </div>
-
-        <div class="cta-inner">
-          <div class="ci-head">
-            <span class="label">Déroulé des 20 min</span>
-            <span class="pill">Gratuit</span>
-          </div>
-          <div class="ci-steps">
-            <div class="ci-step">
-              <span class="num">1</span>
-              <div>
-                <h5>Vous décrivez votre équipe</h5>
-                <p>Métiers, niveau IA actuel, outils utilisés</p>
-              </div>
-            </div>
-            <div class="ci-step">
-              <span class="num">2</span>
-              <div>
-                <h5>Nous construisons le programme</h5>
-                <p>Contenu adapté à vos métiers et vos outils</p>
-              </div>
-            </div>
-            <div class="ci-step">
-              <span class="num">3</span>
-              <div>
-                <h5>Vous repartez avec un programme prêt</h5>
-                <p>Dates, contenu, format présentiel ou distanciel</p>
-              </div>
-            </div>
-          </div>
-          <div class="ci-result"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Vous repartez avec : programme adapté + planning proposé</div>
-          <div class="ci-tags">
-            <span>Réponse 24h</span>
-            <span>Sur mesure</span>
-            <span>Sans engagement</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+  </div>
+</section>
 
 </main>
 
-<footer class="site-footer">
+<footer>
   <div class="container">
-    <div class="footer-top">
-      <div class="footer-brand">
-        <a href="index.html#top" class="logo"><img src="assets/logo.png" alt="DecIA" width="110" height="26"></a>
-        <p style="text-align:left;">L'intelligence artificielle utile aux entreprises.<br>Audit · Automatisation · Agents IA · Formation<br>Plus d'efficacité. Moins de tâches inutiles.</p>
-      </div>
-      <div class="footer-cols">
-        <div class="footer-col">
-          <h4>Navigation</h4>
-          <a href="index.html#offre">Solutions</a>
-          <a href="audit.html">Audit</a>
-          <a href="formation.html">Formation</a>
-          <a href="etudes-de-cas.html">Étude de cas</a>
-          <a href="ressources.html">Ressources</a>
-        </div>
-        <div class="footer-col">
-          <h4>Contact</h4>
-          <p>contact@decia.fr</p>
-          <p><a href="tel:+33689180195">+33 6 89 18 01 95</a></p>
-        </div>
-        <div class="footer-col">
-          <h4>Suivez-nous</h4>
-          <div class="footer-social">
-            <a href="https://www.linkedin.com/company/deciafr/about/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 11v5M8 8v.01M12 16v-3a2 2 0 0 1 4 0v3M12 13v3"/></svg></a>
-          </div>
-        </div>
-      </div>
+    <div class="ft">
+      <div><a href="index.html#top"><img src="assets/logo.png" alt="DecIA"></a><p>L’intelligence artificielle utile aux entreprises.<br>Audit · Automatisation · Agents IA · Formation.<br>Plus d’efficacité. Moins de tâches inutiles.</p></div>
+      <div class="col" style="text-align:center;align-items:center"><h4>Navigation</h4><a href="index.html#offre">Solutions</a><a href="audit.html">Audit</a><a href="formation.html">Formation</a><a href="etudes-de-cas.html">Étude de cas</a><a href="ressources.html">Ressources</a></div>
+      <div class="col" style="text-align:center;align-items:center"><h4>Contact</h4><a href="mailto:contact@decia.fr">contact@decia.fr</a><a href="tel:+33689180195">+33 6 89 18 01 95</a></div>
+      <div class="col" style="text-align:center;align-items:center"><h4>Suivez-nous</h4><a href="https://www.linkedin.com/company/deciafr/about/" aria-label="LinkedIn" style="display:inline-flex"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 11v5M8 8v.01M12 16v-3a2 2 0 0 1 4 0v3M12 13v3"/></svg></a></div>
     </div>
-    <div class="footer-bottom">
-      <span>© <span id="year">2026</span> DecIA. Tous droits réservés.</span>
-      <span><a href="mentions-legales.html">Mentions légales</a> · <a href="confidentialite.html">Confidentialité</a></span>
-    </div>
+    <div class="fb"><span>© 2026 DecIA. Tous droits réservés.</span><span><a href="mentions-legales.html">Mentions légales</a> · <a href="confidentialite.html">Confidentialité</a></span></div>
   </div>
 </footer>
 
-<script src="js/components.js"></script>
-<script src="js/main.js"></script>
-<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+<script src="js/site.js"></script>
 <script>
 (function () {
-  "use strict";
   var bar = document.getElementById('readingProgress');
   if (!bar) return;
-
   function update() {
     var scrollTop = window.scrollY || document.documentElement.scrollTop;
     var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
     var pct = height > 0 ? (scrollTop / height) * 100 : 0;
     bar.style.width = pct + '%';
   }
-
   update();
   window.addEventListener('scroll', update, { passive: true });
   window.addEventListener('resize', update);
