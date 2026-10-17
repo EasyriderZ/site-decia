@@ -39,8 +39,9 @@
 
 /* ===== Callout générique (s'adapte au thème via var(--card)) ===== */
 .callout{display:flex;gap:16px;align-items:flex-start;background:var(--card);border:var(--cardb);box-shadow:var(--cardsh);border-radius:24px;padding:24px 28px;margin-bottom:26px}
-.callout .tile{width:44px;height:44px;flex:none}
-.callout .tile svg{width:52%;height:52%}
+.callout .tile{width:44px;height:44px;flex:none;position:relative;overflow:hidden;background:linear-gradient(150deg,var(--c1),var(--c2));box-shadow:inset 0 1px 1px rgba(255,255,255,.5),inset 0 -3px 5px rgba(0,0,0,.2),0 8px 18px rgba(20,20,80,.18)}
+.callout .tile::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.65) 0%,rgba(255,255,255,.2) 30%,rgba(255,255,255,0) 58%)}
+.callout .tile svg{position:relative;z-index:1;width:52%;height:52%}
 .callout p{font-size:14px;color:var(--cardink);font-weight:600;margin:0;opacity:.85}
 .callout p strong{opacity:1}
 
@@ -49,16 +50,18 @@
 .frow{display:grid;grid-template-columns:1fr 1.6fr;gap:24px;padding:20px 26px;border-bottom:1px solid rgba(128,128,160,.15);align-items:center}
 .frow:last-child{border-bottom:none}
 .frow .f-issue{display:flex;align-items:center;gap:12px;font-weight:700;font-size:14.5px;color:var(--cardink)}
-.frow .f-issue .tile{width:36px;height:36px;flex:none;border-radius:10px}
-.frow .f-issue .tile svg{width:58%;height:58%}
+.frow .f-issue .tile{width:36px;height:36px;flex:none;border-radius:10px;position:relative;overflow:hidden;background:linear-gradient(150deg,var(--c1),var(--c2));box-shadow:inset 0 1px 1px rgba(255,255,255,.5),inset 0 -3px 5px rgba(0,0,0,.2),0 6px 14px rgba(20,20,80,.18)}
+.frow .f-issue .tile::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.65) 0%,rgba(255,255,255,.2) 30%,rgba(255,255,255,0) 58%)}
+.frow .f-issue .tile svg{position:relative;z-index:1;width:58%;height:58%}
 .frow .f-desc{font-size:13px;color:var(--cardink);opacity:.7;font-weight:600;line-height:1.55}
 @media (max-width:760px){.frow{grid-template-columns:1fr}}
 
 /* ===== Mini-cartes (ROI / distinction) ===== */
 .mini-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:28px 0}
 .mini-card{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:var(--cardb);box-shadow:var(--cardsh);border-radius:18px;padding:18px 20px}
-.mini-card .tile{width:40px;height:40px;flex:none}
-.mini-card .tile svg{width:52%;height:52%}
+.mini-card .tile{width:40px;height:40px;flex:none;position:relative;overflow:hidden;background:linear-gradient(150deg,var(--c1),var(--c2));box-shadow:inset 0 1px 1px rgba(255,255,255,.5),inset 0 -3px 5px rgba(0,0,0,.2),0 8px 18px rgba(20,20,80,.18)}
+.mini-card .tile::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.65) 0%,rgba(255,255,255,.2) 30%,rgba(255,255,255,0) 58%)}
+.mini-card .tile svg{position:relative;z-index:1;width:52%;height:52%}
 .mini-card h4{font-size:14.5px;margin-bottom:4px;color:var(--cardink)}
 .mini-card p{font-size:12.5px;color:var(--cardink);opacity:.7;font-weight:600;margin:0}
 @media (max-width:860px){.mini-grid{grid-template-columns:1fr 1fr}}
@@ -75,23 +78,64 @@
 .roi-cap{font-size:12px;color:var(--cardink);opacity:.55;margin-top:10px;font-family:"DM Sans",sans-serif}
 @media (max-width:700px){.roi-head{display:none}.roi-line{grid-template-columns:1fr 1fr;row-gap:4px}}
 
-/* ===== Charte IA — carte + diagramme étoile ===== */
-.charte{background:var(--card);border:var(--cardb);box-shadow:var(--cardsh);border-radius:26px;padding:34px}
-.charte .intro{font-size:14px;color:var(--cardink);opacity:.85;font-weight:600;margin-bottom:24px;max-width:none}
-.charte .intro strong{opacity:1}
-.charte-wrap{display:grid;grid-template-columns:260px 1fr;gap:34px;align-items:center}
-.charte-star svg{width:100%;height:auto;display:block}
-.charte-spoke{stroke:rgba(128,128,160,.3);stroke-width:1.5}
-.charte-hub-bg{fill:var(--card)}
-.charte-hub{fill:rgba(245,183,0,.14);stroke:#F5B700;stroke-width:2}
-.charte-hub-label{font-family:"Plus Jakarta Sans",sans-serif;font-weight:800;font-size:16px;letter-spacing:.02em;fill:#F5B700}
-.charte-node circle{fill:var(--card);stroke:#F5B700;stroke-width:1.5}
-.charte-node text{font-family:"DM Sans",sans-serif;font-size:11px;font-weight:700;fill:#F5B700}
-.charte-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 22px}
-.charte-grid .c-item{display:flex;gap:10px;font-size:13px;color:var(--cardink);opacity:.8;font-weight:600}
-.charte-grid .c-num{font-family:"DM Sans",sans-serif;font-size:11px;color:#F5B700;opacity:1;flex:none;font-weight:700}
-@media (max-width:760px){.charte-wrap{grid-template-columns:1fr}.charte-star{max-width:280px;margin:0 auto}}
-@media (max-width:480px){.charte-grid{grid-template-columns:1fr}}
+/* ===== Livrable premium — mockup Charte IA ===== */
+.charte-premium{
+  position:relative;
+  overflow:hidden;
+  background:linear-gradient(145deg,#07142F 0%,#0B1D42 58%,#0A2C58 100%);
+  border-radius:30px;
+  padding:34px;
+  box-shadow:0 30px 70px rgba(8,28,70,.20);
+}
+.charte-premium::before{
+  content:"";
+  position:absolute;
+  width:320px;height:320px;border-radius:50%;
+  right:-150px;top:-170px;
+  background:rgba(10,108,255,.20);
+  filter:blur(2px);
+}
+.charte-premium::after{
+  content:"";
+  position:absolute;inset:0;pointer-events:none;opacity:.10;
+  background-image:linear-gradient(rgba(255,255,255,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.12) 1px,transparent 1px);
+  background-size:28px 28px;
+  mask-image:linear-gradient(90deg,transparent,black 60%,transparent);
+}
+.cp-head{position:relative;z-index:2;display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:28px}
+.cp-head .cp-kicker{font-family:"DM Sans",sans-serif;font-size:10px;font-weight:800;letter-spacing:.10em;text-transform:uppercase;color:#79ADFF;margin-bottom:7px}
+.cp-head h3{color:#fff;font-size:22px;letter-spacing:-.03em;margin:0}
+.cp-head p{color:rgba(255,255,255,.62);font-size:12.5px;font-weight:600;margin:7px 0 0;max-width:58ch;line-height:1.5}
+.cp-badge{flex:none;padding:8px 12px;border-radius:14px;background:rgba(245,183,0,.12);border:1px solid rgba(245,183,0,.24);color:#FFD35C;font-family:"DM Sans",sans-serif;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.cp-body{position:relative;z-index:2;display:grid;grid-template-columns:minmax(260px,.85fr) minmax(0,1.15fr);gap:42px;align-items:center}
+
+/* Pile de documents */
+.doc-stack{position:relative;height:355px;display:flex;align-items:center;justify-content:center}
+.doc-sheet{position:absolute;width:225px;height:305px;border-radius:10px;background:#EAF1FC;box-shadow:0 24px 50px rgba(0,0,0,.28)}
+.doc-sheet.back2{transform:translate(25px,-9px) rotate(5deg);opacity:.55}
+.doc-sheet.back1{transform:translate(13px,-4px) rotate(2.5deg);opacity:.78}
+.doc-cover{position:relative;width:225px;height:305px;border-radius:10px;overflow:hidden;background:linear-gradient(160deg,#0A66FF 0%,#0848B8 52%,#061C4A 100%);box-shadow:0 28px 55px rgba(0,0,0,.34);padding:24px;display:flex;flex-direction:column;z-index:3;transform:rotate(-2deg);transition:transform .35s ease}
+.charte-premium:hover .doc-cover{transform:rotate(0deg) translateY(-4px)}
+.doc-cover::before{content:"IA";position:absolute;right:-10px;bottom:25px;font-family:"Plus Jakarta Sans",sans-serif;font-size:112px;line-height:1;font-weight:800;letter-spacing:-.08em;color:rgba(255,255,255,.065)}
+.doc-brand{font-family:"Plus Jakarta Sans",sans-serif;color:#fff;font-size:13px;font-weight:800;letter-spacing:.02em}
+.doc-rule{width:38px;height:3px;border-radius:3px;background:#F5B700;margin:28px 0 18px}
+.doc-cover small{font-family:"DM Sans",sans-serif;color:#8FC0FF;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.10em}
+.doc-cover h4{position:relative;z-index:2;color:#fff;font-size:23px;line-height:1.12;letter-spacing:-.04em;margin:8px 0 0;max-width:160px}
+.doc-meta{position:relative;z-index:2;margin-top:auto;display:flex;justify-content:space-between;align-items:flex-end;color:rgba(255,255,255,.65);font-family:"DM Sans",sans-serif;font-size:8.5px;font-weight:700;line-height:1.5}
+.doc-seal{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;border:1px solid rgba(255,211,92,.55);color:#FFD35C;font-size:8px;text-align:center;font-weight:800}
+
+/* Contenu du livrable */
+.cp-content{min-width:0}
+.cp-content .label{font-family:"DM Sans",sans-serif;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:#79ADFF;margin-bottom:12px}
+.cp-list{display:grid;grid-template-columns:1fr 1fr;gap:9px 18px}
+.cp-item{display:flex;align-items:center;gap:9px;min-height:36px;padding:8px 10px;border-radius:11px;background:rgba(255,255,255,.065);border:1px solid rgba(255,255,255,.075);color:rgba(255,255,255,.82);font-size:11.5px;font-weight:700}
+.cp-check{width:18px;height:18px;border-radius:6px;display:grid;place-items:center;flex:none;background:rgba(34,211,182,.13);color:#41E0C3;font-family:"DM Sans",sans-serif;font-size:10px;font-weight:800}
+.cp-formats{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+.cp-formats span{padding:6px 9px;border-radius:9px;background:rgba(10,108,255,.16);border:1px solid rgba(92,160,255,.17);color:#9DC5FF;font-family:"DM Sans",sans-serif;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.cp-note{margin-top:17px;padding-top:15px;border-top:1px solid rgba(255,255,255,.10);color:rgba(255,255,255,.50);font-size:10.5px;font-weight:600;line-height:1.5}
+@media(max-width:800px){.cp-body{grid-template-columns:1fr}.doc-stack{height:330px}.cp-head{flex-direction:column}.cp-list{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.charte-premium{padding:25px 20px}.cp-list{grid-template-columns:1fr}.doc-stack{transform:scale(.9);margin:-15px 0}.cp-badge{white-space:normal}}
+
 
 /* ===== Journée type sur mesure ===== */
 .day-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:16px}
@@ -107,7 +151,8 @@
 .cta .panel{background:rgba(255,255,255,.95);color:#0B1020;border-radius:32px;padding:30px;box-shadow:0 46px 80px rgba(0,0,0,.4)}
 .panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
 .panel-head .label{font-family:"DM Sans",sans-serif;font-size:13px;font-weight:700;color:#5F7396}
-.panel-head .pill{background:rgba(24,184,158,.12);color:#18B89E;font-size:12px;font-weight:800;padding:6px 14px;border-radius:20px}
+.panel-head .label.pillk{color:#0B1020;font-size:14px;font-weight:800}
+.panel-head .pill{display:inline-flex;align-items:center;justify-content:center;text-align:center;line-height:1;margin:0;padding:0;width:150px;height:56px;border-radius:18px;background:#00C853;color:#fff;font-family:"DM Sans",system-ui,-apple-system,sans-serif;font-weight:600;font-size:16px;white-space:nowrap;box-shadow:inset 0 1px 0 rgba(255,255,255,.38),0 6px 16px rgba(0,200,83,.16),0 28px 64px rgba(0,200,83,.34)}
 .panel-steps{display:flex;flex-direction:column;gap:18px;margin-bottom:20px}
 .panel-step{display:flex;gap:14px;align-items:flex-start}
 .panel-step .num{width:30px;height:30px;font-size:14px;background:linear-gradient(135deg,#FF6A13,#FF9A3D)}
@@ -116,10 +161,66 @@
 .panel-result{display:flex;align-items:center;gap:10px;background:rgba(10,108,255,.06);border-radius:14px;padding:12px 16px;font-size:13px;font-weight:700;color:#0B1020;margin-bottom:16px}
 .panel-result svg{stroke:#0A66FF;width:18px;height:18px;flex:none}
 .panel-tags{display:flex;flex-wrap:wrap;gap:8px}
-.panel-tags span{font-size:11.5px;font-weight:700;padding:6px 12px;border-radius:20px;background:#F3F4FF;color:#40506F}
+.panel-tags span{font-size:13px;font-weight:800;padding:6px 12px;border-radius:20px;background:rgba(10,108,255,.08);color:#0A66FF}
 .cta .note{margin-top:14px;font-size:12.5px;color:rgba(255,255,255,.65);font-weight:600}
 
 @media (max-width:980px){.tier-grid{grid-template-columns:1fr}}
+
+/* ===== V3 — schémas graphiques des 3 formations ===== */
+.formation-intro{display:grid;grid-template-columns:minmax(0,1.02fr) minmax(390px,.98fr);gap:64px;align-items:center;margin-bottom:38px}
+.formation-intro .head{margin:0;text-align:left}
+.formation-intro .head .lead{margin-left:0;margin-right:0}
+.training-visual{position:relative;min-height:340px;border-radius:32px;padding:25px;overflow:hidden;background:#07142F;box-shadow:0 34px 70px rgba(8,28,70,.22)}
+.training-visual:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 18% 12%,rgba(44,133,255,.32),transparent 28%),radial-gradient(circle at 92% 88%,rgba(20,209,190,.16),transparent 30%);pointer-events:none}
+.training-visual:after{content:"";position:absolute;inset:0;opacity:.17;background-image:linear-gradient(rgba(255,255,255,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.12) 1px,transparent 1px);background-size:26px 26px;mask-image:linear-gradient(to bottom,black,transparent 90%);pointer-events:none}
+.tv-top{position:relative;z-index:4;display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.tv-kicker{font-family:"DM Sans",sans-serif;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#8DB9FF}
+.tv-dots{display:flex;gap:5px}.tv-dots i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.25)}.tv-dots i:first-child{background:#0A6CFF}
+.tv-caption{position:absolute;left:24px;right:24px;bottom:20px;z-index:5;display:flex;align-items:center;gap:9px;font-family:"DM Sans",sans-serif;font-size:11px;font-weight:700;color:rgba(255,255,255,.72)}
+.tv-caption i{width:7px;height:7px;border-radius:50%;background:#22D3B6;box-shadow:0 0 0 5px rgba(34,211,182,.12)}
+
+/* 01 */
+.orbit{position:relative;height:242px;z-index:2}
+.orbit-core{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:88px;height:88px;border-radius:28px;background:linear-gradient(145deg,#1677FF,#0A4EDB);box-shadow:0 20px 42px rgba(10,108,255,.42),inset 0 1px rgba(255,255,255,.45);display:grid;place-items:center;color:#fff;font-family:"Plus Jakarta Sans",sans-serif;font-weight:800;font-size:18px;z-index:3}
+.orbit-core:after{content:"";position:absolute;inset:-14px;border:1px solid rgba(75,151,255,.28);border-radius:35px}
+.orbit-line{position:absolute;left:50%;top:50%;width:132px;height:1px;background:linear-gradient(90deg,rgba(69,146,255,.8),rgba(69,146,255,.05));transform-origin:0 50%;z-index:1}
+.ol1{transform:rotate(205deg)}.ol2{transform:rotate(335deg)}.ol3{transform:rotate(155deg)}.ol4{transform:rotate(25deg)}
+.orbit-card{position:absolute;width:132px;padding:11px 12px;border-radius:15px;background:rgba(255,255,255,.095);border:1px solid rgba(255,255,255,.13);backdrop-filter:blur(8px);box-shadow:0 12px 30px rgba(0,0,0,.16);z-index:2}
+.orbit-card b{display:block;color:#66A6FF;font:800 9px "DM Sans",sans-serif;letter-spacing:.06em;margin-bottom:4px}.orbit-card span{display:block;color:#fff;font-size:11.5px;font-weight:700;line-height:1.25}
+.oc1{left:0;top:20px}.oc2{right:0;top:20px}.oc3{left:0;bottom:12px}.oc4{right:0;bottom:12px}
+
+/* 02 */
+.dashboard{position:relative;height:242px;z-index:2;display:grid;grid-template-columns:1.12fr .88fr;gap:12px;align-items:stretch}
+.dash-main{background:rgba(255,255,255,.085);border:1px solid rgba(255,255,255,.12);border-radius:18px;backdrop-filter:blur(8px);padding:16px;display:grid;grid-template-rows:auto 1fr 54px;min-width:0}
+.dash-label{font:800 9px "DM Sans",sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#8DB9FF;height:14px;display:flex;align-items:center}
+.gauge{position:relative;width:144px;height:72px;overflow:hidden;margin:auto}
+.gauge:before{content:"";position:absolute;left:1px;top:1px;width:140px;height:140px;border-radius:50%;border:10px solid rgba(255,255,255,.09);border-bottom-color:#1677FF;border-right-color:#1677FF;transform:rotate(45deg);box-sizing:border-box}
+.gauge:after{content:"ROI";position:absolute;left:50%;bottom:0;transform:translateX(-50%);color:#fff;font:800 21px "Plus Jakarta Sans",sans-serif}
+.dash-bars{height:54px;display:flex;align-items:flex-end;gap:7px;padding-top:4px;border-top:1px solid rgba(255,255,255,.06)}
+.dash-bars i{flex:1;border-radius:5px 5px 2px 2px;background:linear-gradient(#39A0FF,#0A5BE8)}
+.dash-bars i:nth-child(1){height:35%}.dash-bars i:nth-child(2){height:55%}.dash-bars i:nth-child(3){height:42%}.dash-bars i:nth-child(4){height:78%}.dash-bars i:nth-child(5){height:92%}
+.dash-side{display:grid;grid-template-rows:repeat(3,1fr);gap:10px;min-width:0}
+.metric{background:rgba(255,255,255,.085);border:1px solid rgba(255,255,255,.12);border-radius:18px;backdrop-filter:blur(8px);padding:10px 12px;display:grid;grid-template-columns:1fr auto;grid-template-rows:auto auto;column-gap:8px;align-content:center}
+.metric span{grid-column:1;grid-row:1;font:700 8.5px "DM Sans",sans-serif;color:rgba(255,255,255,.48);text-transform:uppercase;letter-spacing:.04em}
+.metric strong{grid-column:1;grid-row:2;color:#fff;font-size:11px;line-height:1.15;margin-top:3px;white-space:nowrap}
+.metric em{grid-column:2;grid-row:1/3;align-self:center;padding:4px 6px;border-radius:8px;background:rgba(34,211,182,.12);color:#41E0C3;font:800 8px "DM Sans",sans-serif;font-style:normal;white-space:nowrap}
+
+/* 03 — constellation sur mesure */
+.custom-map{position:relative;height:242px;z-index:2}
+.custom-core{position:absolute;left:50%;top:49%;transform:translate(-50%,-50%);width:112px;height:112px;border-radius:34px;background:linear-gradient(145deg,#1677FF,#0A4EDB);box-shadow:0 22px 48px rgba(10,108,255,.42),inset 0 1px rgba(255,255,255,.35);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;z-index:4}
+.custom-core small{font:800 9px "DM Sans",sans-serif;letter-spacing:.08em;text-transform:uppercase;opacity:.68;margin-bottom:5px}
+.custom-core strong{font:800 14px "Plus Jakarta Sans",sans-serif;line-height:1.2}
+.custom-ring{position:absolute;left:50%;top:49%;transform:translate(-50%,-50%);width:178px;height:178px;border-radius:50%;border:1px dashed rgba(92,160,255,.27);z-index:1}
+.custom-link{position:absolute;left:50%;top:49%;width:132px;height:1px;background:linear-gradient(90deg,rgba(86,155,255,.75),rgba(86,155,255,.06));transform-origin:0 50%;z-index:1}
+.cl1{transform:rotate(210deg)}.cl2{transform:rotate(330deg)}.cl3{transform:rotate(150deg)}.cl4{transform:rotate(30deg)}
+.custom-node{position:absolute;width:122px;padding:11px 10px;border-radius:16px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.13);backdrop-filter:blur(8px);box-shadow:0 12px 30px rgba(0,0,0,.16);z-index:3}
+.custom-node b{display:block;color:#fff;font-size:11px;margin-bottom:3px}.custom-node span{display:block;color:#8DB9FF;font:700 8.5px "DM Sans",sans-serif;text-transform:uppercase;letter-spacing:.05em}
+.cn1{left:0;top:18px}.cn2{right:0;top:18px}.cn3{left:0;bottom:12px}.cn4{right:0;bottom:12px}
+.custom-badge{position:absolute;left:50%;bottom:1px;transform:translateX(-50%);padding:5px 10px;border-radius:12px;background:rgba(34,211,182,.12);border:1px solid rgba(34,211,182,.18);color:#41E0C3;font:800 8.5px "DM Sans",sans-serif;text-transform:uppercase;letter-spacing:.05em;z-index:5;white-space:nowrap}
+
+@media(max-width:900px){.formation-intro{grid-template-columns:1fr;gap:28px}.training-visual{max-width:650px;width:100%;margin:0 auto}}
+@media(max-width:520px){.training-visual{min-height:315px;padding:20px}.orbit-card{width:108px;padding:9px}.orbit-core{width:72px;height:72px}.dashboard{grid-template-columns:1fr .8fr}.pipe-node{width:56px;height:56px}.pipe-step:nth-child(2) .pipe-node{width:68px;height:68px}.pipe-step b{font-size:10px}}
+
 </style>
 </head>
 <body id="top" class="flat">
@@ -156,8 +257,8 @@
       <p class="lead rv" style="--d:.1s;margin-left:auto;margin-right:auto">3 questions, une gamme de formation.</p>
       <div class="chips rv" style="--d:.14s;margin-bottom:28px">
         <span class="chip"><i style="--c:#18B89E"></i>Que peut faire l’IA ?</span>
-        <span class="chip"><i style="--c:#F5B700"></i>Sans perdre le contrôle</span>
-        <span class="chip"><i style="--c:#6F8CFF"></i>Adaptée à mon entreprise</span>
+        <span class="chip"><i style="--c:#F5B700"></i>Sans perdre le contrôle ?</span>
+        <span class="chip"><i style="--c:#6F8CFF"></i>Adaptée à mon entreprise ?</span>
       </div>
       <div class="actions rv" style="--d:.18s;justify-content:center;margin-bottom:0">
         <a class="btn" href="rendez-vous.html">Parler de vos besoins de formation</a>
@@ -221,14 +322,29 @@
 <!-- ===== 01 — IA AU QUOTIDIEN — fond bleu ===== -->
 <section class="sheet t-blanc" data-theme="blanc" style="z-index:3;padding-top:50px;padding-bottom:50px" id="quotidien">
   <div class="container">
-    <div class="head">
+    <div class="formation-intro">
+      <div class="head">
       <div class="eyebrow rv"><i><svg viewBox="0 0 24 24"><path d="M12 1.5C13 8 16 11 22.5 12 16 13 13 16 12 22.5 11 16 8 13 1.5 12 8 11 11 8 12 1.5z" fill="#fff"/></svg></i>Formation 01</div>
       <h2 class="h rv" style="--d:.06s"><span class="gt">IA au</span> <span class="serif" style="font-size:1.05em">quotidien</span></h2>
       <p class="lead rv" style="--d:.12s">Comprendre l’IA, découvrir ses possibilités et repartir avec des usages immédiatement applicables. L’objectif n’est pas de former des experts en IA : c’est une formation de découverte et de prise en main.</p>
     </div>
 
+            <div class="training-visual rv" style="--d:.12s" aria-label="Schéma graphique des usages quotidiens de l'IA">
+        <div class="tv-top"><div class="tv-kicker">Votre journée + IA</div><div class="tv-dots"><i></i><i></i><i></i></div></div>
+        <div class="orbit">
+          <span class="orbit-line ol1"></span><span class="orbit-line ol2"></span><span class="orbit-line ol3"></span><span class="orbit-line ol4"></span>
+          <div class="orbit-core">IA</div>
+          <div class="orbit-card oc1"><b>08:30 · EMAIL</b><span>Rédiger et améliorer</span></div>
+          <div class="orbit-card oc2"><b>10:30 · DOCUMENT</b><span>Lire et résumer</span></div>
+          <div class="orbit-card oc3"><b>14:00 · RÉUNION</b><span>Préparer et structurer</span></div>
+          <div class="orbit-card oc4"><b>16:30 · CONTENU</b><span>Créer plus vite</span></div>
+        </div>
+        
+      </div>
+    </div>
+
     <div class="callout rv" style="--d:.1s">
-      <div class="tile" style="background:linear-gradient(160deg,#fff,#FFF6E0)"><svg viewBox="0 0 24 24" fill="none" stroke="#F5B700" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg></div>
+      <div class="tile" style="--c1:#FFD60A;--c2:#FF9500"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg></div>
       <p><strong>Livrable :</strong> guide « Les bonnes pratiques de l’IA au quotidien » + bibliothèque de prompts de démarrage.</p>
     </div>
     <div class="chips rv" style="--d:.12s;justify-content:flex-start;margin-bottom:28px">
@@ -239,19 +355,19 @@
 
     <div class="ftable rv" style="--d:.16s">
       <div class="frow">
-        <div class="f-issue"><div class="tile" style="background:linear-gradient(160deg,#fff,#E6F0FF)"><svg viewBox="0 0 24 24" fill="none" stroke="#0A6CFF" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>Comprendre l’IA en 30 minutes</div>
+        <div class="f-issue"><div class="tile" style="--c1:#0A84FF;--c2:#0040DD"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>Comprendre l’IA en 30 minutes</div>
         <div class="f-desc">IA traditionnelle vs IA générative, ChatGPT / Claude / Gemini, ce qu’elle sait et ne sait pas faire, hallucinations et vérification, limites.</div>
       </div>
       <div class="frow">
-        <div class="f-issue"><div class="tile" style="background:linear-gradient(160deg,#fff,#E6FAF5)"><svg viewBox="0 0 24 24" fill="none" stroke="#18B89E" stroke-width="1.8"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg></div>Découvrir les usages concrets</div>
+        <div class="f-issue"><div class="tile" style="--c1:#00E6B8;--c2:#00A389"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg></div>Découvrir les usages concrets</div>
         <div class="f-desc">Rédiger et améliorer un email, résumer un document, préparer une réunion, créer un contenu, rechercher et structurer de l’information, gagner du temps sur l’administratif.</div>
       </div>
       <div class="frow">
-        <div class="f-issue"><div class="tile" style="background:linear-gradient(160deg,#fff,#FFE9F3)"><svg viewBox="0 0 24 24" fill="none" stroke="#FF4FA3" stroke-width="1.8"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></div>Apprendre à bien dialoguer avec une IA</div>
+        <div class="f-issue"><div class="tile" style="--c1:#FF6FC3;--c2:#D6007F"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></div>Apprendre à bien dialoguer avec une IA</div>
         <div class="f-desc">Une méthode simple — Contexte → Objectif → Contraintes → Résultat attendu — avec exercices pratiques.</div>
       </div>
       <div class="frow">
-        <div class="f-issue"><div class="tile" style="background:linear-gradient(160deg,#fff,#FFF6E0)"><svg viewBox="0 0 24 24" fill="none" stroke="#F5B700" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></div>Atelier « mon métier »</div>
+        <div class="f-issue"><div class="tile" style="--c1:#FFD60A;--c2:#FF9500"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></div>Atelier « mon métier »</div>
         <div class="f-desc">Chaque participant identifie 3 tâches régulières, leur fréquence, le temps passé, la possibilité d’utiliser l’IA — et teste 1 à 2 cas réels.</div>
       </div>
     </div>
@@ -261,22 +377,41 @@
 <!-- ===== 02 — IA POUR LES DIRIGEANTS — fond sombre ===== -->
 <section class="sheet t-blanc" data-theme="blanc" style="z-index:4;padding-top:50px;padding-bottom:50px" id="dirigeants">
   <div class="container">
-    <div class="head">
+    <div class="formation-intro">
+      <div class="head">
       <div class="eyebrow rv"><i><svg viewBox="0 0 24 24"><path d="M12 1.5C13 8 16 11 22.5 12 16 13 13 16 12 22.5 11 16 8 13 1.5 12 8 11 11 8 12 1.5z" fill="#fff"/></svg></i>Formation 02</div>
       <h2 class="h rv" style="--d:.06s"><span class="gt">IA pour les</span> <span class="serif" style="font-size:1.05em">dirigeants</span></h2>
       <p class="lead rv" style="--d:.12s">Ce n’est pas « apprendre à utiliser ChatGPT », mais comprendre ce que l’IA peut changer dans votre entreprise et comment l’encadrer. Notre formation la plus stratégique : identifier les opportunités, mesurer le ROI et mettre en place un cadre responsable.</p>
+    </div>
+
+            <div class="training-visual rv" style="--d:.12s" aria-label="Cockpit graphique de décision IA pour dirigeant">
+        <div class="tv-top"><div class="tv-kicker">Cockpit de décision IA</div><div class="tv-dots"><i></i><i></i><i></i></div></div>
+        <div class="dashboard">
+          <div class="dash-main">
+            <div class="dash-label">Potentiel à évaluer</div>
+            <div class="gauge"></div>
+            <div class="dash-bars"><i></i><i></i><i></i><i></i><i></i></div>
+          </div>
+          <div class="dash-side">
+            <div class="metric"><span>Opportunités</span><strong>Cas d’usage</strong><em>À prioriser</em></div>
+            <div class="metric"><span>Maîtrise</span><strong>Risques & données</strong><em>À encadrer</em></div>
+            <div class="metric"><span>Gouvernance</span><strong>Charte IA</strong><em>À construire</em></div>
+          </div>
+        </div>
+        <div class="tv-caption"><i></i>ROI · souveraineté · confidentialité · cadre IA</div>
+      </div>
     </div>
 
     <h3 class="rv" style="font-size:19px;letter-spacing:-.02em;margin-bottom:8px">Où se trouve le ROI ?</h3>
     <p class="rv" style="color:var(--soft);font-size:14px;font-weight:600;max-width:70ch">On ne parle pas uniquement de productivité. On examine six familles de gains, pour que le dirigeant commence à raisonner en ROI, pas en fascination technologique.</p>
 
     <div class="mini-grid">
-      <div class="mini-card rv"><div class="tile" style="background:linear-gradient(160deg,#fff,#E6FAF5)"><svg viewBox="0 0 24 24" fill="none" stroke="#18B89E" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div><div><h4>Temps gagné</h4><p>Moins de tâches administratives.</p></div></div>
-      <div class="mini-card rv" style="--d:.04s"><div class="tile" style="background:linear-gradient(160deg,#fff,#E6F0FF)"><svg viewBox="0 0 24 24" fill="none" stroke="#0A6CFF" stroke-width="1.8"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></div><div><h4>Productivité</h4><p>Produire davantage avec les mêmes ressources.</p></div></div>
-      <div class="mini-card rv" style="--d:.08s"><div class="tile" style="background:linear-gradient(160deg,#fff,#EEE6FF)"><svg viewBox="0 0 24 24" fill="none" stroke="#6F8CFF" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></div><div><h4>Qualité</h4><p>Standardisation, contrôle, assistance.</p></div></div>
-      <div class="mini-card rv" style="--d:.12s"><div class="tile" style="background:linear-gradient(160deg,#fff,#FFF6E0)"><svg viewBox="0 0 24 24" fill="none" stroke="#F5B700" stroke-width="1.8"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg></div><div><h4>Commercial</h4><p>Prospection, préparation, suivi.</p></div></div>
-      <div class="mini-card rv" style="--d:.16s"><div class="tile" style="background:linear-gradient(160deg,#fff,#FFE9F3)"><svg viewBox="0 0 24 24" fill="none" stroke="#FF4FA3" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div><div><h4>Connaissance</h4><p>Exploitation des documents et données internes.</p></div></div>
-      <div class="mini-card rv" style="--d:.2s"><div class="tile" style="background:linear-gradient(160deg,#fff,#FFEDE2)"><svg viewBox="0 0 24 24" fill="none" stroke="#FF6A13" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M4 8h16"/></svg></div><div><h4>Réactivité</h4><p>Réponses plus rapides aux clients.</p></div></div>
+      <div class="mini-card rv"><div class="tile" style="--c1:#00E6B8;--c2:#00A389"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div><div><h4>Temps gagné</h4><p>Moins de tâches administratives.</p></div></div>
+      <div class="mini-card rv" style="--d:.04s"><div class="tile" style="--c1:#0A84FF;--c2:#0040DD"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></div><div><h4>Productivité</h4><p>Produire davantage avec les mêmes ressources.</p></div></div>
+      <div class="mini-card rv" style="--d:.08s"><div class="tile" style="--c1:#5E5CE6;--c2:#3634A3"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></div><div><h4>Qualité</h4><p>Standardisation, contrôle, assistance.</p></div></div>
+      <div class="mini-card rv" style="--d:.12s"><div class="tile" style="--c1:#FFD60A;--c2:#FF9500"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg></div><div><h4>Commercial</h4><p>Prospection, préparation, suivi.</p></div></div>
+      <div class="mini-card rv" style="--d:.16s"><div class="tile" style="--c1:#FF6FC3;--c2:#D6007F"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div><div><h4>Connaissance</h4><p>Exploitation des documents et données internes.</p></div></div>
+      <div class="mini-card rv" style="--d:.2s"><div class="tile" style="--c1:#FF9F0A;--c2:#D9480F"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M4 8h16"/></svg></div><div><h4>Réactivité</h4><p>Réponses plus rapides aux clients.</p></div></div>
     </div>
 
     <div class="roitable rv" style="--d:.1s">
@@ -290,48 +425,50 @@
     <h3 class="rv" style="font-size:19px;letter-spacing:-.02em;margin:34px 0 10px">Souveraineté et confidentialité</h3>
     <p class="rv" style="color:var(--soft);font-size:14px;font-weight:600;max-width:75ch;margin-bottom:28px">Un sujet particulièrement important pour les dirigeants : où vont les données, que deviennent les documents envoyés à une IA, données personnelles et clients, propriété intellectuelle, comptes professionnels vs personnels, hébergement, dépendance aux plateformes, bonnes pratiques RGPD. Et surtout : qu’est-ce que vos collaborateurs peuvent envoyer à une IA ?</p>
 
-    <div class="charte rv">
-      <p class="intro"><strong>Livrable premium : modèle de charte IA DecIA</strong>, éditable Word / Google Docs — présenté comme un modèle interne à adapter à votre entreprise, dont la validation juridique ou RGPD peut nécessiter un professionnel compétent.</p>
-      <div class="charte-wrap">
-        <div class="charte-star" aria-hidden="true">
-          <svg viewBox="0 0 300 300">
-            <line class="charte-spoke" x1="150" y1="150" x2="150" y2="32"/>
-            <line class="charte-spoke" x1="150" y1="150" x2="226" y2="60"/>
-            <line class="charte-spoke" x1="150" y1="150" x2="266" y2="130"/>
-            <line class="charte-spoke" x1="150" y1="150" x2="252" y2="209"/>
-            <line class="charte-spoke" x1="150" y1="150" x2="190" y2="261"/>
-            <line class="charte-spoke" x1="150" y1="150" x2="110" y2="261"/>
-            <line class="charte-spoke" x1="150" y1="150" x2="48" y2="209"/>
-            <line class="charte-spoke" x1="150" y1="150" x2="34" y2="130"/>
-            <line class="charte-spoke" x1="150" y1="150" x2="74" y2="60"/>
-            <circle class="charte-hub-bg" cx="150" cy="150" r="46"/>
-            <circle class="charte-hub" cx="150" cy="150" r="46"/>
-            <text class="charte-hub-label" x="150" y="145" text-anchor="middle">CHARTE</text>
-            <text class="charte-hub-label" x="150" y="163" text-anchor="middle">IA</text>
-            <g class="charte-node"><circle cx="150" cy="32" r="17"/><text x="150" y="37" text-anchor="middle">01</text></g>
-            <g class="charte-node"><circle cx="226" cy="60" r="17"/><text x="226" y="65" text-anchor="middle">02</text></g>
-            <g class="charte-node"><circle cx="266" cy="130" r="17"/><text x="266" y="135" text-anchor="middle">03</text></g>
-            <g class="charte-node"><circle cx="252" cy="209" r="17"/><text x="252" y="214" text-anchor="middle">04</text></g>
-            <g class="charte-node"><circle cx="190" cy="261" r="17"/><text x="190" y="266" text-anchor="middle">05</text></g>
-            <g class="charte-node"><circle cx="110" cy="261" r="17"/><text x="110" y="266" text-anchor="middle">06</text></g>
-            <g class="charte-node"><circle cx="48" cy="209" r="17"/><text x="48" y="214" text-anchor="middle">07</text></g>
-            <g class="charte-node"><circle cx="34" cy="130" r="17"/><text x="34" y="135" text-anchor="middle">08</text></g>
-            <g class="charte-node"><circle cx="74" cy="60" r="17"/><text x="74" y="65" text-anchor="middle">09</text></g>
-          </svg>
+    <div class="charte-premium rv">
+        <div class="cp-head">
+          <div>
+            <div class="cp-kicker">Livrable premium inclus</div>
+            <h3>Votre modèle de Charte IA</h3>
+            <p>Un document structuré à personnaliser pour poser un cadre clair d’utilisation de l’IA dans votre entreprise.</p>
+          </div>
+          <div class="cp-badge">Modèle éditable inclus</div>
         </div>
-        <div class="charte-grid">
-          <span class="c-item"><span class="c-num">01</span>Objet de la charte</span>
-          <span class="c-item"><span class="c-num">02</span>Usages autorisés</span>
-          <span class="c-item"><span class="c-num">03</span>Usages interdits</span>
-          <span class="c-item"><span class="c-num">04</span>Vérification humaine</span>
-          <span class="c-item"><span class="c-num">05</span>Confidentialité</span>
-          <span class="c-item"><span class="c-num">06</span>Propriété intellectuelle</span>
-          <span class="c-item"><span class="c-num">07</span>Outils autorisés</span>
-          <span class="c-item"><span class="c-num">08</span>Responsabilités</span>
-          <span class="c-item"><span class="c-num">09</span>Évolution de la charte</span>
+
+        <div class="cp-body">
+          <div class="doc-stack" aria-label="Aperçu du modèle de Charte IA">
+            <div class="doc-sheet back2"></div>
+            <div class="doc-sheet back1"></div>
+            <div class="doc-cover">
+              <div class="doc-brand">DecIA</div>
+              <div class="doc-rule"></div>
+              <small>Modèle entreprise</small>
+              <h4>Charte d’utilisation de l’IA</h4>
+              <div class="doc-meta">
+                <span>ENTREPRISE<br>Version 1.0</span>
+                <span class="doc-seal">IA<br>READY</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="cp-content">
+            <div class="label">Le modèle couvre notamment</div>
+            <div class="cp-list">
+              <div class="cp-item"><span class="cp-check">✓</span>Usages autorisés</div>
+              <div class="cp-item"><span class="cp-check">✓</span>Usages interdits</div>
+              <div class="cp-item"><span class="cp-check">✓</span>Confidentialité</div>
+              <div class="cp-item"><span class="cp-check">✓</span>Données sensibles</div>
+              <div class="cp-item"><span class="cp-check">✓</span>Propriété intellectuelle</div>
+              <div class="cp-item"><span class="cp-check">✓</span>Vérification humaine</div>
+              <div class="cp-item"><span class="cp-check">✓</span>Outils autorisés</div>
+              <div class="cp-item"><span class="cp-check">✓</span>Responsabilités</div>
+              <div class="cp-item"><span class="cp-check">✓</span>Bonnes pratiques</div>
+            </div>
+            <div class="cp-formats"><span>Prêt à adapter</span><span>Structure complète</span><span>Usage interne</span></div>
+            <div class="cp-note">Modèle de travail à adapter au contexte de l’entreprise. Selon vos usages, une validation juridique, RGPD ou conformité peut être nécessaire.</div>
+          </div>
         </div>
       </div>
-    </div>
 
     <div class="chips rv" style="justify-content:flex-start;margin-top:28px;margin-bottom:0">
       <span class="chip"><i style="--c:#0A6CFF"></i>½ journée à 1 journée</span>
@@ -344,14 +481,31 @@
 <!-- ===== 03 — FORMATION SUR MESURE — fond blanc ===== -->
 <section class="sheet t-blanc" data-theme="blanc" style="z-index:5;padding-top:50px;padding-bottom:50px" id="sur-mesure">
   <div class="container">
-    <div class="head">
+    <div class="formation-intro">
+      <div class="head">
       <div class="eyebrow rv"><i><svg viewBox="0 0 24 24"><path d="M12 1.5C13 8 16 11 22.5 12 16 13 13 16 12 22.5 11 16 8 13 1.5 12 8 11 11 8 12 1.5z" fill="#fff"/></svg></i>Formation 03</div>
       <h2 class="h rv" style="--d:.06s"><span class="gt">Formation</span> <span class="serif" style="font-size:1.05em">sur mesure</span></h2>
       <p class="lead rv" style="--d:.12s">Pas de programme prédéfini. Une formation construite à partir de vos métiers, de vos outils et de vos problématiques.</p>
     </div>
 
+            <div class="training-visual rv" style="--d:.12s" aria-label="Schéma graphique d'une formation IA construite sur mesure">
+        <div class="tv-top"><div class="tv-kicker">Votre environnement métier</div><div class="tv-dots"><i></i><i></i><i></i></div></div>
+        <div class="custom-map">
+          <div class="custom-ring"></div>
+          <span class="custom-link cl1"></span><span class="custom-link cl2"></span><span class="custom-link cl3"></span><span class="custom-link cl4"></span>
+          <div class="custom-core"><small>Formation</small><strong>100 %<br>sur mesure</strong></div>
+          <div class="custom-node cn1"><b>Vos métiers</b><span>Réalité terrain</span></div>
+          <div class="custom-node cn2"><b>Vos outils</b><span>Environnement réel</span></div>
+          <div class="custom-node cn3"><b>Vos cas d’usage</b><span>Problèmes concrets</span></div>
+          <div class="custom-node cn4"><b>Vos données</b><span>Contexte entreprise</span></div>
+          <div class="custom-badge">→ assistants & workflows métier</div>
+        </div>
+        <div class="tv-caption"><i></i>La formation s'adapte à votre entreprise</div>
+      </div>
+    </div>
+
     <div class="callout rv" style="--d:.1s">
-      <div class="tile" style="background:linear-gradient(160deg,#fff,#EEE6FF)"><svg viewBox="0 0 24 24" fill="none" stroke="#6F8CFF" stroke-width="1.8"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg></div>
+      <div class="tile" style="--c1:#5E5CE6;--c2:#3634A3"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg></div>
       <p><strong>Avant la formation :</strong> mini-entretien de 30 à 45 minutes avec le dirigeant pour comprendre l’entreprise, identifier les métiers et outils concernés, les difficultés, et sélectionner les cas d’usage. Le programme est ensuite construit sur mesure.</p>
     </div>
 
@@ -389,7 +543,7 @@
     </div>
     <div class="rv" style="--d:.15s">
       <div class="panel">
-        <div class="panel-head"><span class="label">Déroulé des 20 min</span><span class="pill">Gratuit</span></div>
+        <div class="panel-head"><span class="label pillk"><i><svg viewBox="0 0 24 24"><path d="M12 1.5C13 8 16 11 22.5 12 16 13 13 16 12 22.5 11 16 8 13 1.5 12 8 11 11 8 12 1.5z" fill="#fff"/></svg></i>Déroulé des 20 min</span><span class="pill">Gratuit</span></div>
         <div class="panel-steps">
           <div class="panel-step"><span class="num">1</span><div><h5>Vous décrivez votre équipe</h5><p>Métiers, niveau IA actuel, outils utilisés</p></div></div>
           <div class="panel-step"><span class="num">2</span><div><h5>Nous construisons le programme</h5><p>Contenu adapté à vos métiers et vos outils</p></div></div>

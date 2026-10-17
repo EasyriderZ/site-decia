@@ -527,3 +527,33 @@
 .dc-lib-summary strong {
   color: var(--text);
 }
+
+/* --------------------------------------------------------------------------
+   dc-rmock — mockup "report" de score (ex-audit.html, conservé ici)
+   -------------------------------------------------------------------------- */
+.dc-rmock{background:#0B1020;border-radius:28px;overflow:hidden;box-shadow:0 30px 60px rgba(0,0,0,.4)}
+.dc-rmock-bar{display:flex;align-items:center;gap:8px;padding:14px 20px;background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.08)}
+.dc-rmock-dots span{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.18);display:inline-block;margin-right:6px}
+.dc-rmock-label{margin-left:auto;font-size:12px;color:rgba(255,255,255,.5);font-family:"DM Sans","Plus Jakarta Sans",sans-serif}
+.dc-rmock-body{padding:30px}
+.dc-rmock-score{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.dc-rmock-score .value{font-size:42px;font-weight:800;color:#fff;letter-spacing:-.02em}
+.dc-rmock-score .value small{font-size:16px;color:rgba(255,255,255,.5);font-weight:600}
+.dc-rmock-score .label{font-size:12px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;font-family:"DM Sans","Plus Jakarta Sans",sans-serif}
+.dc-rmock-score .delta{display:inline-block;margin-top:8px;color:#18B89E;font-size:13px;font-weight:700}
+.dc-rmock-ring{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center}
+.dc-rmock-ring svg{width:26px;height:26px;stroke:#18B89E}
+.dc-rmock-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
+.dc-rmock-stat{background:rgba(255,255,255,.05);border-radius:16px;padding:16px}
+.dc-rmock-stat .lbl{font-size:11px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;font-family:"DM Sans","Plus Jakarta Sans",sans-serif}
+.dc-rmock-stat .big{font-size:21px;font-weight:800;color:#fff}
+.dc-rmock-stat .sub{font-size:11px;color:rgba(255,255,255,.4);margin-top:4px}
+.dc-rmock-opps{background:rgba(255,255,255,.03);border-radius:16px;padding:18px}
+.dc-rmock-opps .lbl{font-size:12px;color:rgba(255,255,255,.5);margin-bottom:12px;display:block;font-family:"DM Sans","Plus Jakarta Sans",sans-serif}
+.dc-rmock-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px solid rgba(255,255,255,.06)}
+.dc-rmock-row:first-of-type{border-top:none}
+.dc-rmock-row .left{display:flex;align-items:center;font-size:13px;color:#fff;font-weight:600}
+.dc-rmock-num{width:22px;height:22px;border-radius:50%;background:#F6511D;color:#fff;font-size:11px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;margin-right:10px;flex:none}
+.dc-rmock-val{color:#18B89E;font-weight:800;font-size:13px}
+@media (max-width:980px){.dc-rmock-grid{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.dc-rmock-grid{grid-template-columns:1fr}}

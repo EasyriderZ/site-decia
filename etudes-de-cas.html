@@ -17,15 +17,28 @@
 <link rel="stylesheet" href="css/site.css">
 <style>
 .ecase-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
-.ecase{padding:30px 28px;display:flex;flex-direction:column;gap:14px;transition:transform .3s ease}
-.ecase:hover{transform:translateY(-6px)}
-.ecase .tag{display:inline-block;font-family:"DM Sans",sans-serif;font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#0A66FF;background:rgba(10,108,255,.08);padding:6px 14px;border-radius:20px;align-self:flex-start}
-.ecase h3{font-size:19px;letter-spacing:-.025em;line-height:1.3}
-.ecase dl{display:grid;grid-template-columns:1fr 1fr;gap:14px 20px;margin-top:4px}
-.ecase dt{font-family:"DM Sans",sans-serif;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#0A66FF;margin-bottom:4px;font-weight:700}
-.ecase dd{font-size:13px;color:#40506F;font-weight:600;line-height:1.5;margin:0}
+.ecase{position:relative;overflow:hidden;padding:30px 28px 26px;display:flex;flex-direction:column;gap:0;border:1px solid rgba(10,102,255,.08);transition:transform .3s ease,box-shadow .3s ease,border-color .3s ease}
+.ecase::before{content:"";position:absolute;left:0;top:0;width:4px;height:100%;background:#0A66FF;transform:scaleY(0);transform-origin:bottom;transition:transform .35s ease}
+.ecase:hover{transform:translateY(-6px);border-color:rgba(10,102,255,.24);box-shadow:0 22px 50px rgba(18,38,78,.10)}
+.ecase:hover::before{transform:scaleY(1)}
+.ecase-head{position:relative;padding-right:66px;margin-bottom:16px}
+.ecase-index{position:absolute;right:0;top:-8px;font-family:"Plus Jakarta Sans",sans-serif;font-size:46px;line-height:1;font-weight:800;letter-spacing:-.06em;color:rgba(10,102,255,.08);transition:color .3s ease,transform .3s ease}
+.ecase:hover .ecase-index{color:rgba(10,102,255,.14);transform:translateY(-2px)}
+.ecase .tag{display:inline-block;font-family:"DM Sans",sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.075em;text-transform:uppercase;color:#0A66FF;background:rgba(10,108,255,.08);padding:6px 12px;border-radius:20px;margin-bottom:13px}
+.ecase h3{font-size:20px;letter-spacing:-.03em;line-height:1.28;margin:0}
+.ecase-context{font-size:12.5px;color:#6A7690;font-weight:600;line-height:1.55;padding:0 0 17px;margin:0;border-bottom:1px solid rgba(64,80,111,.10)}
+.ecase-flow{display:grid;grid-template-columns:1fr 32px 1fr;gap:10px;align-items:stretch;padding:18px 0}
+.ecase-step{padding:14px 14px 13px;border-radius:14px;background:#F7F9FC;border:1px solid rgba(64,80,111,.07)}
+.ecase-step.solution{background:rgba(10,102,255,.045);border-color:rgba(10,102,255,.10)}
+.ecase-label{display:block;font-family:"DM Sans",sans-serif;font-size:10px;text-transform:uppercase;letter-spacing:.075em;color:#0A66FF;margin-bottom:6px;font-weight:700}
+.ecase-step p{font-size:12.5px;color:#40506F;font-weight:600;line-height:1.5;margin:0}
+.ecase-arrow{display:flex;align-items:center;justify-content:center;color:#0A66FF;font-size:21px;font-weight:700;transition:transform .3s ease}
+.ecase:hover .ecase-arrow{transform:translateX(3px)}
+.ecase-result{margin-top:auto;padding:16px 17px 17px;border-radius:15px;background:linear-gradient(135deg,rgba(10,102,255,.075),rgba(10,102,255,.025));border:1px solid rgba(10,102,255,.10)}
+.ecase-result .ecase-label{margin-bottom:7px}
+.ecase-result p{font-size:13.5px;color:#263653;font-weight:700;line-height:1.5;margin:0}
 @media (max-width:860px){.ecase-grid{grid-template-columns:1fr}}
-@media (max-width:560px){.ecase dl{grid-template-columns:1fr}}
+@media (max-width:560px){.ecase{padding:25px 21px 22px}.ecase-head{padding-right:48px}.ecase-index{font-size:38px}.ecase-flow{grid-template-columns:1fr;gap:9px}.ecase-arrow{height:16px;transform:rotate(90deg)}.ecase:hover .ecase-arrow{transform:rotate(90deg) translateX(3px)}}
 
 .cta.single{grid-template-columns:1fr;max-width:640px;margin:0 auto;text-align:center}
 .cta.single .pillk{margin:0 auto 30px}
@@ -72,80 +85,171 @@
   <div class="container">
     <div class="ecase-grid">
       <article class="ecase card rv">
-        <span class="tag">Exemple type — artisanat / bâtiment</span>
-        <h3>Des devis qui prenaient 2h chaque soir</h3>
-        <dl>
-          <div><dt>Contexte</dt><dd>Petite structure artisanale, devis rédigés manuellement en fin de journée.</dd></div>
-          <div><dt>Problème</dt><dd>Réponse tardive aux prospects, week-ends mobilisés par l’administratif.</dd></div>
-          <div><dt>Solution</dt><dd>Génération automatique des devis à partir des échanges, relance automatique des impayés.</dd></div>
-          <div><dt>Résultat estimé</dt><dd>Plusieurs heures récupérées chaque semaine, réponse aux prospects en quelques minutes.</dd></div>
-        </dl>
+        <div class="ecase-head">
+          <span class="tag">Exemple type — artisanat / bâtiment</span>
+          <span class="ecase-index" aria-hidden="true">01</span>
+          <h3>Des devis qui prenaient 2h chaque soir</h3>
+        </div>
+        <p class="ecase-context">Petite structure artisanale, devis rédigés manuellement en fin de journée.</p>
+        <div class="ecase-flow">
+          <div class="ecase-step">
+            <span class="ecase-label">Le problème</span>
+            <p>Réponse tardive aux prospects, week-ends mobilisés par l’administratif.</p>
+          </div>
+          <div class="ecase-arrow" aria-hidden="true">→</div>
+          <div class="ecase-step solution">
+            <span class="ecase-label">La transformation</span>
+            <p>Génération automatique des devis à partir des échanges, relance automatique des impayés.</p>
+          </div>
+        </div>
+        <div class="ecase-result">
+          <span class="ecase-label">Résultat estimé</span>
+          <p>Plusieurs heures récupérées chaque semaine, réponse aux prospects en quelques minutes.</p>
+        </div>
       </article>
 
       <article class="ecase card rv" style="--d:.04s">
-        <span class="tag">Exemple type — services / conseil</span>
-        <h3>Des comptes rendus de rendez-vous jamais rédigés</h3>
-        <dl>
-          <div><dt>Contexte</dt><dd>Plusieurs rendez-vous clients par semaine, notes manuscrites non exploitées ensuite.</dd></div>
-          <div><dt>Problème</dt><dd>Informations perdues, suivi irrégulier, prochaines actions oubliées.</dd></div>
-          <div><dt>Solution</dt><dd>Structuration automatique des notes en compte rendu, extraction des prochaines actions.</dd></div>
-          <div><dt>Résultat estimé</dt><dd>Suivi client plus fiable, moins d’informations perdues d’un rendez-vous à l’autre.</dd></div>
-        </dl>
+        <div class="ecase-head">
+          <span class="tag">Exemple type — services / conseil</span>
+          <span class="ecase-index" aria-hidden="true">02</span>
+          <h3>Des comptes rendus de rendez-vous jamais rédigés</h3>
+        </div>
+        <p class="ecase-context">Plusieurs rendez-vous clients par semaine, notes manuscrites non exploitées ensuite.</p>
+        <div class="ecase-flow">
+          <div class="ecase-step">
+            <span class="ecase-label">Le problème</span>
+            <p>Informations perdues, suivi irrégulier, prochaines actions oubliées.</p>
+          </div>
+          <div class="ecase-arrow" aria-hidden="true">→</div>
+          <div class="ecase-step solution">
+            <span class="ecase-label">La transformation</span>
+            <p>Structuration automatique des notes en compte rendu, extraction des prochaines actions.</p>
+          </div>
+        </div>
+        <div class="ecase-result">
+          <span class="ecase-label">Résultat estimé</span>
+          <p>Suivi client plus fiable, moins d’informations perdues d’un rendez-vous à l’autre.</p>
+        </div>
       </article>
 
       <article class="ecase card rv" style="--d:.08s">
-        <span class="tag">Exemple type — commerce / PME</span>
-        <h3>Un tri de mails et de documents entièrement manuel</h3>
-        <dl>
-          <div><dt>Contexte</dt><dd>Dizaines de documents et d’emails reçus chaque jour, traités un par un.</dd></div>
-          <div><dt>Problème</dt><dd>Temps passé à ouvrir, lire et classer, au détriment du cœur de métier.</dd></div>
-          <div><dt>Solution</dt><dd>Extraction automatique des informations clés, classement et priorisation.</dd></div>
-          <div><dt>Résultat estimé</dt><dd>Information immédiatement exploitable, temps de traitement fortement réduit.</dd></div>
-        </dl>
+        <div class="ecase-head">
+          <span class="tag">Exemple type — commerce / PME</span>
+          <span class="ecase-index" aria-hidden="true">03</span>
+          <h3>Un tri de mails et de documents entièrement manuel</h3>
+        </div>
+        <p class="ecase-context">Dizaines de documents et d’emails reçus chaque jour, traités un par un.</p>
+        <div class="ecase-flow">
+          <div class="ecase-step">
+            <span class="ecase-label">Le problème</span>
+            <p>Temps passé à ouvrir, lire et classer, au détriment du cœur de métier.</p>
+          </div>
+          <div class="ecase-arrow" aria-hidden="true">→</div>
+          <div class="ecase-step solution">
+            <span class="ecase-label">La transformation</span>
+            <p>Extraction automatique des informations clés, classement et priorisation.</p>
+          </div>
+        </div>
+        <div class="ecase-result">
+          <span class="ecase-label">Résultat estimé</span>
+          <p>Information immédiatement exploitable, temps de traitement fortement réduit.</p>
+        </div>
       </article>
 
       <article class="ecase card rv" style="--d:.12s">
-        <span class="tag">Exemple type — immobilier</span>
-        <h3>Des mandats relancés au petit bonheur la chance</h3>
-        <dl>
-          <div><dt>Contexte</dt><dd>Agence avec un portefeuille de mandats actifs et des visites organisées au fil de l’eau.</dd></div>
-          <div><dt>Problème</dt><dd>Relances de propriétaires et d’acquéreurs oubliées, suivi des visites dispersé entre mails et appels.</dd></div>
-          <div><dt>Solution</dt><dd>Relances automatiques selon l’état du mandat, comptes rendus de visite générés et centralisés.</dd></div>
-          <div><dt>Résultat estimé</dt><dd>Aucun mandat ni visite ne passe entre les mailles, image plus professionnelle auprès des clients.</dd></div>
-        </dl>
+        <div class="ecase-head">
+          <span class="tag">Exemple type — immobilier</span>
+          <span class="ecase-index" aria-hidden="true">04</span>
+          <h3>Des mandats relancés au petit bonheur la chance</h3>
+        </div>
+        <p class="ecase-context">Agence avec un portefeuille de mandats actifs et des visites organisées au fil de l’eau.</p>
+        <div class="ecase-flow">
+          <div class="ecase-step">
+            <span class="ecase-label">Le problème</span>
+            <p>Relances de propriétaires et d’acquéreurs oubliées, suivi des visites dispersé entre mails et appels.</p>
+          </div>
+          <div class="ecase-arrow" aria-hidden="true">→</div>
+          <div class="ecase-step solution">
+            <span class="ecase-label">La transformation</span>
+            <p>Relances automatiques selon l’état du mandat, comptes rendus de visite générés et centralisés.</p>
+          </div>
+        </div>
+        <div class="ecase-result">
+          <span class="ecase-label">Résultat estimé</span>
+          <p>Aucun mandat ni visite ne passe entre les mailles, image plus professionnelle auprès des clients.</p>
+        </div>
       </article>
 
       <article class="ecase card rv" style="--d:.16s">
-        <span class="tag">Exemple type — santé / paramédical</span>
-        <h3>Un standard téléphonique saturé de prises de rendez-vous</h3>
-        <dl>
-          <div><dt>Contexte</dt><dd>Cabinet avec un agenda chargé, prises de rendez-vous et rappels gérés uniquement par téléphone.</dd></div>
-          <div><dt>Problème</dt><dd>Lignes occupées aux heures de pointe, rendez-vous non honorés faute de rappel.</dd></div>
-          <div><dt>Solution</dt><dd>Prise de rendez-vous et rappels automatisés, confirmation par SMS la veille.</dd></div>
-          <div><dt>Résultat estimé</dt><dd>Moins de rendez-vous manqués, secrétariat libéré des tâches répétitives.</dd></div>
-        </dl>
+        <div class="ecase-head">
+          <span class="tag">Exemple type — santé / paramédical</span>
+          <span class="ecase-index" aria-hidden="true">05</span>
+          <h3>Un standard téléphonique saturé de prises de rendez-vous</h3>
+        </div>
+        <p class="ecase-context">Cabinet avec un agenda chargé, prises de rendez-vous et rappels gérés uniquement par téléphone.</p>
+        <div class="ecase-flow">
+          <div class="ecase-step">
+            <span class="ecase-label">Le problème</span>
+            <p>Lignes occupées aux heures de pointe, rendez-vous non honorés faute de rappel.</p>
+          </div>
+          <div class="ecase-arrow" aria-hidden="true">→</div>
+          <div class="ecase-step solution">
+            <span class="ecase-label">La transformation</span>
+            <p>Prise de rendez-vous et rappels automatisés, confirmation par SMS la veille.</p>
+          </div>
+        </div>
+        <div class="ecase-result">
+          <span class="ecase-label">Résultat estimé</span>
+          <p>Moins de rendez-vous manqués, secrétariat libéré des tâches répétitives.</p>
+        </div>
       </article>
 
-      <article class="ecase card rv" style="--d:.2s">
-        <span class="tag">Exemple type — restauration / hôtellerie</span>
-        <h3>Des réservations et des avis clients éparpillés partout</h3>
-        <dl>
-          <div><dt>Contexte</dt><dd>Établissement recevant des réservations par téléphone, mail et plateformes en ligne.</dd></div>
-          <div><dt>Problème</dt><dd>Doubles réservations, avis clients découverts tardivement et jamais traités.</dd></div>
-          <div><dt>Solution</dt><dd>Centralisation automatique des réservations, alerte et brouillon de réponse à chaque nouvel avis.</dd></div>
-          <div><dt>Résultat estimé</dt><dd>Zéro conflit de réservation, réputation en ligne mieux maîtrisée.</dd></div>
-        </dl>
+      <article class="ecase card rv" style="--d:.20s">
+        <div class="ecase-head">
+          <span class="tag">Exemple type — restauration / hôtellerie</span>
+          <span class="ecase-index" aria-hidden="true">06</span>
+          <h3>Des réservations et des avis clients éparpillés partout</h3>
+        </div>
+        <p class="ecase-context">Établissement recevant des réservations par téléphone, mail et plateformes en ligne.</p>
+        <div class="ecase-flow">
+          <div class="ecase-step">
+            <span class="ecase-label">Le problème</span>
+            <p>Doubles réservations, avis clients découverts tardivement et jamais traités.</p>
+          </div>
+          <div class="ecase-arrow" aria-hidden="true">→</div>
+          <div class="ecase-step solution">
+            <span class="ecase-label">La transformation</span>
+            <p>Centralisation automatique des réservations, alerte et brouillon de réponse à chaque nouvel avis.</p>
+          </div>
+        </div>
+        <div class="ecase-result">
+          <span class="ecase-label">Résultat estimé</span>
+          <p>Zéro conflit de réservation, réputation en ligne mieux maîtrisée.</p>
+        </div>
       </article>
 
       <article class="ecase card rv" style="--d:.24s">
-        <span class="tag">Exemple type — juridique / comptable</span>
-        <h3>Des pièces clients à relancer une par une par mail</h3>
-        <dl>
-          <div><dt>Contexte</dt><dd>Cabinet collectant des dizaines de documents clients par mail à chaque échéance.</dd></div>
-          <div><dt>Problème</dt><dd>Relances manuelles chronophages, dossiers bloqués faute de pièce manquante identifiée à temps.</dd></div>
-          <div><dt>Solution</dt><dd>Suivi automatique des pièces attendues, relances ciblées jusqu’à dossier complet.</dd></div>
-          <div><dt>Résultat estimé</dt><dd>Dossiers complétés plus vite, charge de relance quasiment supprimée.</dd></div>
-        </dl>
+        <div class="ecase-head">
+          <span class="tag">Exemple type — juridique / comptable</span>
+          <span class="ecase-index" aria-hidden="true">07</span>
+          <h3>Des pièces clients à relancer une par une par mail</h3>
+        </div>
+        <p class="ecase-context">Cabinet collectant des dizaines de documents clients par mail à chaque échéance.</p>
+        <div class="ecase-flow">
+          <div class="ecase-step">
+            <span class="ecase-label">Le problème</span>
+            <p>Relances manuelles chronophages, dossiers bloqués faute de pièce manquante identifiée à temps.</p>
+          </div>
+          <div class="ecase-arrow" aria-hidden="true">→</div>
+          <div class="ecase-step solution">
+            <span class="ecase-label">La transformation</span>
+            <p>Suivi automatique des pièces attendues, relances ciblées jusqu’à dossier complet.</p>
+          </div>
+        </div>
+        <div class="ecase-result">
+          <span class="ecase-label">Résultat estimé</span>
+          <p>Dossiers complétés plus vite, charge de relance quasiment supprimée.</p>
+        </div>
       </article>
     </div>
   </div>
@@ -156,7 +260,7 @@
   <div class="container cta single">
     <div>
       <div class="pillk rv"><i><svg viewBox="0 0 24 24"><path d="M12 1.5C13 8 16 11 22.5 12 16 13 13 16 12 22.5 11 16 8 13 1.5 12 8 11 11 8 12 1.5z" fill="#fff"/></svg></i>8 accompagnements par mois maximum</div>
-      <h2 class="h rv" style="--d:.06s;margin-top:30px">Et si votre <span class="gt">prochain cas</span> <span class="serif" style="font-size:1.05em">était le nôtre ?</span></h2>
+      <h2 class="h rv" style="--d:.06s;margin-top:30px">Et <span class="gt">le prochain cas</span> <span class="serif" style="font-size:1.05em">était le vôtre ?</span></h2>
       <a class="btn rv" style="--d:.12s" href="rendez-vous.html">Réserver un échange de 30 minutes</a>
       <div class="proof card rv" style="--d:.18s"><div class="num"><span class="count" data-to="15">15</span></div><b>entreprises accompagnées ces 3 derniers mois</b></div>
     </div>
