@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pré-diagnostic Maturité IA — Decia</title>
+<meta name="description" content="En 3 minutes, situez la maturité IA et automatisation de votre entreprise. Résultat immédiat et gratuit.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#F5F6F8; --navy-2:#9AA3BD; --teal:#0A6CFF; --teal-d:#1A4FF0; --teal-l:rgba(10,108,255,.14);
+    --ink:#F5F6F8; --muted:#9AA3BD; --line:rgba(255,255,255,.14); --bg:#03040B; --card:rgba(255,255,255,.07);
+    --panel:#0A1230;
+    --r:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:"Plus Jakarta Sans",system-ui,sans-serif;color:var(--ink);background:var(--bg);line-height:1.5;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;letter-spacing:-.02em;color:var(--navy)}
+  button{font:inherit;cursor:pointer}
+  .top{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;max-width:760px;margin:0 auto}
+  .logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+  .logo img{height:26px;width:auto;display:block}
+  .step-count{font-size:13px;color:var(--muted)}
+  .progress{height:4px;background:var(--line);max-width:760px;margin:0 auto 0;border-radius:4px;overflow:hidden}
+  .progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--teal-d));transition:width .4s ease}
+  main{max-width:760px;margin:0 auto;padding:40px 24px 80px}
+  .screen{display:none;animation:in .45s ease both}
+  .screen.on{display:block}
+  @keyframes in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  .eyebrow{display:inline-block;font-family:"DM Sans",sans-serif;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#6FA8FF;background:var(--teal-l);padding:5px 10px;border-radius:999px;margin-bottom:18px}
+  .hero h1{font-size:clamp(30px,5vw,44px);line-height:1.12;margin-bottom:16px}
+  .hero p.lead{font-size:18px;color:var(--muted);max-width:560px;margin-bottom:28px}
+  .perks{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 0 32px}
+  .perk{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+  .perk b{display:block;font-family:"Plus Jakarta Sans",sans-serif;font-weight:800;font-size:22px;color:var(--navy)}
+  .perk span{font-size:13px;color:var(--muted)}
+  .btn{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,var(--teal),var(--teal-d));color:#fff;border:0;border-radius:12px;padding:15px 24px;font-weight:600;font-size:16px;transition:transform .15s,box-shadow .15s}
+  .btn:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(10,108,255,.35)}
+  .btn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+  .btn.teal{background:linear-gradient(135deg,var(--teal),var(--teal-d))}
+  .ghost{background:none;border:0;color:var(--muted);font-size:14px;padding:8px 0;margin-top:22px}
+  .ghost:hover{color:var(--navy)}
+  .note{font-size:13px;color:var(--muted);margin-top:14px}
+  .qlabel{font-size:13px;font-weight:600;color:#6FA8FF;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+  .q h2{font-size:clamp(22px,3.6vw,30px);line-height:1.25;margin-bottom:8px}
+  .q .help{color:var(--muted);margin-bottom:24px}
+  .opts{display:grid;gap:10px;margin-top:20px}
+  .opts.grid{grid-template-columns:repeat(2,1fr)}
+  .opt{display:flex;align-items:center;gap:14px;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:16px 18px;font-size:16px;color:var(--ink);transition:border-color .15s,box-shadow .15s,transform .15s}
+  .opt:hover{border-color:var(--teal);box-shadow:0 4px 14px rgba(10,108,255,.18);transform:translateY(-1px)}
+  .opt.sel{border-color:var(--teal-d);background:rgba(10,108,255,.12)}
+  .opt .k{flex:none;width:28px;height:28px;border-radius:8px;border:1.5px solid var(--line);display:grid;place-items:center;font-size:13px;font-weight:600;color:var(--muted)}
+  .opt.sel .k{background:var(--teal-d);border-color:var(--teal-d);color:#fff}
+  .field{margin-bottom:16px}
+  .field label{display:block;font-size:14px;font-weight:500;margin-bottom:6px}
+  .field input{width:100%;padding:14px 16px;border:1.5px solid var(--line);border-radius:12px;font:inherit;font-size:16px;background:rgba(255,255,255,.05);color:var(--ink)}
+  .field input:focus{outline:none;border-color:var(--teal-d)}
+  .consent{display:flex;gap:12px;align-items:flex-start;font-size:14px;color:var(--muted);margin:8px 0 24px}
+  .consent input{margin-top:3px;width:18px;height:18px;accent-color:var(--teal-d);flex:none}
+  .hp{position:absolute;left:-9999px}
+  /* résultat */
+  .res-head{display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:center;background:var(--panel);border:1px solid var(--line);color:#fff;border-radius:22px;padding:28px}
+  .res-head h1{color:#fff;font-size:clamp(24px,3.6vw,32px);margin-bottom:8px}
+  .res-head p{color:#c8d5e6}
+  .gauge{width:150px;height:150px;position:relative}
+  .gauge svg{transform:rotate(-90deg)}
+  .gauge .val{position:absolute;inset:0;display:grid;place-items:center;text-align:center}
+  .gauge .val b{font-family:"Plus Jakarta Sans",sans-serif;font-weight:800;font-size:42px;line-height:1}
+  .gauge .val span{display:block;font-size:12px;color:#9fb3cc;margin-top:4px}
+  .level{display:inline-block;background:var(--teal);color:var(--navy);font-weight:600;font-size:13px;border-radius:999px;padding:4px 12px;margin-bottom:10px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px}
+  .card h3{font-size:19px;margin-bottom:12px}
+  .bars{display:grid;gap:12px}
+  .bar .lab{display:flex;justify-content:space-between;font-size:14px;margin-bottom:5px}
+  .bar .lab b{font-weight:600}
+  .bar .tr{height:8px;background:var(--line);border-radius:6px;overflow:hidden}
+  .bar .tr i{display:block;height:100%;width:0;border-radius:6px;background:var(--teal-d);transition:width 1s ease .3s}
+  .bar.low .tr i{background:#FF6A13}
+  .hours b{font-family:"Plus Jakarta Sans",sans-serif;font-weight:800;font-size:44px;color:var(--navy);line-height:1}
+  .hours p{color:var(--muted);font-size:14px;margin-top:8px}
+  .hours small{display:block;font-size:12px;color:var(--muted);margin-top:12px;font-style:italic}
+  .tips{display:grid;gap:12px;margin-top:16px}
+  .tip{background:var(--card);border:1px solid var(--line);border-left:4px solid #FF6A13;border-radius:12px;padding:16px 18px}
+  .tip b{display:block;color:var(--navy);margin-bottom:4px}
+  .tip p{color:var(--muted);font-size:15px}
+  .cta{margin-top:24px;background:linear-gradient(135deg,var(--teal),var(--teal-d));color:#fff;border-radius:22px;padding:30px}
+  .cta h3{color:#fff;font-size:24px;margin-bottom:10px}
+  .cta p{color:#c8d5e6;margin-bottom:6px}
+  .cta .tel{color:#fff;font-weight:600;text-decoration:none;border-bottom:1px solid var(--teal)}
+  .sect{margin-top:28px;font-size:20px}
+  footer{text-align:center;font-size:12px;color:var(--muted);padding:0 24px 40px}
+  @media (max-width:640px){
+    main{padding:28px 16px 60px}
+    .top{padding:16px}
+    .perks{grid-template-columns:1fr}
+    .opts.grid{grid-template-columns:1fr}
+    .res-head{grid-template-columns:1fr;justify-items:center;text-align:center}
+    .grid2{grid-template-columns:1fr}
+  }
+  .btn.ghost-outline{background:transparent;border:1.5px solid var(--line);color:var(--navy);box-shadow:none}
+  .btn.ghost-outline:hover{border-color:var(--teal);box-shadow:none;background:rgba(10,108,255,.08)}
+  @media print{
+    *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important}
+    body{background:var(--bg)!important}
+    .top,.progress,footer,#dlPdfBtn{display:none!important}
+    main{padding:0 24px 24px!important}
+    .screen{animation:none!important}
+    @page{margin:12mm}
+  }
+</style>
+
+<!-- Styles de base requis par le formulaire Brevo -->
+<style>
+  :where(.sib-form-message-panel) { display: none; }
+  :where(.sib-form-message-panel .sib-notification__icon) { width: 20px; height: 20px; }
+  #sib-container input::placeholder, #sib-container textarea::placeholder { font-family: inherit; color: #6c7288; }
+  #sib-container a { text-decoration: underline; color: #6FA8FF; }
+</style>
+<link rel="stylesheet" href="https://sibforms.com/forms/end-form/build/sib-styles.css">
+
+<!-- Habillage DecIA du formulaire Brevo (survit aux réécritures DOM de main.js) -->
+<style>
+  #sib-form-container{max-width:100%}
+  .sib-form{text-align:left!important;background:transparent!important;padding:0!important}
+  #sib-container{max-width:100%!important;background:var(--card)!important;border:1.5px solid var(--line)!important;border-radius:16px!important;padding:8px 20px!important;text-align:left!important}
+  .sib-form-block{font-family:"Plus Jakarta Sans",sans-serif!important;text-align:left!important}
+  .sib-form-block p{font-family:inherit!important;font-size:18px!important;font-weight:700!important;color:var(--navy)!important;text-decoration:none!important;background:transparent!important}
+  .entry__label{font-family:"Plus Jakarta Sans",sans-serif!important;font-size:14px!important;font-weight:500!important;color:var(--navy)!important;background:transparent!important}
+  .sib-input .input, .sib-sms-input .input, #sib-container select, #sib-container input[type="text"], #sib-container input[type="tel"]{
+    font-family:inherit!important;font-size:16px!important;color:var(--ink)!important;background:rgba(255,255,255,.05)!important;
+    border:1.5px solid var(--line)!important;border-radius:12px!important;padding:14px 16px!important;
+  }
+  .sib-input .input:focus, .sib-sms-input .input:focus{outline:none!important;border-color:var(--teal-d)!important}
+  .sib-sms-tooltip__box{background:var(--panel)!important;color:var(--muted)!important;border:1px solid var(--line)!important}
+  .entry__choice span{color:var(--muted)!important;background:transparent!important}
+  .checkbox_tick_positive{border:1.5px solid var(--line)!important;background:rgba(255,255,255,.05)!important}
+  input#OPT_IN:checked ~ .checkbox_tick_positive{background:var(--teal-d)!important;border-color:var(--teal-d)!important}
+  .sib-form-block__button{
+    font-family:"Plus Jakarta Sans",sans-serif!important;font-weight:600!important;font-size:16px!important;
+    background:linear-gradient(135deg,var(--teal),var(--teal-d))!important;color:#fff!important;border:0!important;
+    border-radius:12px!important;padding:15px 24px!important;width:100%!important;justify-content:center!important;
+  }
+  #error-message{background:rgba(255,106,19,.14)!important;border-color:#FF6A13!important;color:#FFC8A8!important}
+  #success-message{background:rgba(24,184,158,.14)!important;border-color:#18B89E!important;color:#6EE7C0!important}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a class="logo" href="https://decia.fr">
+    <img src="assets/logo.png" alt="DecIA">
+  </a>
+  <span class="step-count" id="stepCount"></span>
+</header>
+<div class="progress"><i id="prog"></i></div>
+
+<main>
+  <!-- Intro -->
+  <section class="screen on hero" id="s-intro">
+    <span class="eyebrow">Pré-diagnostic gratuit</span>
+    <h1 id="heroTitle">Où en est votre entreprise avec l'IA&nbsp;?</h1>
+    <p class="lead">13 questions, 3 minutes. Vous obtenez immédiatement votre niveau de maturité, vos points forts et vos angles morts, et une estimation du temps que vous pourriez récupérer.</p>
+    <div class="perks">
+      <div class="perk"><b>3 min</b><span>pas de préparation nécessaire</span></div>
+      <div class="perk"><b>Score /100</b><span>sur 5 dimensions clés</span></div>
+      <div class="perk"><b>Immédiat</b><span>résultat affiché à l'écran</span></div>
+    </div>
+    <button class="btn" onclick="start()">Commencer le diagnostic →</button>
+    <p class="note">Gratuit, sans engagement. Vos réponses restent confidentielles.</p>
+  </section>
+
+  <!-- Questions (générées) -->
+  <section class="screen q" id="s-q">
+    <div class="qlabel" id="qDim"></div>
+    <h2 id="qTitle"></h2>
+    <p class="help" id="qHelp"></p>
+    <div class="opts" id="qOpts"></div>
+    <button class="ghost" id="backBtn" onclick="back()">← Question précédente</button>
+  </section>
+
+  <!-- Contact -->
+  <section class="screen q" id="s-contact">
+    <div class="qlabel">Dernière étape</div>
+    <h2>Votre résultat est prêt.</h2>
+    <p class="help">Confirmez vos coordonnées pour l'afficher et recevoir votre diagnostic détaillé.</p>
+    <div class="sib-form">
+      <div id="sib-form-container" class="sib-form-container">
+        <div id="error-message" class="sib-form-message-panel">
+          <div class="sib-form-message-panel__text sib-form-message-panel__text--center">
+            <span class="sib-form-message-panel__inner-text">Nous n'avons pas pu confirmer votre inscription.</span>
+          </div>
+        </div>
+        <div id="success-message" class="sib-form-message-panel">
+          <div class="sib-form-message-panel__text sib-form-message-panel__text--center">
+            <span class="sib-form-message-panel__inner-text">Vos résultats prochaine page</span>
+          </div>
+        </div>
+        <div id="sib-container" class="sib-container--large sib-container--vertical">
+          <form id="sib-form" method="POST" action="https://69a6cd00.sibforms.com/serve/MUIFAKKVLnT9H2kN-wzKKgL793-NoaYNfnfhwHHSqWRav3UHhlDQkf8hN3ORe2WfZfVfEmXeZhZay0ggMlp1wqaG3A3EN6Xd1TMhAWQ9cQRsdJWTuSJBlhSvJadPuwA6uXhwwwEYDlEeoxFXd-Hc-gqSIMKw8kiaR96UNeuYUD8N7pTgmvV_U_EkVjdprcFhIWY_Zge_k-RDgy-Rsw==" data-type="subscription" onsubmit="return onPreDiagSubmit(event)">
+            <div style="padding:8px 0">
+              <div class="sib-input sib-form-block">
+                <div class="form__entry entry_block">
+                  <div class="form__label-row">
+                    <label class="entry__label" for="PRENOM" data-required="*">Prénom</label>
+                    <div class="entry__field"><input class="input" maxlength="200" type="text" id="PRENOM" name="PRENOM" autocomplete="given-name" placeholder="Jean" data-required="true" required /></div>
+                  </div>
+                  <label class="entry__error entry__error--primary"></label>
+                </div>
+              </div>
+            </div>
+            <div style="padding:8px 0">
+              <div class="sib-input sib-form-block">
+                <div class="form__entry entry_block">
+                  <div class="form__label-row">
+                    <label class="entry__label" for="EMAIL" data-required="*">Email professionnel</label>
+                    <div class="entry__field"><input class="input" type="text" id="EMAIL" name="EMAIL" autocomplete="email" value="" placeholder="jean@entreprise.fr" data-required="true" required /></div>
+                  </div>
+                  <label class="entry__error entry__error--primary"></label>
+                </div>
+              </div>
+            </div>
+            <div style="padding:8px 0">
+              <div class="sib-sms-field sib-form-block">
+                <div class="form__entry entry_block">
+                  <div class="form__label-row">
+                    <label class="entry__label" for="SMS">Téléphone (optionnel)</label>
+                    <div class="sib-sms-input-wrapper" style="direction:ltr">
+                      <div class="sib-sms-input" data-placeholder="6 12 34 56 78" data-country-code="FR" data-value="" data-attributename="SMS">
+                        <div class="entry__field"><select class="input" name="SMS__COUNTRY_CODE"><option value="+33">+33 FR</option></select></div>
+                        <div class="entry__field" style="width:100%"><input type="tel" class="input" id="SMS" name="SMS" autocomplete="off" placeholder="6 12 34 56 78" /></div>
+                      </div>
+                    </div>
+                  </div>
+                  <label class="entry__error entry__error--primary"></label>
+                  <label class="entry__error entry__error--secondary"></label>
+                </div>
+              </div>
+            </div>
+            <div style="padding:8px 0">
+              <div class="sib-input sib-form-block">
+                <div class="form__entry entry_block">
+                  <div class="form__label-row">
+                    <label class="entry__label" for="name" data-required="*">Entreprise</label>
+                    <div class="entry__field"><input class="input" maxlength="200" type="text" id="name" name="COMPANY:name" autocomplete="organization" placeholder="Dupont SAS" data-required="true" required /></div>
+                  </div>
+                  <label class="entry__error entry__error--primary"></label>
+                </div>
+              </div>
+            </div>
+            <div style="padding:8px 0">
+              <div class="sib-optin sib-form-block" data-required="true">
+                <div class="form__entry entry_mcq">
+                  <div class="form__label-row">
+                    <div class="entry__choice">
+                      <label>
+                        <input type="checkbox" class="input_replaced" value="1" id="OPT_IN" name="OPT_IN" required />
+                        <span class="checkbox checkbox_tick_positive"></span>
+                        <span>J'accepte que Decia utilise ces réponses pour m'envoyer mon diagnostic et me recontacter à ce sujet. Désinscription possible à tout moment.</span>
+                      </label>
+                    </div>
+                  </div>
+                  <label class="entry__error entry__error--primary"></label>
+                </div>
+              </div>
+            </div>
+            <div style="padding:8px 0">
+              <div class="sib-form-block" style="text-align:left">
+                <button class="sib-form-block__button sib-form-block__button-with-loader" form="sib-form" type="submit" id="submitBtn">Voir mon résultat →</button>
+              </div>
+            </div>
+            <input type="text" name="email_address_check" value="" class="input--hidden" style="display:none">
+            <input type="hidden" name="locale" value="fr">
+          </form>
+        </div>
+      </div>
+    </div>
+    <button class="ghost" onclick="back()">← Question précédente</button>
+  </section>
+
+  <!-- Résultat -->
+  <section class="screen" id="s-result">
+    <div class="res-head">
+      <div class="gauge">
+        <svg width="150" height="150" viewBox="0 0 150 150"><circle cx="75" cy="75" r="64" stroke="rgba(255,255,255,.18)" stroke-width="12" fill="none"/><circle id="gArc" cx="75" cy="75" r="64" stroke="#0A6CFF" stroke-width="12" fill="none" stroke-linecap="round" stroke-dasharray="402" stroke-dashoffset="402" style="transition:stroke-dashoffset 1.2s ease .2s"/></svg>
+        <div class="val"><div><b id="rScore">0</b><span>sur 100</span></div></div>
+      </div>
+      <div>
+        <span class="level" id="rLevel"></span>
+        <h1 id="rTitle"></h1>
+        <p id="rLevelTxt"></p>
+      </div>
+    </div>
+
+    <button class="btn ghost-outline" id="dlPdfBtn" onclick="downloadPdf()" style="margin:20px 0 0">Télécharger mon diagnostic (PDF) ↓</button>
+
+    <div class="grid2">
+      <div class="card">
+        <h3>Vos 5 dimensions</h3>
+        <svg id="radar" viewBox="0 0 260 230" width="100%" aria-label="Radar des 5 dimensions"></svg>
+      </div>
+      <div class="card">
+        <h3>Détail sur 20</h3>
+        <div class="bars" id="bars"></div>
+      </div>
+    </div>
+
+    <div class="card hours" style="margin-top:16px">
+      <h3>Temps potentiellement récupérable</h3>
+      <b id="rHours">0</b> <span style="font-size:18px;color:var(--muted)">heures / an</span>
+      <p>à l'échelle de votre entreprise, en ordre de grandeur.</p>
+      <small>Estimation : temps déclaré × effectif × 20&nbsp;% automatisable, sur 45 semaines. À affiner sur vos processus réels.</small>
+    </div>
+
+    <h3 class="sect" id="tipsTitle">Vos premières pistes</h3>
+    <div class="tips" id="tips"></div>
+
+    <div class="cta">
+      <h3>Passer de la tendance au plan d'action</h3>
+      <p>Ce pré-diagnostic donne une tendance. Pour identifier vos 2 ou 3 gains prioritaires, chiffrés sur vos processus réels, je vous propose un échange de 45 minutes dans vos locaux.</p>
+      <p style="margin-top:14px"><b>Répondez simplement au mail par lequel vous avez reçu ce lien</b>, ou appelez-moi au <a class="tel" href="tel:+33689180195">06 89 18 01 95</a>.</p>
+      <p style="margin-top:18px;color:#fff">Olivier — Decia, conseil IA et automatisation</p>
+    </div>
+  </section>
+</main>
+<footer>© Decia — Vos réponses servent uniquement à établir votre diagnostic. Aucune revente de données.</footer>
+
+<script>
+const PTS=[0,3,7,10];
+const Q=[
+  {key:'secteur',dim:'Votre entreprise',title:"Votre secteur d'activité ?",grid:true,opts:['Artisanat / BTP','Commerce / distribution','Industrie / production','Services aux entreprises','Professions libérales / cabinets','Santé / social','Transport / logistique','Hôtellerie / restauration','Autre']},
+  {key:'effectif',dim:'Votre entreprise',title:'Combien de personnes travaillent dans votre entreprise ?',opts:['1 à 9 personnes','10 à 49 personnes','50 à 100 personnes','Plus de 100 personnes'],val:[5,25,75,120]},
+  {key:'temps_repetitif',dim:'Votre entreprise',title:'Temps moyen passé par personne et par semaine sur des tâches répétitives ?',help:'Saisie, relances, devis, reporting, copier-coller entre logiciels…',opts:['Moins de 2 h','2 à 5 h','5 à 10 h','Plus de 10 h'],val:[1,3,7,12]},
+  {key:'q_usages_qui',dim:'Usages IA',d:0,title:"Qui utilise l'IA générative (ChatGPT, Copilot, Mistral…) dans votre entreprise ?",opts:['Personne, à ma connaissance','Quelques personnes, à titre personnel','Plusieurs personnes, régulièrement, sans cadre défini',"Usages identifiés, outils fournis par l'entreprise"]},
+  {key:'q_usages_frequence',dim:'Usages IA',d:0,title:"À quelle fréquence l'IA est-elle utilisée dans le travail ?",opts:['Jamais','Ponctuellement','Chaque semaine','Tous les jours']},
+  {key:'q_processus_taches',dim:'Processus',d:1,title:'Vos tâches répétitives sont…',opts:['Difficiles à identifier','Connues, mais jamais listées','Listées et mesurées','Déjà en partie automatisées']},
+  {key:'q_processus_outils',dim:'Processus',d:1,title:"Quels outils d'automatisation sont en place ?",opts:['Aucun','Quelques macros ou modèles Excel/Word','Quelques flux automatiques (Zapier, Make, connecteurs…)','Plusieurs flux en production, suivis']},
+  {key:'q_donnees_stockage',dim:'Données & outils',d:2,title:'Où se trouvent vos informations clients et dossiers ?',opts:['Papier et boîtes mail','Fichiers Excel dispersés','Un logiciel principal, complété par des fichiers','Des logiciels structurés et à jour']},
+  {key:'q_donnees_connexion',dim:'Données & outils',d:2,title:'Vos logiciels communiquent-ils entre eux ?',opts:['Non, on ressaisit','Par exports manuels','En partie','Oui, automatiquement']},
+  {key:'q_equipe_formation',dim:'Équipe',d:3,title:"Votre équipe a-t-elle été formée à l'IA ?",opts:['Aucune formation','Autoformation individuelle','Sensibilisation ponctuelle','Formation structurée']},
+  {key:'q_equipe_perception',dim:'Équipe',d:3,title:"Comment votre équipe perçoit-elle l'IA ?",opts:['Plutôt réticente','Curieuse, mais sans temps à y consacrer','Volontaire','Demandeuse, avec des référents identifiés']},
+  {key:'q_cadre_regles',dim:'Cadre & pilotage',d:4,title:"Avez-vous des règles sur les données que l'on peut confier à une IA ?",opts:["La question ne s'est pas posée","Le risque est identifié, rien n'est formalisé",'Des consignes orales','Une charte écrite']},
+  {key:'q_cadre_direction',dim:'Cadre & pilotage',d:4,title:"Pour la direction, l'IA c'est…",opts:["Pas une priorité pour l'instant",'Un intérêt, sans plan défini','Des priorités identifiées','Un budget et une feuille de route']}
+];
+const DIMS=['Usages IA','Processus','Données','Équipe','Cadre'];
+const LEVELS=[
+  {max:25,name:'Découverte',txt:"L'IA est encore peu présente chez vous. C'est le niveau où les premiers gains sont les plus rapides : quelques usages simples, bien choisis, libèrent du temps dès les premières semaines."},
+  {max:50,name:'Exploration',txt:"L'IA est utilisée, mais de façon dispersée. L'enjeu est de transformer ces initiatives individuelles en gains mesurables pour toute l'entreprise."},
+  {max:75,name:'Structuration',txt:'Vous avez de bonnes bases. Le prochain palier consiste à connecter vos outils et automatiser les processus à plus fort volume.'},
+  {max:100,name:'Pilotage',txt:"Vous faites partie des entreprises avancées. L'enjeu est d'industrialiser, de mesurer le retour sur investissement et de sécuriser vos usages dans la durée."}
+];
+const TIPS=[
+  ['Usages IA','Identifiez 2 ou 3 tâches de rédaction récurrentes (mails types, comptes rendus, devis) et testez-les avec un assistant IA pendant 2 semaines, en mesurant le temps gagné.'],
+  ['Processus','Listez pendant une semaine les tâches faites « à la main » plus de 3 fois. Celles qui suivent toujours les mêmes étapes sont vos meilleures candidates à l\'automatisation.'],
+  ['Données','Repérez la ressaisie la plus fréquente entre deux logiciels ou fichiers : c\'est souvent le premier gain rapide, sans changer d\'outil.'],
+  ['Équipe','Une séance courte de prise en main, sur vos propres cas métier, déclenche plus d\'adoption qu\'une formation générique.'],
+  ['Cadre','Fixez une règle simple : quelles données (clients, RH, financières) ne doivent jamais être collées dans un outil IA grand public.']
+];
+
+const ans=new Array(Q.length).fill(null);
+let i=0;
+const $=id=>document.getElementById(id);
+const params=new URLSearchParams(location.search);
+
+// préremplissage depuis le lien du mail
+const FIELD_MAP={prenom:'PRENOM',entreprise:'name',email:'EMAIL'};
+Object.keys(FIELD_MAP).forEach(k=>{const el=$(FIELD_MAP[k]);if(el&&params.get(k))el.value=params.get(k)});
+if(params.get('entreprise'))$('heroTitle').textContent=`Où en est ${params.get('entreprise')} avec l'IA ?`;
+
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));$(id).classList.add('on');window.scrollTo({top:0,behavior:'smooth'})}
+function setProg(n){$('prog').style.width=(n/(Q.length+1)*100)+'%';$('stepCount').textContent=n>0&&n<=Q.length+1?`${Math.min(n,Q.length+1)} / ${Q.length+1}`:''}
+
+function start(){i=0;render()}
+function render(){
+  const q=Q[i];
+  $('qDim').textContent=q.dim;$('qTitle').textContent=q.title;$('qHelp').textContent=q.help||'';
+  const box=$('qOpts');box.className='opts'+(q.grid?' grid':'');box.innerHTML='';
+  q.opts.forEach((o,k)=>{
+    const b=document.createElement('button');b.type='button';b.className='opt'+(ans[i]===k?' sel':'');
+    b.innerHTML=`<span class="k">${String.fromCharCode(65+k)}</span><span>${o}</span>`;
+    b.onclick=()=>{ans[i]=k;b.classList.add('sel');setTimeout(next,220)};
+    box.appendChild(b);
+  });
+  $('backBtn').style.visibility=i===0?'hidden':'visible';
+  show('s-q');setProg(i+1);
+  // relance l'animation
+  const s=$('s-q');s.style.animation='none';s.offsetHeight;s.style.animation='';
+}
+function next(){if(i<Q.length-1){i++;render()}else{show('s-contact');setProg(Q.length+1)}}
+function back(){if($('s-contact').classList.contains('on')){i=Q.length-1}else if(i>0){i--}render()}
+
+function compute(){
+  const dims=[0,0,0,0,0];
+  Q.forEach((q,k)=>{if(q.d!==undefined)dims[q.d]+=PTS[ans[k]]});
+  const score=dims.reduce((a,b)=>a+b,0);
+  const level=LEVELS.find(l=>score<=l.max);
+  const hours=Q[2].val[ans[2]]*Q[1].val[ans[1]]*9;
+  return {dims,score,level,hours};
+}
+
+// ====== EmailJS : envoi du pré-diagnostic déjà formaté ======
+// 1) Crée un compte gratuit sur https://www.emailjs.com
+// 2) Connecte un service d'envoi (Gmail, Outlook...) → note son "Service ID"
+// 3) Crée un template avec les variables {{prenom}} {{entreprise}} {{email}} {{score}} {{niveau}}
+//    {{heures_an}} {{s_usages}} {{s_processus}} {{s_donnees}} {{s_equipe}} {{s_cadre}}
+//    {{secteur}} {{effectif}} {{temps_repetitif}} {{reponses}} {{source}}
+//    → mets l'adresse où tu veux recevoir les résultats dans le champ "To Email" du template
+//    → note le "Template ID" et ta "Public Key" (Account → General)
+// 4) Remplace les 3 valeurs ci-dessous
+const EMAILJS_PUBLIC_KEY='À_COMPLETER';
+const EMAILJS_SERVICE_ID='À_COMPLETER';
+const EMAILJS_TEMPLATE_ID='À_COMPLETER';
+
+function sendDiagnosticEmail(r,contact){
+  if(typeof emailjs==='undefined'||EMAILJS_PUBLIC_KEY==='À_COMPLETER')return;
+  const reponses=Q.map((q,k)=>`- ${q.title} → ${q.opts[ans[k]]??'—'}`).join('\n');
+  emailjs.send(EMAILJS_SERVICE_ID,EMAILJS_TEMPLATE_ID,{
+    prenom:contact.prenom,entreprise:contact.entreprise,email:contact.email,
+    score:r.score,niveau:r.level.name,heures_an:r.hours,
+    s_usages:r.dims[0],s_processus:r.dims[1],s_donnees:r.dims[2],s_equipe:r.dims[3],s_cadre:r.dims[4],
+    secteur:Q[0].opts[ans[0]]||'',effectif:Q[1].opts[ans[1]]||'',temps_repetitif:Q[2].opts[ans[2]]||'',
+    reponses,source:params.get('source')||'direct'
+  },EMAILJS_PUBLIC_KEY).catch(()=>{});
+}
+
+function onPreDiagSubmit(e){
+  const r=compute();
+  const contact={
+    prenom:$('PRENOM').value.trim(),
+    email:$('EMAIL').value.trim(),
+    entreprise:$('name').value.trim()
+  };
+  sendDiagnosticEmail(r,contact);
+  $('submitBtn').disabled=true;$('submitBtn').textContent='Calcul en cours…';
+  setTimeout(()=>showResult(r),900);
+  return true; // ne bloque pas la soumission Brevo, qui se fait en parallèle
+}
+
+function showResult(r){
+  show('s-result');$('prog').style.width='100%';$('stepCount').textContent='Résultat';
+  const prenom=$('PRENOM').value.trim();
+  $('rTitle').textContent=(prenom?prenom+', voici':'Voici')+' votre niveau de maturité IA';
+  $('rLevel').textContent='Niveau : '+r.level.name;$('rLevelTxt').textContent=r.level.txt;
+  // jauge + compteur
+  requestAnimationFrame(()=>{$('gArc').style.strokeDashoffset=402-402*r.score/100});
+  count($('rScore'),r.score,1100);count($('rHours'),r.hours,1300,true);
+  // barres
+  $('bars').innerHTML=DIMS.map((d,k)=>`<div class="bar${r.dims[k]<=10?' low':''}"><div class="lab"><span>${d}</span><b>${r.dims[k]} / 20</b></div><div class="tr"><i style="--w:${r.dims[k]*5}%"></i></div></div>`).join('');
+  setTimeout(()=>document.querySelectorAll('.bar .tr i').forEach(el=>el.style.width=el.style.getPropertyValue('--w')),50);
+  radar(r.dims);
+  // pistes
+  const t=TIPS.filter((_,k)=>r.dims[k]<=10);
+  $('tipsTitle').style.display=t.length?'block':'none';
+  $('tips').innerHTML=t.map(x=>`<div class="tip"><b>${x[0]}</b><p>${x[1]}</p></div>`).join('');
+}
+
+function downloadPdf(){
+  const entreprise=$('name')?.value?.trim()||'';
+  const prevTitle=document.title;
+  document.title=`Diagnostic IA${entreprise?' - '+entreprise:''}`;
+  window.print();
+  setTimeout(()=>{document.title=prevTitle},500);
+}
+
+function count(el,to,ms,fmt){const t0=performance.now();(function f(t){const p=Math.min((t-t0)/ms,1),v=Math.round(to*(1-Math.pow(1-p,3)));el.textContent=fmt?v.toLocaleString('fr-FR'):v;if(p<1)requestAnimationFrame(f)})(t0)}
+
+function radar(v){
+  const cx=130,cy=118,R=86,n=5,svg=$('radar');
+  const pt=(k,r)=>{const a=-Math.PI/2+k*2*Math.PI/n;return[cx+r*Math.cos(a),cy+r*Math.sin(a)]};
+  let h='';
+  [0.25,0.5,0.75,1].forEach(s=>{h+=`<polygon points="${[...Array(n)].map((_,k)=>pt(k,R*s).join(',')).join(' ')}" fill="none" stroke="rgba(255,255,255,.14)"/>`});
+  for(let k=0;k<n;k++){const[x,y]=pt(k,R);h+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="rgba(255,255,255,.14)"/>`;
+    const[lx,ly]=pt(k,R+18);h+=`<text x="${lx}" y="${ly}" font-size="11" font-family="Plus Jakarta Sans" fill="#9AA3BD" text-anchor="middle" dominant-baseline="middle">${DIMS[k]}</text>`}
+  const poly=v.map((x,k)=>pt(k,R*Math.max(x,1)/20).join(',')).join(' ');
+  h+=`<polygon points="${poly}" fill="rgba(10,108,255,.22)" stroke="#0A6CFF" stroke-width="2" style="transform-origin:${cx}px ${cy}px;animation:grow .9s ease .3s both"/>`;
+  h+=`<style>@keyframes grow{from{transform:scale(0)}to{transform:scale(1)}}</style>`;
+  svg.innerHTML=h;
+}
+</script>
+
+<!-- SDK EmailJS (envoi du pré-diagnostic formaté) -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4.3.3/dist/email.min.js"></script>
+
+<!-- Config + script Brevo (capture du contact dans la liste DecIA - Pré-diagnostic) -->
+<script>
+  window.REQUIRED_CODE_ERROR_MESSAGE='Veuillez choisir un code pays';
+  window.LOCALE='fr';
+  window.EMAIL_INVALID_MESSAGE=window.SMS_INVALID_MESSAGE="Les informations que vous avez fournies ne sont pas valides. Veuillez vérifier le format du champ et réessayer.";
+  window.REQUIRED_ERROR_MESSAGE="Vous devez renseigner ce champ. ";
+  window.GENERIC_INVALID_MESSAGE="Les informations que vous avez fournies ne sont pas valides. Veuillez vérifier le format du champ et réessayer.";
+  window.INVALID_NUMBER="Les informations que vous avez fournies ne sont pas valides. Veuillez vérifier le format du champ et réessayer.";
+  window.INVALID_DATE="Veuillez saisir une date valide";
+  window.REQUIRED_MULTISELECT_MESSAGE='Veuillez choisir au moins une option';
+  window.translation={common:{selectedList:'{quantity} liste sélectionnée',selectedLists:'{quantity} listes sélectionnées',selectedOption:'{quantity} sélectionné',selectedOptions:'{quantity} sélectionnés'}};
+  var AUTOHIDE=Boolean(1);
+</script>
+<script defer src="https://sibforms.com/forms/end-form/build/main.js"></script>
+</body>
+</html>

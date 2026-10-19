@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Les 10 Étapes Clés pour Implémenter l'IA dans Votre Entreprise — DecIA</title>
+<meta name="description" content="Guide pratique DecIA en 10 étapes pour implémenter l'IA dans une TPE ou PME, sans projet coûteux ni jargon. Auto-diagnostic inclus.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#03040B;
+    --panel:#0A1230;
+    --card:rgba(255,255,255,0.07);
+    --card-hover:rgba(255,255,255,0.11);
+    --border:rgba(255,255,255,0.14);
+    --border-strong:rgba(255,255,255,0.24);
+    --text:#F5F6F8;
+    --text-soft:#9AA3BD;
+    --text-mute:#6c7288;
+    --blue-start:#0A6CFF;
+    --blue-end:#1A4FF0;
+    --accent:#6FA8FF;
+    --coral:#FF6A13;
+    --grad:linear-gradient(135deg,var(--blue-start),var(--blue-end));
+    --grad-soft:linear-gradient(135deg,rgba(10,108,255,0.16),rgba(26,79,240,0.16));
+    --success:#18B89E;
+    --font-display:"Plus Jakarta Sans",sans-serif;
+    --font-body:"Plus Jakarta Sans",sans-serif;
+    --font-serif:"Instrument Serif",Georgia,serif;
+    --font-mono:"DM Sans",sans-serif;
+    --radius-sm:14px;
+    --radius-md:24px;
+    --radius-lg:32px;
+    --radius-pill:999px;
+    --shadow-glow:0 14px 30px rgba(10,108,255,0.35);
+    --container-w:1180px;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:var(--font-body);
+    color:var(--text);
+    background:var(--bg);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  h1,h2,h3,h4{font-family:var(--font-display);font-weight:700;letter-spacing:-0.02em;color:var(--text);line-height:1.15;}
+  p{color:var(--text-soft);}
+  a{text-decoration:none;color:inherit;}
+  ul{list-style:none;}
+  img{display:block;max-width:100%;}
+  .container{max-width:var(--container-w);margin:0 auto;padding:0 24px;}
+  .grad-text{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:0.72rem;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--accent);
+    font-weight:500;
+    margin-bottom:1rem;
+    display:inline-block;
+  }
+  .section-pad{padding:5rem 0;}
+  .section-pad.alt{background:var(--panel);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+  .section-head{max-width:720px;margin-bottom:2.75rem;}
+  .section-head h2{font-size:clamp(1.6rem,2.6vw,2.15rem);margin-bottom:0.75rem;}
+  .lead{font-size:1.05rem;color:var(--text-soft);max-width:62ch;}
+
+  /* header */
+  .site-header{
+    padding:22px 0;
+    border-bottom:1px solid var(--border);
+  }
+  .site-header .container{display:flex;align-items:center;justify-content:space-between;}
+  .site-header .logo img{height:26px;width:auto;}
+  .site-header .tag{font-family:var(--font-mono);font-size:0.72rem;color:var(--text-mute);letter-spacing:0.05em;}
+
+  /* hero */
+  .hero{padding:5.5rem 0 4rem;position:relative;}
+  .hero-glow{
+    position:absolute;top:-140px;left:50%;transform:translateX(-50%);
+    width:900px;height:420px;
+    background:radial-gradient(closest-side,rgba(10,108,255,0.28),transparent 70%);
+    filter:blur(10px);pointer-events:none;
+  }
+  .hero-inner{position:relative;text-align:center;max-width:820px;margin:0 auto;}
+  .hero h1{font-size:clamp(2rem,4.2vw,3.1rem);margin:0.5rem 0 1.25rem;}
+  .hero .lead{margin:0 auto 2rem;font-size:1.15rem;}
+  .hero-actions{display:flex;gap:0.9rem;justify-content:center;flex-wrap:wrap;margin-bottom:2.25rem;}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:0.5rem;
+    padding:0 1.875rem;min-height:62px;border-radius:20px;
+    font-family:"DM Sans",sans-serif;font-weight:600;font-size:1.0625rem;border:1px solid transparent;letter-spacing:-0.01em;
+    transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease, background .3s ease;
+  }
+  .btn-primary{background:var(--grad);color:#fff;}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:var(--shadow-glow);}
+  .btn-secondary{background:rgba(255,255,255,0.04);border-color:var(--border-strong);color:var(--text);}
+  .btn-secondary:hover{background:rgba(255,255,255,0.08);}
+  .proof-strip{display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;}
+  .proof-chip{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:0.82rem;color:var(--text-soft);font-family:var(--font-mono);
+  }
+  .proof-chip .dot{width:6px;height:6px;border-radius:50%;background:var(--success);display:inline-block;}
+
+  .stat-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1rem;}
+  .stat-box{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-md);padding:1.75rem 1.5rem;text-align:center;}
+  .stat-box .num{font-family:var(--font-display);font-size:2rem;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .stat-box .lbl{font-size:0.85rem;color:var(--text-soft);margin-top:0.4rem;}
+  .stat-box.risk .num{background:linear-gradient(135deg,var(--coral),#FF9A3D);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .stat-box.partial .num{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .stat-box.ok .num{background:linear-gradient(135deg,var(--success),#3FE0C4);-webkit-background-clip:text;background-clip:text;color:transparent;}
+
+  /* benefit / pain cards */
+  .benefits{display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem;}
+  .benefit-card{
+    background:var(--card);border:1px solid var(--border);border-radius:var(--radius-md);
+    padding:1.75rem;transition:background .25s ease, border-color .25s ease;
+  }
+  .benefit-card:hover{background:var(--card-hover);border-color:var(--border-strong);}
+  .benefit-card .icon{
+    width:42px;height:42px;border-radius:10px;background:var(--grad-soft);
+    display:flex;align-items:center;justify-content:center;margin-bottom:1rem;
+    font-family:var(--font-mono);font-weight:800;font-size:1.02rem;color:var(--accent);
+  }
+  .benefit-card h3{font-size:1.02rem;margin-bottom:0.4rem;}
+  .benefit-card p{font-size:0.9rem;}
+
+  /* steps (méthode) */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
+  .step{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-md);padding:1.75rem;}
+  .step-num{font-family:var(--font-mono);font-size:0.85rem;color:var(--accent);margin-bottom:0.6rem;}
+  .step h3{font-size:1.1rem;margin-bottom:0.6rem;}
+  .step p{font-size:0.9rem;}
+
+  /* mode d'emploi rows */
+  .howto-row{display:flex;gap:1.25rem;align-items:flex-start;margin-bottom:1rem;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-md);padding:1.5rem;}
+  .howto-row .num-badge{
+    width:34px;height:34px;border-radius:50%;background:var(--grad);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.95rem;flex:none;
+  }
+  .howto-row h3{font-size:1rem;margin-bottom:0.3rem;}
+  .howto-row p{font-size:0.88rem;}
+  .howto-row p a{color:var(--accent);text-decoration:underline;}
+  .howto-row p a:hover{color:var(--text);}
+
+  /* category / étape sections */
+  .cat-block{margin-bottom:3.25rem;}
+  .cat-head{display:flex;align-items:center;flex-wrap:wrap;gap:0.85rem;margin-bottom:1.5rem;border-bottom:1px solid var(--border);padding-bottom:1rem;}
+  .cat-head .catnum{display:inline-flex;align-items:center;gap:10px;background:#fff;color:#0B1020;border:1px solid rgba(255,255,255,.9);box-shadow:0 14px 26px rgba(0,0,0,.28);border-radius:999px;padding:9px 20px 9px 10px;font-family:"DM Sans",sans-serif;font-size:16px;font-weight:600;max-width:100%}
+  .cat-head .catnum i{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--coral),#FF9A3D);display:flex;align-items:center;justify-content:center;flex:none}
+  .cat-head .catnum i svg{width:16px;height:16px}
+
+  /* étape content card */
+  .etape-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-md);padding:2rem 2.25rem;}
+  .etape-card h3{font-size:1rem;color:var(--text);margin:1.75rem 0 0.6rem;}
+  .etape-card h3:first-child{margin-top:0;}
+  .etape-card p{font-size:0.92rem;margin-bottom:0.25rem;}
+  .etape-card ul,.etape-card ol{padding-left:1.25rem;margin:0.5rem 0 0.25rem;}
+  .etape-card ol{list-style:decimal;}
+  .etape-card ul{list-style:disc;}
+  .etape-card li{font-size:0.9rem;color:var(--text-soft);margin-bottom:0.5rem;}
+  .etape-card .action{margin-top:1.75rem;padding:1.2rem 1.4rem;border-radius:var(--radius-sm);background:var(--grad-soft);border-left:3px solid var(--accent);}
+  .etape-card .action .lbl{font-weight:700;color:var(--text);font-size:0.85rem;margin-bottom:0.35rem;display:block;}
+  .etape-card .action p{margin:0;font-size:0.88rem;}
+  .source-note{font-size:0.78rem;color:var(--text-mute);margin-top:1.75rem;border-top:1px solid var(--border);padding-top:1rem;}
+
+  .mini-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.1rem;}
+  .mini-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-md);padding:1.5rem;}
+  .mini-card h4{font-size:1rem;margin-bottom:0.2rem;display:inline-block;padding:5px 12px;border:1.5px solid var(--accent);border-radius:10px;background:rgba(111,168,255,.08);}
+  .mini-card .tagline{font-family:var(--font-mono);font-size:0.72rem;color:var(--text-mute);margin-bottom:0.75rem;}
+  .mini-card li{font-size:0.85rem;color:var(--text-soft);margin-bottom:0.4rem;padding-left:1rem;position:relative;}
+  .mini-card li::before{content:"";position:absolute;left:0;top:0.55em;width:5px;height:5px;border-radius:50%;background:var(--accent);}
+
+  /* data tables */
+  .table-wrap{border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;margin:1rem 0 1.5rem;background:var(--card);overflow-x:auto;}
+  table.data-table{width:100%;border-collapse:collapse;}
+  .data-table th{background:rgba(255,255,255,0.04);color:var(--text-mute);font-family:var(--font-mono);font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;text-align:left;padding:14px 18px;border-bottom:1px solid var(--border);white-space:nowrap;}
+  .data-table td{padding:14px 18px;border-bottom:1px solid var(--border);font-size:0.88rem;color:var(--text-soft);}
+  .data-table tr:last-child td{border-bottom:none;}
+  .data-table td.num{color:var(--accent);font-family:var(--font-mono);font-weight:700;width:36px;}
+  .data-table td.score{text-align:right;font-family:var(--font-mono);color:var(--text-mute);white-space:nowrap;}
+  .data-table td b{color:var(--text);}
+
+  /* CTA rich (repris de index.html) */
+  .cta-rich{position:relative;overflow:hidden;display:grid;grid-template-columns:1fr;max-width:720px;margin:0 auto;gap:var(--space-4);padding:56px;border-radius:var(--radius-lg);background:var(--grad);}
+  .cta-rich::before{content:"";position:absolute;width:340px;height:340px;top:-140px;right:-80px;background:radial-gradient(circle,rgba(255,255,255,0.22),transparent 70%);pointer-events:none;}
+  .cta-rich > *{position:relative;z-index:1;}
+  .cta-rich .cta-text{text-align:center;}
+  .cta-rich .badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:var(--radius-pill);background:rgba(255,255,255,0.15);color:#fff;font-family:var(--font-mono);font-size:0.72rem;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:18px;}
+  .cta-rich h2{color:#fff;font-size:clamp(1.6rem,3vw,2.1rem);margin-bottom:14px;}
+  .cta-rich .cta-text p{color:rgba(255,255,255,0.85);margin:0 auto 24px;max-width:48ch;}
+  .cta-rich .btn-primary{background:#fff;color:var(--blue-start);}
+  .cta-rich .btn-primary:hover{box-shadow:0 14px 26px rgba(0,0,0,0.35);}
+  .cta-rich .avatars-row{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:28px;}
+  .cta-rich .avatars-row .avatars{display:flex;}
+  .cta-rich .avatars-row .avatars span{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.15);border:2px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;margin-left:-8px;flex-shrink:0;}
+  .cta-rich .avatars-row .avatars span svg{width:14px;height:14px;stroke:#fff;}
+  .cta-rich .avatars-row .avatars span:first-child{margin-left:0;}
+  .cta-rich .avatars-row .txt{color:rgba(255,255,255,0.85);font-size:0.86rem;}
+
+  .checklist{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-md);padding:1.75rem;margin:1.5rem 0 0;}
+  .checklist .lbl{font-weight:700;margin-bottom:0.9rem;color:var(--text);font-size:0.95rem;}
+  .checklist li{position:relative;padding-left:1.6rem;margin-bottom:0.6rem;font-size:0.92rem;color:var(--text-soft);}
+  .checklist li::before{content:"✓";position:absolute;left:0;color:var(--success);font-weight:800;}
+
+  /* footer */
+  .site-footer{border-top:1px solid var(--border);padding:3rem 0 2rem;background:var(--panel);}
+  .footer-top{display:flex;justify-content:space-between;flex-wrap:wrap;gap:2rem;margin-bottom:2rem;}
+  .footer-brand p{font-size:0.85rem;max-width:320px;margin-top:0.75rem;}
+  .footer-col h4{font-family:var(--font-mono);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-mute);margin-bottom:0.75rem;}
+  .footer-col p, .footer-col a{display:block;font-size:0.88rem;color:var(--text-soft);margin-bottom:0.4rem;}
+  .footer-col a:hover{color:var(--accent);}
+  .footer-cols{display:flex;gap:3.5rem;}
+  .footer-bottom{border-top:1px solid var(--border);padding-top:1.5rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;font-size:0.78rem;color:var(--text-mute);}
+
+  @media (max-width:860px){
+    .benefits,.mini-grid,.steps,.stat-strip{grid-template-columns:1fr;}
+    .footer-cols{gap:2rem;flex-wrap:wrap;}
+    .data-table th,.data-table td{padding:10px 12px;font-size:0.82rem;}
+    .etape-card{padding:1.5rem 1.4rem;}
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <a href="index.html" class="logo"><img src="assets/logo.png" alt="DecIA" width="100" height="24"></a>
+    <span class="tag">Guide 2026 · TPE, PME &amp; Artisans</span>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="hero-glow" aria-hidden="true"></div>
+  <div class="container">
+    <div class="hero-inner">
+      <p class="eyebrow">Guide gratuit · Méthode IA pour TPE, PME &amp; dirigeants</p>
+      <h1>Les 10 étapes clés pour <span class="grad-text">implémenter l'IA</span> dans votre entreprise</h1>
+      <p class="lead">Gagner du temps avec l'IA — sans projet coûteux, sans jargon et sans ajouter une usine à gaz à votre organisation.</p>
+      <div class="stat-strip">
+        <div class="stat-box"><div class="num">10</div><div class="lbl">étapes pour structurer votre démarche IA</div></div>
+        <div class="stat-box"><div class="num">18%</div><div class="lbl">des entreprises françaises utilisent déjà l'IA (Insee 2025)</div></div>
+        <div class="stat-box"><div class="num">71%</div><div class="lbl">de celles qui ne l'utilisent pas n'en voient pas l'utilité</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MODE D'EMPLOI -->
+<section class="section-pad" style="padding-top:1.5rem;">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow">À qui s'adresse ce guide</p>
+      <h2>Comment lire ce guide</h2>
+      <p class="lead">Vous dirigez une TPE ou une PME. Vous avez peut-être testé ChatGPT, entendu parler d'« agents IA » ou d'automatisation, et vous vous demandez par où commencer pour que l'IA serve vraiment votre entreprise — et pas seulement votre curiosité. Ce guide vous donne une méthode en 10 étapes pour passer d'une idée floue à des résultats mesurables : du temps gagné, moins d'erreurs, des clients mieux servis.</p>
+    </div>
+    <div class="howto-row">
+      <div class="num-badge">1</div>
+      <div><h3>Lisez une étape à la fois</h3><p>Chacune tient en une page et se termine par une action concrète à réaliser dans la semaine.</p></div>
+    </div>
+    <div class="howto-row">
+      <div class="num-badge">2</div>
+      <div><h3>Suivez l'ordre</h3><p>Les étapes s'enchaînent : sauter les premières est la cause la plus fréquente d'échec.</p></div>
+    </div>
+    <div class="howto-row">
+      <div class="num-badge">3</div>
+      <div><h3>Repérez l'action de la semaine</h3><p>Chaque étape se termine par une action simple, à réaliser avant de passer à la suivante.</p></div>
+    </div>
+    <div class="howto-row">
+      <div class="num-badge">4</div>
+      <div><h3>Faites l'auto-diagnostic</h3><p>En fin de guide, pour savoir où vous en êtes et par quoi commencer.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- LE CONSTAT -->
+<section class="section-pad alt">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow">Le constat</p>
+      <h2>Beaucoup d'essais, peu de résultats durables</h2>
+      <p class="lead">L'IA progresse vite dans les entreprises françaises. Selon l'Insee, 18% des entreprises de 10 salariés ou plus déclaraient utiliser au moins une technologie d'IA en 2025, contre 10% un an plus tôt. Mais parmi celles qui ne l'utilisent pas, 71% déclarent ne pas en voir l'utilité ; et parmi celles qui l'utilisent, plus de la moitié se disent freinées par un manque d'expertise. <span class="grad-text">Le frein n'est pas l'outil. C'est de savoir à quoi l'IA peut servir chez vous, et comment l'installer sans y perdre de temps.</span></p>
+    </div>
+    <div class="benefits">
+      <div class="benefit-card">
+        <div class="icon">01</div>
+        <h3>Partir de l'outil</h3>
+        <p>« On a pris un abonnement, maintenant cherchons à quoi il sert. » Résultat : un outil peu utilisé, puis abandonné.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="icon">02</div>
+        <h3>Viser trop gros, trop vite</h3>
+        <p>Un grand projet « IA » lancé d'un coup, coûteux, long, et dont personne ne sait mesurer le résultat.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="icon">03</div>
+        <h3>Oublier les équipes</h3>
+        <p>L'outil est choisi par la direction, imposé sans explication, et contourné par ceux qui devaient l'utiliser.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="icon">04</div>
+        <h3>Ne rien mesurer</h3>
+        <p>Sans point de départ chiffré, impossible de savoir si l'IA fait gagner du temps ou en fait perdre.</p>
+      </div>
+    </div>
+    <p class="source-note">Les 10 étapes qui suivent sont conçues pour éviter ces quatre pièges. Source : Insee Première n° 2120, juillet 2026, « Les TIC dans les entreprises en 2025 » ; comparaison 2024 : Insee Première n° 2061, juillet 2025.</p>
+  </div>
+</section>
+
+<!-- LES 10 ETAPES -->
+<section class="section-pad" id="etapes">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow">La méthode</p>
+      <h2>Les 10 étapes, une à une</h2>
+      <p class="lead">De l'idée floue aux résultats mesurables : identifier les bons cas d'usage, sécuriser vos données, tester rapidement et intégrer l'IA dans le quotidien de vos équipes.</p>
+    </div>
+
+    <div class="cat-block" id="etape-1">
+      <div class="cat-head"><span class="catnum"><i><svg viewBox="0 0 24 24"><path d="M12 1.5C13 8 16 11 22.5 12 16 13 13 16 12 22.5 11 16 8 13 1.5 12 8 11 11 8 12 1.5z" fill="#fff"/></svg></i>01 — Partir de vos problèmes, pas des outils</span></div>
+      <div class="etape-card">
+        <h3>Pourquoi c'est décisif</h3>
+        <p>L'IA n'est pas un objectif. C'est un moyen. Une entreprise qui « se met à l'IA » sans savoir ce qu'elle veut améliorer finit avec des outils qui ne changent rien à son quotidien.</p>
+        <h3>Ce qu'il faut faire</h3>
+        <ul>
+          <li>Listez ce qui vous coûte le plus aujourd'hui : du temps, des erreurs, des retards, des clients mécontents, une charge qui empêche de se développer.</li>
+          <li>Choisissez <strong>2 ou 3 objectifs business</strong> formulés en résultat, pas en technologie.</li>
+          <li>Pour chacun, posez une question simple : « Comment saurai-je que c'est réussi ? »</li>
+        </ul>
+        <h3>Exemple</h3>
+        <p>Un cabinet d'architectes ne se fixe pas comme objectif « utiliser l'IA », mais <strong>« réduire de moitié le temps passé à rédiger les comptes rendus de chantier »</strong>. L'objectif est clair, mesurable, et l'IA n'est qu'une des façons possibles de l'atteindre.</p>
+        <h3>L'erreur à éviter</h3>
+        <p>Commencer par comparer ChatGPT, Copilot et les autres. Le choix de l'outil arrive à l'étape 6, pas avant.</p>
+        <div class="action"><span class="lbl">✓ Votre action cette semaine</span><p>Écrivez vos 3 objectifs sous la forme : « Je veux [résultat] pour [qui / quel service], mesuré par [indicateur]. »</p></div>
+      </div>
+    </div>
+
+    <div class="cat-block" id="etape-2">
+      <div class="cat-head"><span class="catnum"><i><svg viewBox="0 0 24 24"><path d="M12 1.5C13 8 16 11 22.5 12 16 13 13 16 12 22.5 11 16 8 13 1.5 12 8 11 11 8 12 1.5z" fill="#fff"/></svg></i>02 — Repérer où part le temps</span></div>
+      <div class="etape-card">
+        <h3>Pourquoi c'est décisif</h3>
+        <p>Les meilleures opportunités se cachent rarement dans les grands projets. Elles se trouvent dans les petites tâches répétitives que tout le monde fait sans y penser, et qui, additionnées, représentent des heures chaque semaine.</p>
+        <h3>Ce qu'il faut faire</h3>
+        <p>Pendant une semaine, notez avec vos équipes les tâches répétitives dans un tableau simple :</p>
+        <div class="table-wrap">
+          <table class="data-table">
+            <tr><th>Tâche</th><th>Qui</th><th>Fréquence</th><th>Temps estimé</th><th>Ce qui agace</th></tr>
+            <tr><td>Saisie des factures fournisseurs</td><td>Assistante</td><td>Quotidienne</td><td>45 min/jour</td><td>Ressaisie, erreurs</td></tr>
+            <tr><td>Relances de devis</td><td>Commercial</td><td>Hebdomadaire</td><td>2 h/semaine</td><td>Oublis</td></tr>
+            <tr><td>Réponses aux mêmes questions clients</td><td>Accueil</td><td>Quotidienne</td><td>1 h/jour</td><td>Répétitif</td></tr>
+          </table>
+        </div>
+        <p style="font-size:0.8rem;color:var(--text-mute);font-style:italic;">Exemple illustratif.</p>
+        <p>Cherchez en priorité les tâches qui sont <strong>fréquentes, répétitives, basées sur des documents ou des mails</strong>, et qui suivent à peu près toujours le même déroulé.</p>
+        <h3>L'erreur à éviter</h3>
+        <p>Faire cet inventaire seul, depuis le bureau de la direction. Ceux qui font les tâches savent où part le temps, et ce sont eux qui adopteront (ou non) la solution.</p>
+        <div class="action"><span class="lbl">✓ Votre action cette semaine</span><p>Demandez à chaque collaborateur de citer ses 3 tâches les plus chronophages et les plus répétitives.</p></div>
+      </div>
+    </div>
+
+    <div class="cat-block" id="etape-3">
+      <div class="cat-head"><span class="catnum"><i><svg viewBox="0 0 24 24"><path d="M12 1.5C13 8 16 11 22.5 12 16 13 13 16 12 22.5 11 16 8 13 1.5 12 8 11 11 8 12 1.5z" fill="#fff"/></svg></i>03 — Faire l'état des lieux des usages actuels</span></div>
+      <div class="etape-card">
+        <h3>Pourquoi c'est décisif</h3>
+        <p>Dans beaucoup d'entreprises, l'IA est déjà là, sans que la direction le sache : un collaborateur rédige ses mails avec un assistant gratuit, un autre résume des contrats clients dans un outil en ligne. Ces usages sont souvent utiles, mais parfois risqués pour vos données.</p>
+        <h3>Ce qu'il faut faire</h3>
+        <p>Posez 5 questions à vos équipes, sans jugement (un questionnaire anonyme fonctionne bien) :</p>
+        <ol>
+          <li>Utilisez-vous un outil d'IA dans votre travail ?</li>
+          <li>Lequel, compte personnel ou professionnel ?</li>
+          <li>Pour quelles tâches ?</li>
+          <li>Y mettez-vous des informations clients ou internes ?</li>
+          <li>Qu'est-ce que cela vous fait gagner ?</li>
+        </ol>
+        <ul>
+          <li>Repérez les usages qui marchent : ce sont vos premiers candidats à généraliser.</li>
+          <li>Repérez les usages à risque : ils seront traités à l'étape 5.</li>
+        </ul>
+        <h3>L'erreur à éviter</h3>
+        <p>Interdire d'emblée. Une interdiction pousse les usages dans l'ombre. Mieux vaut comprendre, encadrer, puis équiper.</p>
+        <div class="action"><span class="lbl">✓ Votre action cette semaine</span><p>Envoyez le questionnaire à vos équipes et fixez une date pour en discuter les résultats ensemble.</p></div>
+      </div>
+    </div>
+
+    <div class="cat-block" id="etape-4">
+      <div class="cat-head"><span class="catnum"><i><svg viewBox="0 0 24 24"><path d="M12 1.5C13 8 16 11 22.5 12 16 13 13 16 12 22.5 11 16 8 13 1.5 12 8 11 11 8 12 1.5z" fill="#fff"/></svg></i>04 — Prioriser les cas d'usage</span></div>
+      <div class="etape-card">
+        <h3>Pourquoi c'est décisif</h3>
+        <p>Après les étapes 2 et 3, vous aurez plus d'idées que de temps. Tout faire en même temps, c'est ne rien terminer. Il faut choisir.</p>
+        <h3>Ce qu'il faut faire</h3>
+        <p>Classez chaque idée selon deux critères : <strong>le gain</strong> (temps gagné × fréquence, erreurs évitées, impact client) et <strong>l'effort</strong> (simplicité, données disponibles, outils à connecter, risques).</p>
+        <div class="table-wrap">
+          <table class="data-table">
+            <tr><th></th><th>Effort faible</th><th>Effort élevé</th></tr>
+            <tr><td><b>Gain élevé</b></td><td><strong>Quick wins</strong> : à lancer en premier</td><td>Projets structurants : à planifier</td></tr>
+            <tr><td><b>Gain faible</b></td><td>Petits plus : si le temps le permet</td><td>À écarter</td></tr>
+          </table>
+        </div>
+        <p>Retenez <strong>1 ou 2 quick wins</strong> pour démarrer. Un premier succès rapide crée la confiance et finance, en temps gagné, les projets suivants.</p>
+        <h3>Exemple</h3>
+        <p>Une PME de services hésite entre un assistant capable de répondre à tous ses clients (gain élevé, effort élevé) et la préparation automatique des relances de devis (gain réel, effort faible). Elle commence par les relances, obtient un résultat en quelques semaines, puis revient au projet plus ambitieux.</p>
+        <h3>L'erreur à éviter</h3>
+        <p>Choisir le projet le plus impressionnant plutôt que le plus utile.</p>
+        <div class="action"><span class="lbl">✓ Votre action cette semaine</span><p>Placez vos idées dans la matrice et entourez les deux quick wins.</p></div>
+      </div>
+    </div>
+
+    <div class="cat-block" id="etape-5">
+      <div class="cat-head"><span class="catnum"><i><svg viewBox="0 0 24 24"><path d="M12 1.5C13 8 16 11 22.5 12 16 13 13 16 12 22.5 11 16 8 13 1.5 12 8 11 11 8 12 1.5z" fill="#fff"/></svg></i>05 — Sécuriser vos données et votre conformité</span></div>
+      <div class="etape-card">
+        <h3>Pourquoi c'est décisif</h3>
+        <p>Envoyer un contrat client, une fiche de paie ou un dossier médical dans un outil d'IA grand public, c'est potentiellement exposer des données personnelles ou confidentielles. Le risque est juridique (RGPD, secret professionnel) et commercial (la confiance de vos clients).</p>
+        <h3>Ce qu'il faut faire</h3>
+        <ul>
+          <li><strong>Classez vos données</strong> : publiques, internes, confidentielles, personnelles ou sensibles.</li>
+          <li><strong>Vérifiez les outils</strong> : où les données sont-elles hébergées ? Sont-elles utilisées pour entraîner les modèles ? Les offres professionnelles offrent généralement des garanties que les versions gratuites n'offrent pas.</li>
+          <li><strong>Rédigez une charte d'usage d'une page</strong> : outils autorisés, données interdites, relecture humaine obligatoire avant tout envoi à un client.</li>
+          <li><strong>Pensez au règlement européen sur l'IA (AI Act)</strong> : la plupart des usages courants en TPE/PME (rédaction, résumé, tri de mails) ne relèvent pas des catégories « à haut risque ». Certains usages, comme le tri de candidatures, demandent en revanche une vigilance particulière. Les obligations applicables à ces systèmes « à haut risque » ont été repoussées au 2 décembre 2027.</li>
+        </ul>
+        <h3>L'erreur à éviter</h3>
+        <p>Attendre un incident pour poser des règles, ou à l'inverse se bloquer complètement par peur de la réglementation. Un cadre simple suffit pour démarrer.</p>
+        <div class="action"><span class="lbl">✓ Votre action cette semaine</span><p>Listez les données que vos équipes ne doivent jamais mettre dans un outil d'IA non validé, et communiquez cette liste.</p></div>
+      </div>
+    </div>
+
+    <div class="cat-block" id="etape-6">
+      <div class="cat-head"><span class="catnum"><i><svg viewBox="0 0 24 24"><path d="M12 1.5C13 8 16 11 22.5 12 16 13 13 16 12 22.5 11 16 8 13 1.5 12 8 11 11 8 12 1.5z" fill="#fff"/></svg></i>06 — Choisir la solution la plus simple qui marche</span></div>
+      <div class="etape-card">
+        <h3>Pourquoi c'est décisif</h3>
+        <p>Plus une solution est sophistiquée, plus elle coûte cher, plus elle est imprévisible et plus elle demande de maintenance. La bonne solution est la plus simple qui atteint votre objectif.</p>
+        <h3>Ce qu'il faut faire</h3>
+        <p>Avant de choisir, montez l'échelle marche par marche et arrêtez-vous dès que le besoin est couvert :</p>
+        <ol>
+          <li><strong>Une fonction existe déjà dans vos logiciels</strong> (messagerie, logiciel comptable, CRM) : activez-la.</li>
+          <li><strong>Un outil d'IA prêt à l'emploi suffit</strong> : un assistant de rédaction, de transcription, de résumé.</li>
+          <li><strong>Une automatisation simple</strong> : des règles fixes qui enchaînent les étapes sans intervention (« quand une facture arrive, l'enregistrer et prévenir la comptabilité »).</li>
+          <li><strong>Une automatisation avec IA</strong> : l'IA intervient seulement là où il faut comprendre un texte (lire un document, classer un mail, rédiger un brouillon).</li>
+          <li><strong>Un agent IA</strong> : un système qui décide lui-même des actions à mener. À réserver aux situations trop variées pour être décrites par des règles.</li>
+        </ol>
+        <h3>Exemple</h3>
+        <p>Pour trier les mails entrants d'une PME, un agent IA « qui gère la boîte mail » serait tentant. En pratique, une automatisation qui classe chaque mail en 5 catégories et prépare un brouillon de réponse couvre l'essentiel du besoin, pour un coût et un risque bien plus faibles.</p>
+        <h3>L'erreur à éviter</h3>
+        <p>Choisir une technologie parce qu'elle est à la mode. Un agent IA n'est pas « mieux » qu'une automatisation : il est adapté à d'autres problèmes.</p>
+        <div class="action"><span class="lbl">✓ Votre action cette semaine</span><p>Pour chacun de vos deux quick wins, identifiez la marche la plus basse de l'échelle qui pourrait suffire.</p></div>
+      </div>
+    </div>
+
+    <div class="cat-block" id="etape-7">
+      <div class="cat-head"><span class="catnum"><i><svg viewBox="0 0 24 24"><path d="M12 1.5C13 8 16 11 22.5 12 16 13 13 16 12 22.5 11 16 8 13 1.5 12 8 11 11 8 12 1.5z" fill="#fff"/></svg></i>07 — Tester petit et mesurer</span></div>
+      <div class="etape-card">
+        <h3>Pourquoi c'est décisif</h3>
+        <p>Un test de quelques semaines coûte peu et vous dit l'essentiel : est-ce que ça marche, chez vous, avec vos équipes et vos données ? C'est la meilleure protection contre les investissements inutiles.</p>
+        <h3>Ce qu'il faut faire</h3>
+        <p>Construisez un <strong>pilote de 30 jours</strong> :</p>
+        <ul>
+          <li><strong>Une seule tâche</strong>, choisie à l'étape 4.</li>
+          <li><strong>Un petit groupe</strong> d'utilisateurs volontaires.</li>
+          <li><strong>Une mesure avant</strong> : chronométrez la tâche telle qu'elle est faite aujourd'hui.</li>
+          <li><strong>Un objectif chiffré</strong> : par exemple, « passer de 30 à 10 minutes par devis ».</li>
+          <li><strong>Un critère de décision fixé à l'avance</strong> : au-delà de quel résultat on généralise, en dessous duquel on ajuste ou on arrête.</li>
+        </ul>
+        <h3>Exemple</h3>
+        <p>Une entreprise du bâtiment teste pendant un mois la préparation des devis à partir des notes de visite. Mesure avant : 45 minutes par devis. Après trois semaines : 20 minutes, avec relecture. Le critère (moins de 25 minutes) est atteint : le pilote est étendu à toute l'équipe. <span style="font-style:italic;color:var(--text-mute);">Exemple illustratif.</span></p>
+        <h3>L'erreur à éviter</h3>
+        <p>Lancer le pilote sans mesure de départ. Sans « avant », le « après » ne prouve rien.</p>
+        <div class="action"><span class="lbl">✓ Votre action cette semaine</span><p>Chronométrez votre quick win n° 1 sur 3 ou 4 occurrences pour obtenir votre point de départ.</p></div>
+      </div>
+    </div>
+
+    <div class="cat-block" id="etape-8">
+      <div class="cat-head"><span class="catnum"><i><svg viewBox="0 0 24 24"><path d="M12 1.5C13 8 16 11 22.5 12 16 13 13 16 12 22.5 11 16 8 13 1.5 12 8 11 11 8 12 1.5z" fill="#fff"/></svg></i>08 — Embarquer et former vos équipes</span></div>
+      <div class="etape-card">
+        <h3>Pourquoi c'est décisif</h3>
+        <p>La meilleure solution échoue si personne ne l'utilise. Les freins sont rarement techniques : ce sont des craintes (« vais-je être remplacé ? », « et si l'IA se trompe ? ») et des habitudes.</p>
+        <h3>Ce qu'il faut faire</h3>
+        <ul>
+          <li><strong>Expliquez le pourquoi</strong> : quelles tâches pénibles l'IA va alléger, et ce que l'équipe pourra faire du temps libéré.</li>
+          <li><strong>Impliquez les utilisateurs</strong> dès le pilote : ce sont eux qui savent si la solution est pratique.</li>
+          <li><strong>Désignez un référent</strong> interne, curieux et respecté, qui aide ses collègues au quotidien.</li>
+          <li><strong>Formez sur vos cas réels</strong>, pas sur des exemples génériques : vos documents, vos mails, vos procédures.</li>
+          <li><strong>Posez une règle simple</strong> : l'IA propose, l'humain vérifie et décide.</li>
+        </ul>
+        <h3>L'erreur à éviter</h3>
+        <p>Une formation unique de deux heures, puis plus rien. L'adoption se construit par la pratique, avec un accompagnement sur les premières semaines.</p>
+        <div class="action"><span class="lbl">✓ Votre action cette semaine</span><p>Identifiez votre futur référent IA et proposez-lui de participer au pilote.</p></div>
+      </div>
+    </div>
+
+    <div class="cat-block" id="etape-9">
+      <div class="cat-head"><span class="catnum"><i><svg viewBox="0 0 24 24"><path d="M12 1.5C13 8 16 11 22.5 12 16 13 13 16 12 22.5 11 16 8 13 1.5 12 8 11 11 8 12 1.5z" fill="#fff"/></svg></i>09 — Intégrer l'IA dans vos outils du quotidien</span></div>
+      <div class="etape-card">
+        <h3>Pourquoi c'est décisif</h3>
+        <p>Si utiliser l'IA demande d'ouvrir un nouvel outil, de copier-coller entre quatre fenêtres et de tout ressaisir, elle sera abandonnée en quelques semaines. Une solution adoptée est une solution qui s'insère dans le travail existant.</p>
+        <h3>Ce qu'il faut faire</h3>
+        <ul>
+          <li><strong>Connectez la solution à vos outils</strong> : messagerie, agenda, CRM, logiciel métier, espace de stockage de documents.</li>
+          <li><strong>Documentez le fonctionnement</strong> en une page : qui fait quoi, où se trouvent les résultats, que faire en cas d'erreur.</li>
+          <li><strong>Gardez un contrôle humain</strong> sur tout ce qui part vers un client, engage l'entreprise ou touche à des données sensibles.</li>
+          <li><strong>Prévoyez un plan B</strong> : si l'outil est indisponible, la tâche doit pouvoir être faite comme avant.</li>
+        </ul>
+        <h3>Exemple</h3>
+        <p>Plutôt qu'un assistant séparé pour rédiger les comptes rendus de réunion, l'enregistrement est transcrit automatiquement, le compte rendu est préparé, puis déposé dans le dossier client avec un brouillon de mail récapitulatif à relire et envoyer.</p>
+        <h3>L'erreur à éviter</h3>
+        <p>Ajouter un outil de plus à une pile déjà trop lourde. L'objectif est de supprimer des étapes, pas d'en ajouter.</p>
+        <div class="action"><span class="lbl">✓ Votre action cette semaine</span><p>Pour votre quick win, notez les outils dans lesquels le résultat doit arriver pour être utilisé sans effort.</p></div>
+      </div>
+    </div>
+
+    <div class="cat-block" id="etape-10" style="margin-bottom:0;">
+      <div class="cat-head"><span class="catnum"><i><svg viewBox="0 0 24 24"><path d="M12 1.5C13 8 16 11 22.5 12 16 13 13 16 12 22.5 11 16 8 13 1.5 12 8 11 11 8 12 1.5z" fill="#fff"/></svg></i>10 — Mesurer, ajuster, maintenir</span></div>
+      <div class="etape-card">
+        <h3>Pourquoi c'est décisif</h3>
+        <p>Une solution IA n'est pas un achat ponctuel. Les outils évoluent, les prix changent, vos processus aussi. Sans suivi, les gains s'érodent en silence.</p>
+        <h3>Ce qu'il faut faire</h3>
+        <p>Suivez <strong>3 ou 4 indicateurs</strong>, pas plus :</p>
+        <ul>
+          <li><strong>Temps gagné</strong> par semaine sur la tâche concernée ;</li>
+          <li><strong>Qualité</strong> : taux d'erreurs ou de reprises ;</li>
+          <li><strong>Adoption</strong> : nombre de personnes qui utilisent réellement la solution ;</li>
+          <li><strong>Coût</strong> mensuel (abonnements, maintenance) comparé au gain.</li>
+        </ul>
+        <p>Puis organisez une <strong>revue trimestrielle</strong> de 30 minutes : ce qui marche, ce qui doit être ajusté, ce qui doit être arrêté. Et revenez à l'étape 4 pour lancer le cas d'usage suivant.</p>
+        <h3>L'erreur à éviter</h3>
+        <p>Considérer le projet comme terminé une fois l'outil installé. C'est souvent là qu'il commence.</p>
+        <div class="action"><span class="lbl">✓ Votre action cette semaine</span><p>Créez un tableau de suivi avec vos 3 ou 4 indicateurs et bloquez la date de votre première revue dans l'agenda.</p></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- AUTO-DIAGNOSTIC -->
+<section class="section-pad alt" id="diagnostic">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow">Auto-diagnostic</p>
+      <h2>Où en êtes-vous ?</h2>
+      <p class="lead">Répondez par oui ou par non. Comptez un point par « oui ».</p>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <tr><th>#</th><th>Question</th><th style="text-align:right;">Score</th></tr>
+        <tr><td class="num">1</td><td>Avez-vous défini 2 ou 3 objectifs précis que l'IA doit vous aider à atteindre ?</td><td class="score">Oui / Non</td></tr>
+        <tr><td class="num">2</td><td>Savez-vous quelles tâches répétitives coûtent le plus de temps à vos équipes ?</td><td class="score">Oui / Non</td></tr>
+        <tr><td class="num">3</td><td>Savez-vous quels outils d'IA vos collaborateurs utilisent déjà ?</td><td class="score">Oui / Non</td></tr>
+        <tr><td class="num">4</td><td>Avez-vous identifié 1 ou 2 cas d'usage prioritaires ?</td><td class="score">Oui / Non</td></tr>
+        <tr><td class="num">5</td><td>Disposez-vous de règles claires sur les données à ne pas mettre dans un outil d'IA ?</td><td class="score">Oui / Non</td></tr>
+        <tr><td class="num">6</td><td>Vos solutions sont-elles choisies en fonction du besoin, pas de la mode ?</td><td class="score">Oui / Non</td></tr>
+        <tr><td class="num">7</td><td>Avez-vous mesuré le temps passé sur une tâche avant de l'automatiser ?</td><td class="score">Oui / Non</td></tr>
+        <tr><td class="num">8</td><td>Vos équipes sont-elles formées sur leurs propres cas de travail ?</td><td class="score">Oui / Non</td></tr>
+        <tr><td class="num">9</td><td>Vos outils d'IA sont-ils connectés à vos logiciels du quotidien ?</td><td class="score">Oui / Non</td></tr>
+        <tr><td class="num">10</td><td>Suivez-vous des indicateurs de résultat (temps gagné, qualité, adoption, coût) ?</td><td class="score">Oui / Non</td></tr>
+      </table>
+    </div>
+    <div class="stat-strip">
+      <div class="stat-box risk"><div class="num">0–3</div><div class="lbl">Démarrer — tout est encore ouvert, concentrez-vous sur les étapes 1 à 4</div></div>
+      <div class="stat-box partial"><div class="num">4–7</div><div class="lbl">Structurer — les étapes 5 à 8 vous feront passer à des résultats mesurables</div></div>
+      <div class="stat-box ok"><div class="num">8–10</div><div class="lbl">Accélérer — l'enjeu est d'industrialiser et d'étendre les cas d'usage</div></div>
+    </div>
+    <p class="lead" style="margin-top:1.75rem;">Pour aller plus loin, faites le <strong style="color:var(--text);">pré-diagnostic en ligne gratuit</strong> sur <a href="https://diag.decia.fr" style="color:var(--accent);text-decoration:underline;"><strong>diag.decia.fr</strong></a> : quelques minutes pour obtenir une première lecture de votre potentiel d'automatisation.</p>
+  </div>
+</section>
+
+<!-- AUDIT FLASH -->
+<section class="section-pad" id="audit">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow">Et après ce guide ?</p>
+      <h2>Votre prochaine étape : l'audit Flash</h2>
+      <p class="lead">Vous avez la méthode. Reste la question la plus difficile : par où commencer, chez vous, concrètement ? C'est l'objet de l'audit Flash DecIA.</p>
+    </div>
+    <div class="checklist">
+      <ul>
+        <li>45 minutes dans vos locaux, avec vous et, si vous le souhaitez, un ou deux collaborateurs.</li>
+        <li>Un échange centré sur vos tâches, vos outils et vos irritants, sans jargon.</li>
+        <li>Une restitution d'une page avec 2 ou 3 pistes concrètes, chiffrées en temps gagné.</li>
+      </ul>
+    </div>
+    <p class="lead" style="margin-top:1.5rem;">Vous repartez avec une vision claire de vos priorités, que vous décidiez ensuite d'avancer seul ou accompagné. DecIA accompagne les TPE, PME et dirigeants pour rendre l'IA utile, concrète et intégrée à leur quotidien — <span class="grad-text">le résultat d'abord, la technologie ensuite.</span></p>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="section-pad alt">
+  <div class="container">
+    <div class="cta-rich cta-single">
+      <div class="cta-text">
+        <span class="badge"><svg viewBox="0 0 24 24" width="10" height="10" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg>Audit Flash DecIA · 45 minutes</span>
+        <h2>Par où commencer, chez vous, concrètement ?</h2>
+        <p>Pas de catalogue d'outils. Pas de démonstration forcée.<br>Une restitution d'une page, chiffrée en temps gagné.</p>
+        <a href="rendez-vous.html" class="btn btn-primary">Réserver mon audit Flash</a>
+        <div class="avatars-row">
+          <span class="avatars" aria-hidden="true">
+            <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 21V7l8-4 8 4v14"/><path d="M9 21v-6h6v6"/></svg></span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg></span>
+          </span>
+          <span class="txt">15 entreprises accompagnées ces 3 derniers mois</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="index.html" class="logo"><img src="assets/logo.png" alt="DecIA" width="110" height="26"></a>
+        <p>L'intelligence artificielle utile aux entreprises.<br>Audit · Automatisation · Agents IA · Formation<br>Plus d'efficacité. Moins de tâches inutiles.</p>
+      </div>
+      <div class="footer-cols">
+        <div class="footer-col">
+          <h4>Contact</h4>
+          <a href="mailto:contact@decia.fr">contact@decia.fr</a>
+          <a href="tel:+33689180195">+33 6 89 18 01 95</a>
+        </div>
+        <div class="footer-col">
+          <h4>Prendre RDV</h4>
+          <a href="rendez-vous.html">Réserver un échange</a>
+          <a href="https://decia.fr">decia.fr</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 DecIA. Tous droits réservés.</span>
+      <span>Les 10 Étapes Clés pour Implémenter l'IA — Édition 2026</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

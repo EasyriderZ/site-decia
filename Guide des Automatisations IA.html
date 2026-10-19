@@ -7,32 +7,34 @@
 <meta name="description" content="180+ automatisations IA concrètes, classées par métier. Un guide DecIA pour identifier ce qui, dans votre activité, peut être automatisé sans changer d'outils.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#050B1E;
-    --panel:#081029;
-    --card:#0B1530;
-    --card-hover:#101C40;
-    --border:rgba(130,165,255,0.14);
-    --border-strong:rgba(130,165,255,0.24);
-    --text:#f5f6fa;
-    --text-soft:#9aa0b4;
+    --bg:#03040B;
+    --panel:#0A1230;
+    --card:rgba(255,255,255,0.07);
+    --card-hover:rgba(255,255,255,0.11);
+    --border:rgba(255,255,255,0.14);
+    --border-strong:rgba(255,255,255,0.24);
+    --text:#F5F6F8;
+    --text-soft:#9AA3BD;
     --text-mute:#6c7288;
-    --blue-start:#0066ff;
-    --blue-end:#3b24fc;
-    --accent:#5c9cff;
+    --blue-start:#0A6CFF;
+    --blue-end:#1A4FF0;
+    --accent:#6FA8FF;
+    --coral:#FF6A13;
     --grad:linear-gradient(135deg,var(--blue-start),var(--blue-end));
-    --grad-soft:linear-gradient(135deg,rgba(0,102,255,0.16),rgba(59,36,252,0.16));
-    --success:#34d399;
+    --grad-soft:linear-gradient(135deg,rgba(10,108,255,0.16),rgba(26,79,240,0.16));
+    --success:#18B89E;
     --font-display:"Plus Jakarta Sans",sans-serif;
     --font-body:"Plus Jakarta Sans",sans-serif;
-    --font-mono:"JetBrains Mono",monospace;
-    --radius-sm:8px;
-    --radius-md:14px;
-    --radius-lg:22px;
+    --font-serif:"Instrument Serif",Georgia,serif;
+    --font-mono:"DM Sans",sans-serif;
+    --radius-sm:14px;
+    --radius-md:24px;
+    --radius-lg:32px;
     --radius-pill:999px;
-    --shadow-glow:0 14px 30px rgba(0,102,255,0.35);
+    --shadow-glow:0 14px 30px rgba(10,108,255,0.35);
     --container-w:1180px;
   }
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -82,7 +84,7 @@
   .hero-glow{
     position:absolute;top:-140px;left:50%;transform:translateX(-50%);
     width:900px;height:420px;
-    background:radial-gradient(closest-side,rgba(0,102,255,0.28),transparent 70%);
+    background:radial-gradient(closest-side,rgba(10,108,255,0.28),transparent 70%);
     filter:blur(10px);pointer-events:none;
   }
   .hero-inner{position:relative;text-align:center;max-width:820px;margin:0 auto;}
@@ -91,10 +93,9 @@
   .hero-actions{display:flex;gap:0.9rem;justify-content:center;flex-wrap:wrap;margin-bottom:2.25rem;}
   .btn{
     display:inline-flex;align-items:center;justify-content:center;gap:0.5rem;
-    padding:0.875rem 1.625rem;border-radius:var(--radius-sm);
-    font-weight:600;font-size:0.92rem;border:1px solid transparent;
+    padding:0 1.875rem;min-height:62px;border-radius:20px;
+    font-family:"DM Sans",sans-serif;font-weight:600;font-size:1.0625rem;border:1px solid transparent;letter-spacing:-0.01em;
     transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease, background .3s ease;
-    white-space:nowrap;
   }
   .btn-primary{background:var(--grad);color:#fff;}
   .btn-primary:hover{transform:translateY(-2px);box-shadow:var(--shadow-glow);}
@@ -146,14 +147,15 @@
 
   /* category sections */
   .cat-block{margin-bottom:3.25rem;}
-  .cat-head{display:flex;align-items:baseline;gap:0.85rem;margin-bottom:1.5rem;border-bottom:1px solid var(--border);padding-bottom:1rem;}
-  .cat-head .catnum{font-family:var(--font-mono);color:var(--text-mute);font-size:0.85rem;}
-  .cat-head h3{font-size:1.35rem;}
+  .cat-head{display:flex;align-items:center;flex-wrap:wrap;gap:0.85rem;margin-bottom:1.5rem;border-bottom:1px solid var(--border);padding-bottom:1rem;}
+  .cat-head .catnum{display:inline-flex;align-items:center;gap:10px;background:#fff;color:#0B1020;border:1px solid rgba(255,255,255,.9);box-shadow:0 14px 26px rgba(0,0,0,.28);border-radius:999px;padding:9px 20px 9px 10px;font-family:"DM Sans",sans-serif;font-size:16px;font-weight:600;max-width:100%}
+  .cat-head .catnum i{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--coral),#FF9A3D);display:flex;align-items:center;justify-content:center;flex:none}
+  .cat-head .catnum i svg{width:16px;height:16px}
   .metier-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.1rem;}
   .metier-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-md);padding:1.4rem 1.5rem;}
   .metier-card .head{display:flex;align-items:center;gap:0.6rem;margin-bottom:0.9rem;}
   .metier-card .emoji{font-size:1.25rem;}
-  .metier-card .head h4{font-size:0.98rem;color:var(--text);}
+  .metier-card .head h4{font-size:0.98rem;color:var(--text);display:inline-block;padding:5px 12px;border:1.5px solid var(--accent);border-radius:10px;background:rgba(111,168,255,.08);}
   .metier-card .metier-badge{
     margin-left:auto;font-family:var(--font-mono);font-size:0.65rem;color:var(--accent);
     background:var(--grad-soft);padding:2px 9px;border-radius:var(--radius-pill);white-space:nowrap;
@@ -169,7 +171,7 @@
 
   .mini-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.1rem;}
   .mini-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-md);padding:1.5rem;}
-  .mini-card h4{font-size:1rem;margin-bottom:0.2rem;}
+  .mini-card h4{font-size:1rem;margin-bottom:0.2rem;display:inline-block;padding:5px 12px;border:1.5px solid var(--accent);border-radius:10px;background:rgba(111,168,255,.08);}
   .mini-card .tagline{font-family:var(--font-mono);font-size:0.72rem;color:var(--text-mute);margin-bottom:0.75rem;}
   .mini-card li{font-size:0.85rem;color:var(--text-soft);margin-bottom:0.4rem;padding-left:1rem;position:relative;}
   .mini-card li::before{content:"";position:absolute;left:0;top:0.55em;width:5px;height:5px;border-radius:50%;background:var(--accent);}
@@ -255,7 +257,7 @@
     </div>
     <div class="howto-row">
       <div class="num-badge">1</div>
-      <div><h3>Repérez votre secteur</h3><p>7 grandes familles : <a href="#secteur-sante">Santé &amp; Bien-être</a>, <a href="#secteur-juridique">Juridique &amp; Finance</a>, <a href="#secteur-immobilier">Immobilier &amp; Tourisme</a>, <a href="#secteur-immobilier">Commerce &amp; Restauration</a>, <a href="#secteur-artisanat">Artisanat &amp; Bâtiment</a>, <a href="#secteur-creatifs">Créatifs &amp; Consultants</a>, et une sélection de <a href="#secteur-autres">secteurs complémentaires</a>.</p></div>
+      <div><h3>Repérez votre secteur</h3><p>6 grandes familles : <a href="#secteur-sante">Santé &amp; Bien-être</a>, <a href="#secteur-juridique">Juridique &amp; Finance</a>, <a href="#secteur-immobilier">Immobilier, Tourisme, Commerce &amp; Restauration</a>, <a href="#secteur-artisanat">Artisanat &amp; Bâtiment</a>, <a href="#secteur-creatifs">Créatifs &amp; Consultants</a>, et une sélection de <a href="#secteur-autres">secteurs complémentaires</a>.</p></div>
     </div>
     <div class="howto-row">
       <div class="num-badge">2</div>
@@ -277,11 +279,11 @@
   <div class="container">
     <div class="section-head">
       <p class="eyebrow">Le catalogue</p>
-      <h2>7 secteurs, une sélection resserrée des automatisations les plus impactantes</h2>
+      <h2>6 secteurs, une sélection resserrée des automatisations les plus impactantes</h2>
     </div>
 
     <div class="cat-block" id="secteur-sante">
-      <div class="cat-head"><span class="catnum">01</span><h3>Santé &amp; Bien-être</h3></div>
+      <div class="cat-head"><span class="catnum"><i><svg viewBox="0 0 24 24"><path d="M12 1.5C13 8 16 11 22.5 12 16 13 13 16 12 22.5 11 16 8 13 1.5 12 8 11 11 8 12 1.5z" fill="#fff"/></svg></i>01 — Santé &amp; Bien-être</span></div>
       <div class="metier-grid">
         <div class="metier-card">
           <div class="head"><span class="emoji">🩺</span><h4>Cabinet Médical</h4></div>
@@ -320,7 +322,7 @@
     </div>
 
     <div class="cat-block" id="secteur-juridique">
-      <div class="cat-head"><span class="catnum">02</span><h3>Services Juridiques &amp; Financiers</h3></div>
+      <div class="cat-head"><span class="catnum"><i><svg viewBox="0 0 24 24"><path d="M12 1.5C13 8 16 11 22.5 12 16 13 13 16 12 22.5 11 16 8 13 1.5 12 8 11 11 8 12 1.5z" fill="#fff"/></svg></i>02 — Services Juridiques &amp; Financiers</span></div>
       <div class="metier-grid">
         <div class="metier-card">
           <div class="head"><span class="emoji">📊</span><h4>Cabinet Comptable</h4></div>
@@ -351,7 +353,7 @@
     </div>
 
     <div class="cat-block" id="secteur-immobilier">
-      <div class="cat-head"><span class="catnum">03</span><h3>Immobilier, Tourisme, Commerce &amp; Restauration</h3></div>
+      <div class="cat-head"><span class="catnum"><i><svg viewBox="0 0 24 24"><path d="M12 1.5C13 8 16 11 22.5 12 16 13 13 16 12 22.5 11 16 8 13 1.5 12 8 11 11 8 12 1.5z" fill="#fff"/></svg></i>03 — Immobilier, Tourisme, Commerce &amp; Restauration</span></div>
       <div class="metier-grid">
         <div class="metier-card">
           <div class="head"><span class="emoji">🏢</span><h4>Agence Immobilière</h4></div>
@@ -390,7 +392,7 @@
     </div>
 
     <div class="cat-block" id="secteur-artisanat">
-      <div class="cat-head"><span class="catnum">04</span><h3>Services &amp; Artisanat</h3></div>
+      <div class="cat-head"><span class="catnum"><i><svg viewBox="0 0 24 24"><path d="M12 1.5C13 8 16 11 22.5 12 16 13 13 16 12 22.5 11 16 8 13 1.5 12 8 11 11 8 12 1.5z" fill="#fff"/></svg></i>04 — Services &amp; Artisanat</span></div>
       <div class="metier-grid">
         <div class="metier-card">
           <div class="head"><span class="emoji">🔧</span><h4>Artisan (tous corps de métier)</h4></div>
@@ -429,7 +431,7 @@
     </div>
 
     <div class="cat-block" id="secteur-creatifs">
-      <div class="cat-head"><span class="catnum">05</span><h3>Créatifs &amp; Consultants</h3></div>
+      <div class="cat-head"><span class="catnum"><i><svg viewBox="0 0 24 24"><path d="M12 1.5C13 8 16 11 22.5 12 16 13 13 16 12 22.5 11 16 8 13 1.5 12 8 11 11 8 12 1.5z" fill="#fff"/></svg></i>05 — Créatifs &amp; Consultants</span></div>
       <div class="metier-grid">
         <div class="metier-card">
           <div class="head"><span class="emoji">📈</span><h4>Consultant Indépendant</h4></div>
@@ -468,7 +470,7 @@
     </div>
 
     <div class="cat-block" id="secteur-autres" style="margin-bottom:0;">
-      <div class="cat-head"><span class="catnum">+</span><h3>Et si votre métier n'est pas encore listé ?</h3></div>
+      <div class="cat-head"><span class="catnum"><i><svg viewBox="0 0 24 24"><path d="M12 1.5C13 8 16 11 22.5 12 16 13 13 16 12 22.5 11 16 8 13 1.5 12 8 11 11 8 12 1.5z" fill="#fff"/></svg></i>+ — Et si votre métier n'est pas encore listé ?</span></div>
       <p class="lead" style="margin-bottom:1.5rem;">Le principe se transpose à toute activité qui gère des rendez-vous, des devis, des stocks ou de la conformité. Quelques exemples :</p>
       <div class="mini-grid">
         <div class="mini-card">
@@ -534,7 +536,7 @@
       <div class="step">
         <div class="step-num">03 — Faire évoluer</div>
         <h3>Vous restez autonome</h3>
-        <p>Prise en main en 15 minutes, modification simple sans dépendance technique. Les automatisations évoluent avec votre activité : nouveau service, changement de tarif, nouveau message.</p>
+        <p>Prise en main facilitée, modification simple sans dépendance technique. Les automatisations évoluent avec votre activité : nouveau service, changement de tarif, nouveau message.</p>
       </div>
     </div>
   </div>
