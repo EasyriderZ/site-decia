@@ -135,6 +135,9 @@
     border:1.5px solid var(--line)!important;border-radius:12px!important;padding:14px 16px!important;
   }
   .sib-input .input:focus, .sib-sms-input .input:focus{outline:none!important;border-color:var(--teal-d)!important}
+  .sib-input .input.invalid{border-color:#FF6A13!important;background:rgba(255,106,19,.06)!important}
+  .field-error{display:none;color:#FF6A13;font-size:13px;margin-top:6px}
+  .field-error.show{display:block}
   .sib-sms-tooltip__box{background:var(--panel)!important;color:var(--muted)!important;border:1px solid var(--line)!important}
   .entry__choice span{color:var(--muted)!important;background:transparent!important}
   .checkbox_tick_positive{border:1.5px solid var(--line)!important;background:rgba(255,255,255,.05)!important}
@@ -216,10 +219,22 @@
               <div class="sib-input sib-form-block">
                 <div class="form__entry entry_block">
                   <div class="form__label-row">
-                    <label class="entry__label" for="EMAIL" data-required="*">Email professionnel</label>
-                    <div class="entry__field"><input class="input" type="text" id="EMAIL" name="EMAIL" autocomplete="email" value="" placeholder="jean@entreprise.fr" data-required="true" required /></div>
+                    <label class="entry__label" for="NOM" data-required="*">Nom</label>
+                    <div class="entry__field"><input class="input" maxlength="200" type="text" id="NOM" name="NOM" autocomplete="family-name" placeholder="Dupont" data-required="true" required /></div>
                   </div>
                   <label class="entry__error entry__error--primary"></label>
+                </div>
+              </div>
+            </div>
+            <div style="padding:8px 0">
+              <div class="sib-input sib-form-block">
+                <div class="form__entry entry_block">
+                  <div class="form__label-row">
+                    <label class="entry__label" for="EMAIL" data-required="*">Email professionnel</label>
+                    <div class="entry__field"><input class="input" type="email" id="EMAIL" name="EMAIL" autocomplete="email" value="" placeholder="jean@entreprise.fr" data-required="true" required /></div>
+                  </div>
+                  <label class="entry__error entry__error--primary"></label>
+                  <div id="emailErrorMsg" class="field-error">Merci de saisir une adresse email valide (ex. jean@entreprise.fr)</div>
                 </div>
               </div>
             </div>
@@ -372,8 +387,9 @@ const $=id=>document.getElementById(id);
 const params=new URLSearchParams(location.search);
 
 // préremplissage depuis le lien du mail
-const FIELD_MAP={prenom:'PRENOM',entreprise:'name',email:'EMAIL'};
+const FIELD_MAP={prenom:'PRENOM',nom:'NOM',entreprise:'name',email:'EMAIL'};
 Object.keys(FIELD_MAP).forEach(k=>{const el=$(FIELD_MAP[k]);if(el&&params.get(k))el.value=params.get(k)});
+$('EMAIL').addEventListener('input',()=>{$('EMAIL').classList.remove('invalid');$('EMAIL').setCustomValidity('');$('emailErrorMsg').classList.remove('show')});
 if(params.get('entreprise'))$('heroTitle').textContent=`Où en est ${params.get('entreprise')} avec l'IA ?`;
 
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));$(id).classList.add('on');window.scrollTo({top:0,behavior:'smooth'})}
@@ -423,7 +439,7 @@ function sendToMake(r,contact){
   const pistes=getPistes(r).map(x=>`${x[0]} : ${x[1]}`).join(' | ');
   const payload={
     date:new Date().toISOString(),
-    prenom:contact.prenom,entreprise:contact.entreprise,email:contact.email,
+    prenom:contact.prenom,nom:contact.nom,entreprise:contact.entreprise,email:contact.email,
     score:r.score,niveau:r.level.name,heures_an:r.hours,
     s_usages:r.dims[0],s_processus:r.dims[1],s_donnees:r.dims[2],s_equipe:r.dims[3],s_cadre:r.dims[4],
     secteur:Q[0].opts[ans[0]]||'',effectif:Q[1].opts[ans[1]]||'',temps_repetitif:Q[2].opts[ans[2]]||'',
@@ -434,8 +450,14 @@ function sendToMake(r,contact){
 
 function onPreDiagSubmit(e){
   const form=$('sib-form');
+  const emailField=$('EMAIL');
+  const emailOk=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailField.value.trim());
+  emailField.setCustomValidity(emailOk?'':'Merci de saisir une adresse email valide (ex. jean@entreprise.fr)');
+  emailField.classList.toggle('invalid',!emailOk);
+  $('emailErrorMsg').classList.toggle('show',!emailOk);
   if(!form.checkValidity()){
     form.reportValidity();
+    emailField.setCustomValidity('');
     e.preventDefault();
     e.stopImmediatePropagation();
     return false;
@@ -443,6 +465,7 @@ function onPreDiagSubmit(e){
   const r=compute();
   const contact={
     prenom:$('PRENOM').value.trim(),
+    nom:$('NOM').value.trim(),
     email:$('EMAIL').value.trim(),
     entreprise:$('name').value.trim()
   };
