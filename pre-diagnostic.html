@@ -324,8 +324,8 @@
     <div class="tips" id="tips"></div>
 
     <div class="cta" style="text-align:center">
-      <h3>Passer de la tendance<br>au plan d'action</h3>
-      <p>Ce pré-diagnostic donne une tendance. Pour identifier vos 2 ou 3 gains prioritaires, chiffrés sur vos processus réels, nous vous proposons un échange de 45 minutes dans vos locaux.</p>
+      <h3>Passer de la tendance au plan d'action</h3>
+      <p>Ce pré-diagnostic donne une tendance.<br>Pour identifier vos 2 ou 3 gains prioritaires, chiffrés sur vos processus réels, nous vous proposons un échange de 45 minutes dans vos locaux.</p>
       <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:20px">
         <a href="rendez-vous.html" class="btn" style="background:#fff;color:var(--teal-d);text-decoration:none">Prendre rendez-vous →</a>
         <button class="btn" onclick="restartTest()" style="background:transparent;border:1.5px solid rgba(255,255,255,.5);color:#fff;box-shadow:none">Refaire le test</button>
@@ -380,7 +380,7 @@ function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.re
 function setProg(n){$('prog').style.width=(n/(Q.length+1)*100)+'%';$('stepCount').textContent=n>0&&n<=Q.length+1?`${Math.min(n,Q.length+1)} / ${Q.length+1}`:''}
 
 function start(){i=0;render()}
-function restartTest(){ans.fill(null);i=0;$('prog').style.width='0%';show('s-intro')}
+function restartTest(){location.reload()}
 function render(){
   const q=Q[i];
   $('qDim').textContent=q.dim;$('qTitle').textContent=q.title;$('qHelp').textContent=q.help||'';
