@@ -166,11 +166,11 @@
   <section class="screen on hero" id="s-intro">
     <span class="eyebrow">Pré-diagnostic gratuit</span>
     <h1 id="heroTitle">Où en est votre entreprise avec l'IA&nbsp;?</h1>
-    <p class="lead">12 questions, 3 minutes. Vous obtenez immédiatement votre niveau de maturité, vos points forts et vos angles morts, et une estimation du temps que vous pourriez récupérer.</p>
+    <p class="lead">14 questions, 3 minutes pour identifier vos opportunités d'automatisation, évaluer votre niveau de préparation et estimer le temps que votre entreprise pourrait potentiellement récupérer.</p>
     <div class="perks">
-      <div class="perk"><b>3 min</b><span>pas de préparation nécessaire</span></div>
-      <div class="perk"><b>Score /100</b><span>sur 5 dimensions clés</span></div>
-      <div class="perk"><b>Immédiat</b><span>résultat affiché à l'écran</span></div>
+      <div class="perk"><b>3 min</b><span>aucune préparation nécessaire</span></div>
+      <div class="perk"><b>5 dimensions</b><span>analysées</span></div>
+      <div class="perk"><b>Immédiat</b><span>résultats et premières pistes</span></div>
     </div>
     <button class="btn" onclick="start()">Commencer le diagnostic →</button>
     <p class="note">Gratuit, sans engagement. Vos réponses restent confidentielles.</p>
@@ -239,28 +239,11 @@
               </div>
             </div>
             <div style="padding:8px 0">
-              <div class="sib-sms-field sib-form-block">
-                <div class="form__entry entry_block">
-                  <div class="form__label-row">
-                    <label class="entry__label" for="SMS">Téléphone (optionnel)</label>
-                    <div class="sib-sms-input-wrapper" style="direction:ltr">
-                      <div class="sib-sms-input" data-placeholder="6 12 34 56 78" data-country-code="FR" data-value="" data-attributename="SMS">
-                        <div class="entry__field"><select class="input" name="SMS__COUNTRY_CODE"><option value="+33">+33 FR</option></select></div>
-                        <div class="entry__field" style="width:100%"><input type="tel" class="input" id="SMS" name="SMS" autocomplete="off" placeholder="6 12 34 56 78" /></div>
-                      </div>
-                    </div>
-                  </div>
-                  <label class="entry__error entry__error--primary"></label>
-                  <label class="entry__error entry__error--secondary"></label>
-                </div>
-              </div>
-            </div>
-            <div style="padding:8px 0">
               <div class="sib-input sib-form-block">
                 <div class="form__entry entry_block">
                   <div class="form__label-row">
                     <label class="entry__label" for="name" data-required="*">Entreprise</label>
-                    <div class="entry__field"><input class="input" maxlength="200" type="text" id="name" name="COMPANY:name" autocomplete="organization" placeholder="Dupont SAS" data-required="true" required /></div>
+                    <div class="entry__field"><input class="input" maxlength="200" type="text" id="name" name="ENTREPRISE_DIAGNOSTIC" autocomplete="organization" placeholder="Dupont SAS" data-required="true" required /></div>
                   </div>
                   <label class="entry__error entry__error--primary"></label>
                 </div>
@@ -274,7 +257,7 @@
                       <label>
                         <input type="checkbox" class="input_replaced" value="1" id="OPT_IN" name="OPT_IN" required />
                         <span class="checkbox checkbox_tick_positive"></span>
-                        <span>J'accepte que Decia utilise ces réponses pour m'envoyer mon diagnostic et me recontacter à ce sujet. Désinscription possible à tout moment.</span>
+                        <span>J'accepte que DecIA traite mes réponses et mes coordonnées afin d'établir et de m'envoyer mon prédiagnostic.</span>
                       </label>
                     </div>
                   </div>
@@ -329,22 +312,27 @@
     </div>
 
     <div class="card hours" style="margin-top:16px">
-      <h3>Temps potentiellement récupérable</h3>
-      <b id="rHours">0</b> <span style="font-size:18px;color:var(--muted)">heures / an</span>
+      <h3>Potentiel de temps automatisable identifié</h3>
+      <span>≈</span> <b id="rHours">0</b> <span style="font-size:18px;color:var(--muted)">heures / an</span>
       <p>à l'échelle de votre entreprise, en ordre de grandeur.</p>
-      <small>Estimation : temps déclaré × effectif × 25&nbsp;% automatisable, sur 45 semaines. À affiner sur vos processus réels.</small>
+      <small>Ordre de grandeur calculé à partir de vos réponses. Le gain réellement atteignable dépend de vos processus, outils et contraintes.</small>
     </div>
 
-    <h3 class="sect" id="tipsTitle">Vos premières pistes</h3>
+    <h3 class="sect" id="tipsTitle">Vos premières priorités</h3>
     <div class="tips" id="tips"></div>
 
-    <div class="cta" style="text-align:center">
-      <h3>Passer de la tendance au plan d'action</h3>
-      <p>Ce pré-diagnostic donne une tendance.<br>Pour identifier vos 2 ou 3 gains prioritaires, chiffrés sur vos processus réels, nous vous proposons un échange de 45 minutes dans vos locaux.</p>
-      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:20px">
-        <a href="rendez-vous.html" class="btn" style="background:#fff;color:var(--teal-d);text-decoration:none">Prendre rendez-vous →</a>
-        <button class="btn" onclick="restartTest()" style="background:transparent;border:1.5px solid rgba(255,255,255,.5);color:#fff;box-shadow:none">Refaire le test</button>
+    <div class="cta" style="text-align:center" id="ctaBlock">
+      <h3>Vous voulez savoir par où commencer ?</h3>
+      <p>Ce prédiagnostic identifie les grandes tendances. L'étape suivante consiste à déterminer quels sont les 2 ou 3 cas d'usage réellement prioritaires pour votre entreprise.</p>
+      <p>DecIA peut reprendre vos résultats avec vous et identifier les pistes qui méritent d'être approfondies.</p>
+      <div style="margin-top:20px">
+        <button class="btn" id="contactBtn" onclick="requestContact()" style="background:#fff;color:var(--teal-d)">Échanger sur mes résultats →</button>
       </div>
+      <p style="margin-top:10px;font-size:13px">Sans engagement.</p>
+    </div>
+
+    <div style="text-align:center;margin-top:16px">
+      <button class="btn" onclick="restartTest()" style="background:transparent;border:1.5px solid var(--line);color:var(--navy);box-shadow:none">Refaire le test</button>
     </div>
   </section>
 </main>
@@ -356,7 +344,8 @@ const Q=[
   {key:'secteur',dim:'Votre entreprise',title:"Votre secteur d'activité ?",grid:true,opts:['Artisanat / BTP','Commerce / distribution','Industrie / production','Services aux entreprises','Professions libérales / cabinets','Santé / social','Transport / logistique','Hôtellerie / restauration','Autre']},
   {key:'effectif',dim:'Votre entreprise',title:'Combien de personnes travaillent dans votre entreprise ?',opts:['1 à 9 personnes','10 à 19 personnes','20 à 49 personnes','Plus de 50 personnes'],val:[5,15,35,75]},
   {key:'temps_repetitif',dim:'Votre entreprise',title:'Temps moyen passé par personne et par semaine sur des tâches répétitives ?',help:'Saisie, relances, devis, reporting, copier-coller entre logiciels…',opts:['Moins de 2 h','2 à 5 h','5 à 10 h','Plus de 10 h'],val:[1,3,7,12]},
-  {key:'q_usages_frequence',dim:'Usages IA',d:0,w:2,title:"À quelle fréquence l'IA est-elle utilisée dans le travail ?",opts:['Jamais','Ponctuellement','Chaque semaine','Tous les jours']},
+  {key:'q_usages_frequence',dim:'Usages IA',d:0,title:"À quelle fréquence votre équipe utilise-t-elle l'IA dans son travail ?",opts:['Jamais','Ponctuellement','Chaque semaine','Tous les jours']},
+  {key:'q_usages_integration',dim:'Usages IA',d:0,title:"Aujourd'hui, comment l'IA est-elle intégrée dans votre entreprise ?",opts:["Elle n'est pas utilisée","Quelques collaborateurs l'utilisent individuellement","Plusieurs usages métier sont identifiés et partagés","Elle est intégrée dans certains processus de travail réguliers"]},
   {key:'q_processus_taches',dim:'Processus',d:1,title:'Vos tâches répétitives sont…',opts:['Difficiles à identifier','Connues, mais jamais listées','Listées et mesurées','Déjà en partie automatisées']},
   {key:'q_processus_outils',dim:'Processus',d:1,title:"Quels outils d'automatisation sont en place ?",opts:['Aucun','Quelques macros ou modèles Excel/Word','Quelques flux automatiques (Zapier, Make, connecteurs…)','Plusieurs flux en production, suivis']},
   {key:'q_donnees_stockage',dim:'Données & outils',d:2,title:'Où se trouvent vos informations clients et dossiers ?',opts:['Papier et boîtes mail','Fichiers Excel dispersés','Un logiciel principal, complété par des fichiers','Des logiciels structurés et à jour']},
@@ -364,7 +353,8 @@ const Q=[
   {key:'q_equipe_formation',dim:'Équipe',d:3,title:"Votre équipe a-t-elle été formée à l'IA ?",opts:['Aucune formation','Autoformation individuelle','Sensibilisation ponctuelle','Formation structurée']},
   {key:'q_equipe_perception',dim:'Équipe',d:3,title:"Comment votre équipe perçoit-elle l'IA ?",opts:['Plutôt réticente','Curieuse, mais sans temps à y consacrer','Volontaire','Demandeuse, avec des référents identifiés']},
   {key:'q_cadre_regles',dim:'Cadre & pilotage',d:4,title:"Avez-vous des règles sur les données que l'on peut confier à une IA ?",opts:["La question ne s'est pas posée","Le risque est identifié, rien n'est formalisé",'Des consignes orales','Une charte écrite']},
-  {key:'q_cadre_direction',dim:'Cadre & pilotage',d:4,title:"Pour la direction, l'IA c'est…",opts:["Pas une priorité pour l'instant",'Un intérêt, sans plan défini','Des priorités identifiées','Un budget et une feuille de route']}
+  {key:'q_cadre_direction',dim:'Cadre & pilotage',d:4,title:"Aujourd'hui, quelle place l'IA occupe-t-elle dans les priorités de la direction ?",opts:["Pas une priorité pour l'instant",'Un intérêt, sans plan défini','Des priorités identifiées','Un budget et une feuille de route']},
+  {key:'priorite_ia',dim:'Pour finir',title:"Si l'IA pouvait améliorer une seule chose dans votre entreprise aujourd'hui, laquelle serait prioritaire ?",opts:['Gagner du temps sur les tâches administratives',"Améliorer l'efficacité commerciale et le suivi clients","Fluidifier les processus et la circulation de l'information",'Améliorer la production, le service ou la qualité',"Je ne sais pas encore où l'IA pourrait être utile"]}
 ];
 const DIMS=['Usages IA','Processus','Données','Équipe','Cadre'];
 const LEVELS=[
@@ -419,7 +409,7 @@ const WEEKS_PER_YEAR=45;
 const GAIN_PCT=0.25;
 function compute(){
   const dims=[0,0,0,0,0];
-  Q.forEach((q,k)=>{if(q.d!==undefined)dims[q.d]+=PTS[ans[k]]*(q.w||1)});
+  Q.forEach((q,k)=>{if(q.d!==undefined)dims[q.d]+=PTS[ans[k]]});
   const score=dims.reduce((a,b)=>a+b,0);
   const level=LEVELS.find(l=>score<=l.max);
   const hours=Math.round(Q[2].val[ans[2]]*Q[1].val[ans[1]]*WEEKS_PER_YEAR*GAIN_PCT);
@@ -431,21 +421,52 @@ function compute(){
 // 2) Copie l'URL du webhook et colle-la ci-dessous
 const MAKE_WEBHOOK_URL='https://hook.eu1.make.com/fm6hrdh7t6vl2hplad48tdhpkaexf2an';
 
-function getPistes(r){return TIPS.filter((_,k)=>r.dims[k]<=10);}
+function ansFor(key){const idx=Q.findIndex(q=>q.key===key);return idx>=0?(Q[idx].opts[ans[idx]]||''):'';}
 
-function sendToMake(r,contact){
+// contexte passé en 2e argument pour permettre, plus tard, de croiser les priorités
+// avec le secteur et la priorité business déclarée, sans changer la signature.
+function getPistes(r,ctx){
+  const weak=TIPS.filter((_,k)=>r.dims[k]<=10);
+  if(weak.length)return weak;
+  if(r.dims.every(d=>d>=20)){
+    return [["Vos fondamentaux sont solides.","Votre prochain enjeu n'est plus d'identifier les premiers usages, mais de mesurer leur ROI, industrialiser les automatisations pertinentes et sécuriser leur déploiement."]];
+  }
+  return r.dims.map((d,k)=>({d,k})).sort((a,b)=>a.d-b.d||a.k-b.k).slice(0,2).map(x=>x.k).sort((a,b)=>a-b).map(k=>TIPS[k]);
+}
+
+let lastResult=null, lastContact=null;
+
+function sendToMake(r,contact,extra){
   if(MAKE_WEBHOOK_URL==='À_COMPLETER')return;
   const reponses=Q.map((q,k)=>`${q.title} → ${q.opts[ans[k]]??'—'}`).join(' | ');
-  const pistes=getPistes(r).map(x=>`${x[0]} : ${x[1]}`).join(' | ');
+  const pistes=getPistes(r,{secteur:ansFor('secteur'),priorite:ansFor('priorite_ia')}).map(x=>`${x[0]} : ${x[1]}`).join(' | ');
   const payload={
+    type:'diagnostic',
     date:new Date().toISOString(),
     prenom:contact.prenom,nom:contact.nom,entreprise:contact.entreprise,email:contact.email,
     score:r.score,niveau:r.level.name,heures_an:r.hours,
     s_usages:r.dims[0],s_processus:r.dims[1],s_donnees:r.dims[2],s_equipe:r.dims[3],s_cadre:r.dims[4],
-    secteur:Q[0].opts[ans[0]]||'',effectif:Q[1].opts[ans[1]]||'',temps_repetitif:Q[2].opts[ans[2]]||'',
-    reponses,pistes,source:params.get('source')||'direct'
+    secteur:ansFor('secteur'),effectif:ansFor('effectif'),temps_repetitif:ansFor('temps_repetitif'),
+    priorite_ia:ansFor('priorite_ia'),
+    reponses,pistes,source:params.get('source')||'direct',
+    demande_contact:false,
+    ...extra
   };
   fetch(MAKE_WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).catch(()=>{});
+}
+
+let contactRequested=false;
+function requestContact(){
+  if(contactRequested)return;
+  contactRequested=true;
+  const btn=$('contactBtn');
+  if(btn){btn.disabled=true;btn.textContent='Envoi…'}
+  const prenom=(lastContact&&lastContact.prenom)||$('PRENOM').value.trim();
+  if(lastResult&&lastContact)sendToMake(lastResult,lastContact,{type:'demande_contact',demande_contact:true});
+  $('ctaBlock').innerHTML=`
+    <h3>Merci${prenom?' '+prenom:''}</h3>
+    <p>Votre demande est bien enregistrée. Nous reprendrons vos résultats avant de vous contacter afin que notre échange soit directement utile.</p>
+  `;
 }
 
 function onPreDiagSubmit(e){
@@ -469,6 +490,7 @@ function onPreDiagSubmit(e){
     email:$('EMAIL').value.trim(),
     entreprise:$('name').value.trim()
   };
+  lastResult=r;lastContact=contact;
   sendToMake(r,contact);
   $('submitBtn').disabled=true;
   const btnText=$('submitBtn').querySelector('.sib-form-block__button-text');
@@ -490,7 +512,7 @@ function showResult(r){
   setTimeout(()=>document.querySelectorAll('.bar .tr i').forEach(el=>el.style.width=el.style.getPropertyValue('--w')),50);
   radar(r.dims);
   // pistes
-  const t=getPistes(r);
+  const t=getPistes(r,{secteur:ansFor('secteur'),priorite:ansFor('priorite_ia')});
   $('tipsTitle').style.display=t.length?'block':'none';
   $('tips').innerHTML=t.map(x=>`<div class="tip"><b>${x[0]}</b><p>${x[1]}</p></div>`).join('');
 }
