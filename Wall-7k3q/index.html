@@ -1,0 +1,2643 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+</head>
+<body>
+<title>Endurance Strategy Wall</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Mur des stands : bandeau horloge collant, grille 3×2 dense, barre d'alerte, commandes au pouce */
+:root{
+  --bg:#080b0e; --panel:#0f1419; --panel-2:#141b21; --sunk:#0b1014; --line:#212c35; --line-2:#2e3c47;
+  --fg:#e8edf0; --muted:#7e8c97; --dim:#55636e;
+  --amber:#ffc21a; --amber-ink:#1c1500; --go:#29d17c; --stop:#ff4b4b; --sc:#ff992c; --info:#5ec8ff;
+  --f-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --f-body:"Barlow",system-ui,-apple-system,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --gutter-l:max(16px, env(safe-area-inset-left, 0px));
+  --gutter-r:max(16px, env(safe-area-inset-right, 0px));
+  color-scheme:dark;
+}
+html,body{background:var(--bg);color:var(--fg)}
+body{font-family:var(--f-body);font-size:14px;line-height:1.35}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--sunk)}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+button:disabled{cursor:not-allowed;opacity:.45}
+:focus-visible{outline:2px solid var(--info);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+
+/* ---- Bandeau ---- */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--sunk);border-bottom:1px solid var(--line);
+  display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;padding-block:10px;padding-left:var(--gutter-l);padding-right:var(--gutter-r)}
+.brand{display:flex;align-items:baseline;gap:8px;font-family:var(--f-display);font-weight:700;font-size:20px;letter-spacing:.06em;text-transform:uppercase}
+.brand .ver{font-size:13px;color:var(--amber);letter-spacing:.1em}
+.badges{display:flex;gap:6px;flex-wrap:wrap}
+.badge{font-family:var(--f-display);font-weight:600;font-size:15px;letter-spacing:.06em;padding:4px 10px;border:1px solid var(--line-2);border-radius:4px;background:var(--panel)}
+.flag-GREEN{background:var(--go);color:#00160a;border-color:var(--go)}
+.flag-FCY{background:var(--amber);color:var(--amber-ink);border-color:var(--amber)}
+.flag-SC{background:var(--sc);color:#1f0e00;border-color:var(--sc)}
+.flag-RED{background:var(--stop);color:#fff;border-color:var(--stop)}
+.flag-CHEQUERED{background:repeating-conic-gradient(var(--fg) 0 25%,var(--sunk) 0 50%) 0 0/12px 12px;color:var(--sunk);text-shadow:0 0 3px var(--fg)}
+.clock{display:flex;align-items:baseline;gap:8px;margin-left:auto}
+.clock-el{font-family:var(--f-mono);font-size:26px;font-weight:600;background:none;border:0;padding:0;border-bottom:1px dashed var(--line-2)}
+.clock-sep{color:var(--dim)}
+.clock-rem{font-family:var(--f-mono);font-size:17px;color:var(--muted)}
+.clock-lbl{font-size:10px;letter-spacing:.14em;color:var(--dim);font-weight:600}
+.tb-actions{display:flex;gap:6px}
+.btn{border:1px solid var(--line-2);background:var(--panel-2);border-radius:6px;padding:8px 12px;font-weight:600;letter-spacing:.04em}
+.btn:hover:not(:disabled){border-color:var(--muted)}
+.btn.sm{padding:5px 9px;font-size:12px}
+.btn-primary{background:var(--amber);color:var(--amber-ink);border-color:var(--amber)}
+.btn-danger{border-color:var(--stop);color:var(--stop)}
+.tests-ok{color:var(--go)} .tests-ko{color:var(--stop)}
+
+/* ---- Mur ---- */
+.wall{padding-block:12px 24px;padding-left:var(--gutter-l);padding-right:var(--gutter-r);max-width:1900px;margin:0 auto;display:grid;gap:12px}
+.modebar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.modebar .lbl{font-size:10px;letter-spacing:.16em;color:var(--dim);font-weight:700}
+.seg{display:inline-flex;border:1px solid var(--line-2);border-radius:6px;overflow:hidden}
+.seg button{border:0;background:var(--panel);padding:7px 12px;font-family:var(--f-display);font-weight:600;font-size:14px;letter-spacing:.08em;color:var(--muted)}
+.seg button+button{border-left:1px solid var(--line-2)}
+.seg button.on{background:var(--fg);color:var(--bg)}
+.simctl{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:5px 8px 5px 12px;border:1px solid var(--amber);background:#2a2104;border-radius:6px}
+.simtag{font-weight:700;font-size:12px;letter-spacing:.06em;color:var(--amber)}
+.livectl{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:5px 8px 5px 10px;border:1px solid var(--go);background:#0b2418;border-radius:6px;min-width:0}
+.livectl .simtag{color:var(--go)}
+.livectl.wait{border-color:var(--amber);background:#2a2104}.livectl.wait .simtag{color:var(--amber)}
+.livectl.bad{border-color:var(--stop);background:#2a0c0c}.livectl.bad .simtag{color:#ff8a8a}
+.livedot{width:9px;height:9px;border-radius:50%;background:var(--go);box-shadow:0 0 0 3px rgba(41,209,124,.2)}
+.livectl.wait .livedot{background:var(--amber)} .livectl.bad .livedot{background:var(--stop)}
+@media (prefers-reduced-motion:no-preference){.livectl.ok .livedot{animation:pulse 1.6s ease-in-out infinite}}
+@keyframes pulse{50%{opacity:.35}}
+.livestate{font-size:12px;color:var(--fg);overflow-wrap:anywhere}
+.inline{display:flex;gap:8px}.inline input{flex:1;min-width:0;background:var(--bg);border:1px solid var(--line-2);border-radius:5px;padding:8px}
+.livenote{color:var(--go)}
+.note.go{color:var(--go)}.note.stop{color:var(--stop)}
+.seg button.on,.modebar .seg button.on{background:var(--fg);color:var(--bg)}
+.source{margin-left:auto;font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr) minmax(0,1fr);gap:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;min-width:0;display:flex;flex-direction:column}
+.card h2{margin:0;padding:9px 12px;font-size:11px;font-weight:700;letter-spacing:.18em;color:#a9b6c0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:8px;background:var(--panel-2);border-radius:8px 8px 0 0}
+.card h2 .meta{color:var(--dim);letter-spacing:.08em}
+.body{padding:14px;display:grid;gap:12px;align-content:start}
+.big{font-family:var(--f-display);font-weight:700;font-size:46px;line-height:1;letter-spacing:.01em}
+.huge{font-family:var(--f-display);font-weight:700;font-size:78px;line-height:.9;font-variant-numeric:tabular-nums}
+.sublbl{font-size:10px;letter-spacing:.16em;color:var(--muted);font-weight:700}
+.amber{color:var(--amber)} .go{color:var(--go)} .stop{color:var(--stop)} .info{color:var(--info)} .muted{color:var(--muted)}
+.editable{background:none;border:0;padding:0;text-align:inherit;border-bottom:1px dashed var(--line-2);border-radius:0}
+.editable:hover{color:var(--info);border-bottom-color:var(--info)}
+.kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.kpis.k3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.kpi{background:var(--sunk);border:1px solid var(--line);border-radius:6px;padding:8px 10px;display:grid;gap:3px;min-width:0}
+.kpi span{font-size:10px;letter-spacing:.14em;color:var(--muted);font-weight:700}
+.kpi b{font-family:var(--f-mono);font-size:19px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi b.editable{justify-self:start}
+.drv{display:grid;gap:5px}
+.drv-row{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:8px;align-items:center;font-size:13px}
+.drv-code{font-family:var(--f-display);font-weight:700;text-align:center;border:1px solid var(--line-2);border-radius:3px}
+.drv-row.cur .drv-code{background:var(--amber);color:var(--amber-ink);border-color:var(--amber)}
+.drv-bar{height:4px;background:var(--line);border-radius:2px;grid-column:2/4}
+.drv-bar i{display:block;height:100%;background:var(--muted);border-radius:2px}
+.drv-row.cur .drv-bar i{background:var(--amber)}
+
+.center{text-align:center}
+.pos{font-family:var(--f-display);font-weight:700;font-size:72px;line-height:.9;justify-self:center;font-variant-numeric:tabular-nums}
+
+.tb-card.warn{border-color:var(--amber);background:#1d1806}
+.tb-card.danger{border-color:var(--stop);background:#230b0b}
+.tb-card.warn h2{color:var(--amber)} .tb-card.danger h2{color:var(--stop)}
+.tb-unit{font-size:22px;font-family:var(--f-display);font-weight:600;color:var(--muted);letter-spacing:.06em}
+.tb-line{font-family:var(--f-display);font-weight:600;font-size:20px;letter-spacing:.03em}
+
+.fuelnum{font-family:var(--f-display);font-weight:700;font-size:52px;line-height:1;font-variant-numeric:tabular-nums}
+.gauge{position:relative;height:12px;background:var(--sunk);border:1px solid var(--line);border-radius:3px;overflow:hidden}
+.gauge i{position:absolute;inset:0 auto 0 0;background:var(--amber)}
+.gauge .res{position:absolute;top:0;bottom:0;border-left:2px solid var(--stop)}
+.gauge-scale{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:10px;color:var(--dim)}
+
+/* Plan de relais */
+.relays{display:grid;gap:6px;overflow-x:auto}
+.relay-h,.relay{display:grid;grid-template-columns:34px minmax(124px,1.5fr) 62px 52px 52px minmax(86px,1fr);gap:8px;align-items:center;min-width:470px}
+.relay-h{font-size:10px;letter-spacing:.12em;color:var(--dim);font-weight:700;padding:0 8px}
+.relay{background:var(--sunk);border:1px solid var(--line);border-radius:6px;padding:7px 8px}
+.relay.cur{border-color:var(--amber);box-shadow:inset 3px 0 0 var(--amber)}
+.relay.done{opacity:.62}
+.relay .rn{font-family:var(--f-display);font-weight:700;font-size:17px}
+.relay select,.relay input,.field input,.field select,.edit input,.pitform input,.pitform select{background:var(--bg);border:1px solid var(--line-2);border-radius:5px;padding:6px 7px;width:100%;min-width:0}
+.relay input{text-align:right;font-family:var(--f-mono)}
+.relay .t{font-family:var(--f-mono);font-size:13px}
+.relay .t.late{color:var(--stop)}
+.relay .st{font-size:12px;color:var(--muted)}
+.pill{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.1em;padding:2px 6px;border-radius:3px;border:1px solid currentColor}
+.pill.m{color:var(--go)} .pill.x{color:var(--info)} .pill.l{color:var(--stop)}
+.legend{font-size:11px;color:var(--dim)}
+
+.dots{display:flex;gap:8px;flex-wrap:wrap}
+.dot{width:26px;height:26px;border-radius:50%;border:2px solid var(--line-2)}
+.dot.on{background:var(--go);border-color:var(--go)}
+.dot.cur{border-color:var(--amber)}
+.stopcount{font-family:var(--f-display);font-weight:700;font-size:26px}
+.deadline{font-family:var(--f-mono);font-size:22px;font-weight:600;color:var(--stop)}
+.stoplog{display:grid;gap:4px;max-height:168px;overflow:auto}
+.stoplog div{display:grid;grid-template-columns:28px 64px 58px auto minmax(0,1fr);gap:6px;align-items:center;font-size:12px;font-family:var(--f-mono)}
+.stoplog .who{font-family:var(--f-body);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.empty{font-size:12px;color:var(--dim)}
+
+/* Alertes */
+.alert{border:1px solid #5a4a10;background:#211b06;border-radius:8px;padding:14px;display:grid;gap:8px;text-align:center}
+.alert.critical{background:#2a0c0c;border-color:#8e2b2b}
+.alert.info{background:var(--panel);border-color:var(--line-2)}
+.alert-main{font-family:var(--f-display);font-weight:700;font-size:32px;letter-spacing:.03em;text-wrap:balance}
+.alert.critical .alert-main{color:#ff8a8a}
+.alert.warning .alert-main{color:var(--amber)}
+.alert-list{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.chip{font-size:12px;padding:3px 8px;border-radius:12px;border:1px solid var(--line-2);color:var(--muted)}
+.chip.critical{border-color:var(--stop);color:#ff9a9a} .chip.warning{border-color:var(--amber);color:var(--amber)}
+
+/* Commandes */
+.controls{display:grid;grid-template-columns:2fr repeat(4,1fr) 1.3fr;gap:8px}
+.controls.c2{grid-template-columns:repeat(3,1fr)}
+.ctl{border:1px solid var(--line-2);border-radius:8px;background:var(--panel-2);padding:16px 10px;font-family:var(--f-display);font-weight:700;font-size:19px;letter-spacing:.06em}
+.ctl:hover:not(:disabled){border-color:var(--muted)}
+.ctl.pit{background:var(--amber);color:var(--amber-ink);border-color:var(--amber);font-size:24px}
+.ctl.pit.inpit{background:var(--stop);border-color:var(--stop);color:#fff}
+.ctl.whatif{background:#0f2a3a;border-color:#1f5470;color:#bfe9ff}
+.ctl.running{background:#0f3a24;border-color:var(--go);color:#c9ffe0}
+.ctl.flag{position:relative;color:var(--muted)}
+.ctl.flag::before{content:"";position:absolute;left:10px;right:10px;top:6px;height:3px;border-radius:2px;background:var(--fc)}
+.ctl.flag.on{background:var(--fc);color:var(--fi);border-color:var(--fc)}
+.ctl.flag.on::before{background:var(--fi);opacity:.4}
+.f-g{--fc:var(--go);--fi:#00160a} .f-f{--fc:var(--amber);--fi:var(--amber-ink)} .f-s{--fc:var(--sc);--fi:#1f0e00} .f-r{--fc:var(--stop);--fi:#fff}
+.footer{padding-block:6px 18px;padding-left:var(--gutter-l);padding-right:var(--gutter-r);text-align:center;font-size:11px;color:var(--dim)}
+
+/* Modales */
+.modal{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.78);display:grid;place-items:center;padding:max(16px,env(safe-area-inset-top,0px)) var(--gutter-r) max(16px,env(safe-area-inset-bottom,0px)) var(--gutter-l)}
+.dialog{width:min(920px,100%);max-height:100%;overflow:auto;background:#0b1015;border:1px solid var(--line-2);border-radius:12px;padding:18px;display:grid;gap:14px}
+.dialog.narrow{width:min(460px,100%)}
+.dialog h1{margin:0;font-family:var(--f-display);font-weight:700;font-size:28px;letter-spacing:.04em}
+.dialog h3{margin:4px 0 0;font-size:12px;letter-spacing:.16em;color:var(--muted)}
+.formgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.field{display:grid;gap:4px;min-width:0}
+.field label{font-size:10px;font-weight:700;letter-spacing:.1em;color:#9aa8b3}
+.profile-field{grid-column:1/-1}.profile-field select{font-weight:600}
+.field.check{grid-template-columns:auto 1fr;align-items:center}
+.field.check input{width:auto}
+.drow{display:grid;grid-template-columns:70px minmax(0,1fr) auto;gap:8px}
+.srow{display:grid;grid-template-columns:44px minmax(0,1fr) 90px 90px auto;gap:8px;align-items:center}
+.srow .t{font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.list{display:grid;gap:6px}
+.actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+.actions .left{margin-right:auto}
+.errors{font-size:12px;display:grid;gap:3px}
+.errors .e{color:var(--stop)} .errors .w{color:var(--amber)}
+.rules{display:grid;gap:4px;font-size:12px;color:var(--muted)}
+.rules b{font-family:var(--f-mono);color:var(--fg);font-weight:500;margin-right:6px}
+details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--muted);font-weight:700}
+
+.pitdlg{text-align:center}
+.pittimer{font-family:var(--f-mono);font-size:84px;font-weight:600;line-height:1}
+.pitstatus{font-family:var(--f-display);font-weight:700;font-size:26px;letter-spacing:.03em}
+.pitstatus.ok{color:var(--go)} .pitstatus.wait{color:var(--amber)} .pitstatus.bad{color:var(--stop)}
+.pitform{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;text-align:left}
+.checks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.chk{display:flex;gap:8px;align-items:center;justify-content:center;background:var(--panel-2);border:1px solid var(--line);border-radius:6px;padding:10px;font-weight:600;font-size:13px}
+.note{font-size:12px;color:var(--muted)}
+.wigrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.scen{background:var(--sunk);border:1px solid var(--line);border-radius:8px;padding:14px;display:grid;gap:6px;align-content:start}
+.scen h3{margin:0}
+.scen .row{display:flex;justify-content:space-between;gap:8px}
+.scen .row b{font-family:var(--f-mono)}
+.tlist{display:grid;gap:4px;font-size:13px}
+.tlist .g{margin-top:8px;font-size:10px;letter-spacing:.16em;color:var(--dim);font-weight:700}
+.tlist .r{display:grid;grid-template-columns:18px minmax(0,1fr);gap:8px}
+.tlist .d{grid-column:2;font-size:11px;color:var(--muted);font-family:var(--f-mono)}
+.edit .err{color:var(--stop);font-size:12px;min-height:16px}
+
+@media (max-width:1180px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.grid .wide{grid-column:1/-1}.controls{grid-template-columns:repeat(3,1fr)}.controls .pit{grid-column:1/-1}}
+@media (max-width:720px){.grid{grid-template-columns:minmax(0,1fr)}.formgrid,.pitform{grid-template-columns:repeat(2,minmax(0,1fr))}.checks,.wigrid{grid-template-columns:1fr}.huge{font-size:62px}.pittimer{font-size:60px}.alert-main{font-size:24px}.clock{margin-left:0}.controls{grid-template-columns:repeat(2,1fr)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<header class="topbar">
+  <div class="brand">Strategy Wall <span class="ver">V4</span></div>
+  <div class="badges"><span class="badge" id="eventBadge">TTE</span><span class="badge" id="carBadge">#208</span><span class="badge flag-GREEN" id="flagBadge">GREEN</span></div>
+  <div class="clock">
+    <button class="clock-el editable" id="elapsed" title="Ajuster le temps de course">00:00:00</button>
+    <span class="clock-sep">/</span><span class="clock-rem" id="remaining">04:00:00</span><span class="clock-lbl">RESTANT</span>
+  </div>
+  <div class="tb-actions">
+    <button class="btn" id="testsOpen">TESTS <b id="testsBadge">–</b></button>
+    <button class="btn" id="setupOpen">⚙ SETUP</button>
+  </div>
+</header>
+
+<main class="wall">
+  <div class="modebar">
+    <span class="lbl">SOURCE</span>
+    <div class="seg" role="group" aria-label="Source du timing">
+      <button id="modeManual" class="on">MANUAL</button><button id="modeSim">SIMULATION</button><button id="modeLive" title="Connecter le chronométrage ItsLive">LIVE</button>
+    </div>
+    <div class="simctl" id="simCtl" hidden>
+      <span class="simtag">SIMULATION · l'état MANUAL est conservé</span>
+      <div class="seg" id="simSpeed"><button data-speed="1">×1</button><button data-speed="10" class="on">×10</button><button data-speed="60">×60</button></div>
+      <button class="btn sm" id="simFresh">Course neuve</button>
+      <button class="btn sm" id="simExit">Quitter</button>
+    </div>
+    <div class="livectl" id="liveCtl" hidden>
+      <span class="livedot" aria-hidden="true"></span>
+      <span class="simtag" id="liveTag">ITSLIVE</span>
+      <span class="mono livestate" id="liveState">connexion…</span>
+      <div class="seg" id="replaySpeedCtl" hidden><button data-rs="1">×1</button><button data-rs="10" class="on">×10</button><button data-rs="60">×60</button></div>
+      <button class="btn sm" id="liveExport" title="Télécharger le flux reçu pour le rejouer plus tard">Exporter le flux</button>
+      <button class="btn sm" id="liveDisconnect">Déconnecter</button>
+    </div>
+    <span class="source" id="sourceLbl">VIRTUAL TIMING</span>
+  </div>
+
+  <section class="grid">
+    <article class="card">
+      <h2>PILOTE / STINT <span class="meta" id="stintMeta">RELAIS 1</span></h2>
+      <div class="body">
+        <div><button class="big editable" id="curDriver" title="Corriger le pilote en voiture">Pilote A</button><div class="sublbl amber" style="margin-top:6px">EN VOITURE</div></div>
+        <div class="kpis">
+          <div class="kpi"><span>STINT</span><b id="stintTime">00:00</b></div>
+          <div class="kpi"><span>TOURS STINT</span><b id="stintLaps">0</b></div>
+          <div class="kpi"><span id="avgLbl">MOY. STINT (VERT)</span><b id="avgLap">--</b></div>
+          <div class="kpi" title="Meilleur tour propre du relais"><span>MEILLEUR STINT</span><b id="bestLap">--</b></div>
+        </div>
+        <div class="tb-line">NEXT → <span class="info" id="nextDriver">Pilote B</span></div>
+        <div class="drv" id="drvTimes"></div>
+      </div>
+    </article>
+
+    <article class="card">
+      <h2>LIVE / COURSE <span class="meta"><span id="srcKpi">VIRTUEL</span> · <span id="paceMeta">PACE --</span></span></h2>
+      <div class="body center">
+        <button class="pos editable" id="position" title="Ajuster la position">P--</button>
+        <div class="sublbl">POSITION</div>
+        <div class="kpis k3" style="text-align:left">
+          <div class="kpi"><span>TOUR</span><b class="editable" id="lapCount" title="Ajuster le nombre de tours">0</b></div>
+          <div class="kpi"><span>DERNIER</span><b class="editable" id="lastLap" title="Corriger le dernier tour">--</b></div>
+          <div class="kpi"><span>MEILLEUR</span><b id="bestAll">--</b></div>
+          <div class="kpi"><span>PROJ. ARRIVÉE</span><b id="finishLap">--</b></div>
+          <div class="kpi"><span>FUEL → DAMIER</span><b id="fuelEnd">--</b></div>
+          <div class="kpi"><span id="toDeadlineLbl">DEADLINE DANS</span><b id="toDeadline">--</b></div>
+        </div>
+      </div>
+    </article>
+
+    <article class="card tb-card" id="targetCard">
+      <h2>TARGET BOX <span class="meta" id="targetMeta"></span></h2>
+      <div class="body center">
+        <div class="sublbl">ARRÊT OBLIGATOIRE</div>
+        <div class="big amber" id="nextStopNo">#1</div>
+        <div><span class="huge" id="boxTarget">--</span> <span class="tb-unit">TOURS</span></div>
+        <div class="mono muted" id="targetTime">à --:--:--</div>
+        <div class="tb-line"><span id="nextStopDriver">Pilote B</span> · <span class="amber" id="fuelAdd">FULL</span></div>
+      </div>
+    </article>
+
+    <article class="card">
+      <h2>FUEL <span class="meta" id="fuelMeta"></span></h2>
+      <div class="body">
+        <div class="fuelnum"><button class="editable" id="fuelRemaining" title="Corriger le carburant estimé">--</button> <span class="tb-unit">L</span></div>
+        <div><div class="gauge"><i id="fuelBar"></i><span class="res" id="fuelRes"></span></div>
+          <div class="gauge-scale"><span>0</span><span id="tankLbl">50 L</span></div></div>
+        <div class="kpis">
+          <div class="kpi"><span>CONSO RÉF.</span><b id="fuelRef">--</b></div>
+          <div class="kpi"><span>CONSO STRAT.</span><b id="fuelStrat">--</b></div>
+          <div class="kpi"><span>AUTONOMIE</span><b id="fuelRange">--</b></div>
+          <div class="kpi"><span>BOX MAX</span><b class="stop" id="boxMax">--</b></div>
+        </div>
+      </div>
+    </article>
+
+    <article class="card wide">
+      <h2>PLAN DE RELAIS — PLAN / LIVE / RÉEL <span class="meta">modifiable en course</span></h2>
+      <div class="body">
+        <div class="relays" id="relays"></div>
+        <div class="legend">PLAN = cumul des relais depuis le départ · LIVE = recalé sur le dernier arrêt obligatoire réel · une modification recalcule tous les targets suivants.</div>
+      </div>
+    </article>
+
+    <article class="card">
+      <h2>ARRÊTS <span class="meta" id="stopsMeta"></span></h2>
+      <div class="body">
+        <div class="dots" id="stopDots"></div>
+        <div class="stopcount" id="stopCount">0 / 5 <span class="muted" style="font-size:16px">obligatoires · 0 total</span></div>
+        <div class="kpis">
+          <div class="kpi"><span id="deadlineLbl">DEADLINE DERNIER</span><b class="stop" id="deadline">03:40:00</b></div>
+          <div class="kpi"><span>ARRÊT MINI</span><b id="pitMin">02:30</b></div>
+        </div>
+        <div class="stoplog" id="stopLog"></div>
+      </div>
+    </article>
+  </section>
+
+  <section class="alert info" id="alertBar" aria-live="polite">
+    <div class="alert-main" id="alertMain">STRATÉGIE PRÊTE</div>
+    <div class="alert-list" id="alertList"></div>
+  </section>
+
+  <section class="controls">
+    <button class="ctl pit" id="pitBtn">PIT IN</button>
+    <button class="ctl flag f-g" data-flag="GREEN">GREEN</button>
+    <button class="ctl flag f-f" data-flag="FCY">FCY</button>
+    <button class="ctl flag f-s" data-flag="SC">SC</button>
+    <button class="ctl flag f-r" data-flag="RED">RED</button>
+    <button class="ctl whatif" id="whatIf">PIT NOW ?</button>
+  </section>
+  <section class="controls c2">
+    <button class="ctl" id="startBtn">▶ START</button>
+    <button class="ctl" id="lapBtn">+1 TOUR</button>
+    <button class="ctl" id="resetBtn">RESET COURSE</button>
+  </section>
+</main>
+<footer class="footer" id="footer"></footer>
+
+<!-- PIT -->
+<div class="modal" id="pitModal" hidden>
+  <div class="dialog pitdlg">
+    <h1 id="pitTitle">PIT #1</h1>
+    <div class="pittimer" id="pitTimer">00:00.0</div>
+    <div class="pitstatus wait" id="pitStatus">—</div>
+    <div class="pitform">
+      <div class="field"><label for="pitDriver">PILOTE QUI REPART</label><select id="pitDriver"></select></div>
+      <div class="field"><label for="pitFuel">LITRES AJOUTÉS</label><input id="pitFuel" type="number" step="0.1" min="0" inputmode="decimal"></div>
+      <div class="field check" style="align-self:end"><input id="pitChange" type="checkbox"><label for="pitChange">CHANGEMENT DE PILOTE</label></div>
+    </div>
+    <div class="checks">
+      <label class="chk"><input type="checkbox" id="ck1">MOTEUR OFF</label>
+      <label class="chk"><input type="checkbox" id="ck2">RAVITAILLEMENT FINI</label>
+      <label class="chk"><input type="checkbox" id="ck3">PILOTE ATTACHÉ</label>
+    </div>
+    <div class="note livenote" id="pitLiveNote" hidden>Entrée détectée par ItsLive (boucle pitlane). La sortie et la durée officielle viendront d'ItsLive : renseignez litres et pilote, le PIT OUT se fera automatiquement.</div>
+    <div class="note" id="pitNote">Ravitaillement interdit pendant le changement de pilote (art. 4-2/3-2.6) · moteur arrêté avant remplissage (art. 7-9/4-2) · pitlane 60 km/h.</div>
+    <div class="actions"><button class="btn left" id="pitCancel">ANNULER L'ENTRÉE</button><button class="btn" id="pitHide">MASQUER</button><button class="btn btn-primary" id="pitOut" style="font-size:20px;padding:12px 26px">PIT OUT</button></div>
+  </div>
+</div>
+
+<!-- LIVE -->
+<div class="modal" id="liveModal" hidden>
+  <div class="dialog">
+    <h1>LIVE · ItsLive</h1>
+    <div class="field"><label for="liveUrl">LIEN ITSLIVE (CHAMPIONNAT, ÉVÉNEMENT OU SESSION)</label>
+      <div class="inline"><input id="liveUrl" placeholder="https://www.its-live.net/live/caterham/2026" autocomplete="off" spellcheck="false"><button class="btn" id="liveLoad">CHARGER</button></div></div>
+    <div class="formgrid">
+      <div class="field" id="liveEventRow" hidden><label for="liveEvent">ÉVÉNEMENT</label><select id="liveEvent"></select></div>
+      <div class="field" id="liveSessionRow" hidden><label for="liveSession">SESSION</label><select id="liveSession"></select></div>
+      <div class="field" id="liveCarRow" hidden><label for="liveCar">VOITURE SUIVIE</label><select id="liveCar"></select></div>
+      <div class="field"><label for="liveInterval">RAFRAÎCHISSEMENT</label><select id="liveInterval"><option value="2000">2 s</option><option value="3000">3 s (comme ItsLive)</option><option value="5000">5 s</option></select></div>
+    </div>
+    <div class="note" id="liveMsg">Collez le lien ItsLive puis CHARGER.</div>
+    <div class="note">Le mode LIVE pilote la vraie course : temps, tours, position, drapeaux et arrêts (durée officielle des boucles pitlane). Le fuel, les litres ajoutés et le pilote qui repart restent saisis au mur. Fonctionne avec le fichier <b>strategy-wall-standalone.html</b> ; la page publiée en ligne ne peut pas appeler ItsLive.</div>
+    <div class="actions"><button class="btn" id="liveClose">FERMER</button><button class="btn btn-primary" id="liveConnect" disabled>CONNECTER</button></div>
+    <details><summary>REJOUER UN ENREGISTREMENT</summary>
+      <div class="formgrid" style="margin-top:10px">
+        <div class="field" style="grid-column:span 2"><label for="replayFile">FICHIER EXPORTÉ (.json)</label><input id="replayFile" type="file" accept=".json,application/json"></div>
+        <div class="field"><label for="replaySpeed">VITESSE</label><select id="replaySpeed"><option value="1">×1 (temps réel)</option><option value="10" selected>×10</option><option value="60">×60</option></select></div>
+      </div>
+      <div class="note">Rejoue un flux exporté pendant une vraie course, sur une copie de travail : la course en cours n'est pas modifiée.</div>
+      <div class="actions"><button class="btn" id="replayStart">REJOUER</button></div>
+    </details>
+  </div>
+</div>
+
+<!-- WHAT IF -->
+<div class="modal" id="whatModal" hidden>
+  <div class="dialog">
+    <h1>PIT NOW ?</h1>
+    <div class="wigrid">
+      <div class="scen"><h3>CONTINUER</h3>
+        <div class="row"><span>Target</span><b id="wiCont">--</b></div>
+        <div class="row"><span>Box max fuel</span><b id="wiMax">--</b></div>
+        <div class="go">Plan actuel conservé</div></div>
+      <div class="scen"><h3>RENTRER MAINTENANT</h3>
+        <div class="row"><span>Arrêt</span><b id="wiStop">--</b></div>
+        <div class="row"><span>Pilote</span><b id="wiDriver">--</b></div>
+        <div class="row"><span>Fuel conseillé</span><b id="wiFuel">--</b></div>
+        <div class="row"><span>Avance sur target</span><b id="wiEarly">--</b></div>
+        <div class="row"><span>Nouveaux targets</span><b id="wiTargets">--</b></div>
+        <div id="wiValid"></div></div>
+    </div>
+    <div class="actions"><button class="btn" id="whatClose">FERMER</button><button class="btn btn-primary" id="whatAdopt">PIT IN MAINTENANT</button></div>
+  </div>
+</div>
+
+<!-- EDIT -->
+<div class="modal" id="editModal" hidden>
+  <form class="dialog narrow edit" id="editForm">
+    <h1 id="editTitle">Modifier</h1>
+    <div class="field"><label for="editInput" id="editHint"></label><input id="editInput" autocomplete="off"></div>
+    <div class="err" id="editErr"></div>
+    <div class="actions"><button type="button" class="btn" id="editCancel">ANNULER</button><button type="submit" class="btn btn-primary">VALIDER</button></div>
+  </form>
+</div>
+
+<!-- CONFIRM -->
+<div class="modal" id="confirmModal" hidden>
+  <div class="dialog narrow">
+    <h1 id="confirmTitle">Confirmer</h1>
+    <div id="confirmText" class="note" style="font-size:14px"></div>
+    <div class="actions"><button class="btn" id="confirmNo">ANNULER</button><button class="btn btn-danger" id="confirmYes">CONFIRMER</button></div>
+  </div>
+</div>
+
+<!-- TESTS -->
+<div class="modal" id="testsModal" hidden>
+  <div class="dialog">
+    <h1>Tests de non-régression</h1>
+    <div class="note">Exécutés au chargement et à chaque clic. Même suite en ligne de commande : <span class="mono">node tests/run.cjs</span></div>
+    <div class="tlist" id="testsList"></div>
+    <div class="actions"><button class="btn" id="testsRun">RELANCER</button><button class="btn btn-primary" id="testsClose">FERMER</button></div>
+  </div>
+</div>
+
+<!-- SETUP -->
+<div class="modal" id="setupModal" hidden>
+  <div class="dialog">
+    <h1>⚙ Setup</h1>
+    <div class="formgrid" id="setupFields"></div>
+    <h3>PILOTES · ORDRE DE ROTATION</h3>
+    <div class="list" id="setupDrivers"></div>
+    <div><button class="btn sm" id="addDriver">+ PILOTE</button></div>
+    <h3>PLAN DE RELAIS AU DÉPART</h3>
+    <div class="list" id="setupRelays"></div>
+    <div class="errors" id="setupErrors"></div>
+    <details><summary>RÈGLEMENT APPLIQUÉ</summary><div class="rules" id="rulesList" style="margin-top:8px"></div></details>
+    <div class="actions"><button class="btn left" id="recoveryOpen">RECOVERY / RECALAGE</button><button class="btn" id="setupClose">ANNULER</button><button class="btn btn-primary" id="setupSave">VALIDER LE SETUP</button></div>
+  </div>
+</div>
+
+<!-- RECOVERY -->
+<div class="modal" id="recoveryModal" hidden>
+  <div class="dialog">
+    <h1>Recovery / recalage</h1>
+    <div class="note">Reprise d'une course en cours (changement de poste, crash) : ces valeurs reconstruisent l'état courant. L'horloge garde son état START/PAUSE.</div>
+    <div class="formgrid">
+      <div class="field"><label for="rTime">TEMPS COURSE (HH:MM:SS)</label><input id="rTime"></div>
+      <div class="field"><label for="rLaps">TOURS COURSE</label><input id="rLaps" type="number" min="0"></div>
+      <div class="field"><label for="rDriver">PILOTE EN VOITURE</label><select id="rDriver"></select></div>
+      <div class="field"><label for="rStintTime">DÉBUT STINT (HH:MM:SS)</label><input id="rStintTime"></div>
+      <div class="field"><label for="rStintLap">DÉBUT STINT (TOUR)</label><input id="rStintLap" type="number" min="0"></div>
+      <div class="field"><label for="rFuel">FUEL ESTIMÉ (L)</label><input id="rFuel" type="number" step="0.1" min="0"></div>
+      <div class="field"><label for="rMand">ARRÊTS OBLIGATOIRES FAITS</label><input id="rMand" type="number" min="0"></div>
+      <div class="field"><label for="rExtra">ARRÊTS EXTRA FAITS</label><input id="rExtra" type="number" min="0"></div>
+    </div>
+    <div class="errors" id="recErr"></div>
+    <div class="actions"><button class="btn" id="recoveryClose">ANNULER</button><button class="btn btn-primary" id="recoveryApply">RECONSTRUIRE</button></div>
+  </div>
+</div>
+
+<script>/* ============================================================================
+   RACE ENGINE — état de course pur
+   - Aucun accès DOM, aucune horloge interne : chaque événement porte `at`
+     (epoch ms) fourni par le TimingAdapter. => testable, rejouable, persistable.
+   - apply(race, setup, event) -> nouveau race state (immuable vu de l'extérieur)
+   - L'horloge est ancrée (base + anchor) : un refresh navigateur reconstruit
+     le temps écoulé exact sans perte.
+   ========================================================================== */
+(function (root, factory) {
+  const api = factory();
+  if (typeof module === 'object' && module.exports) module.exports = api;
+  else root.RaceEngine = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  'use strict';
+
+  /* ---- Profils réglementaires (un profil par championnat) ---------------- */
+  /* Un profil = le règlement d'un championnat, en données. Ajouter un championnat = ajouter un profil.
+     windowMode  'deadline' : arrêts obligatoires avant (fin − lastStopDeadlineMin)
+                 'window'   : arrêts obligatoires entre windowOpenMin et windowCloseMin (règlement particulier)
+     shortStop   'EXTRA'    : arrêt trop court = non comptabilisé
+                 'PENALTY'  : arrêt trop court = comptabilisé + pénalité
+     outOfWindow 'EXTRA' | 'PENALTY' : même logique pour un arrêt hors fenêtre / après la deadline */
+  const PROFILES = {
+    TTE_PEUGEOT_RELAIS_2026: {
+      id: 'TTE_PEUGEOT_RELAIS_2026', short: 'TTE',
+      name: 'TTE Rencontres Peugeot Relais 2026',
+      permit: 'Permis FFSA C47-2026',
+      raceMinutes: 240, mandatoryStops: 5, minPitSeconds: 150, lastStopDeadlineMin: 20,
+      windowMode: 'deadline', shortStop: 'EXTRA', outOfWindow: 'EXTRA',
+      pitSpeedKmh: 60, driversMin: 2, driversMax: 6,
+      penalty: { missing: '2 tours par arrêt manquant (art. 7-9/1)', short: 'arrêt non comptabilisé (art. 7-9/1)', outOfWindow: 'arrêt non comptabilisé + 1 tour (art. 7-9/3)' },
+      defaults: { refLap: 92, tank: 50, startFuel: 50, fuelPerLap: 1.45, relays: [['A', 40], ['B', 40], ['C', 40], ['A', 40], ['B', 40], ['C', 40]], drivers: ['A', 'B', 'C'] },
+      itslive: null,
+      rules: [
+        ['3-2', 'Course de 4 h, 2 à 6 pilotes par équipage'],
+        ['7-9/1', '5 arrêts obligatoires de 2\'30 mini entre boucle d\'entrée et boucle de sortie'],
+        ['7-9/1', 'Arrêt manquant : 2 tours de pénalité'],
+        ['7-9/2', 'Arrêt non obligatoire : aucun temps minimum'],
+        ['7-9/3', 'Dernier arrêt obligatoire avant les 20 dernières minutes (heure d\'entrée boucle), sinon non comptabilisé + 1 tour'],
+        ['7-9/4', 'Pitlane 60 km/h, moteur arrêté avant ravitaillement'],
+        ['4-2/3-2.6', 'Changement de pilote interdit pendant le remplissage'],
+        ['7-8/2', 'Drapeau rouge : le chronomètre ne s\'arrête pas'],
+        ['7-8/1', 'Safety Car : les pénalités ne peuvent pas être purgées']
+      ]
+    },
+    FERDINAND_CUP_2026: {
+      id: 'FERDINAND_CUP_2026', short: 'Ferdinand Cup',
+      name: 'Ferdinand Cup 2026',
+      permit: 'Permis FFSA C40-2026',
+      raceMinutes: 60, raceMinutesRange: [40, 60], mandatoryStops: 1, minPitSeconds: 120,
+      windowMode: 'window', windowOpenMin: 20, windowCloseMin: 40, windowFromEvent: true,
+      shortStop: 'PENALTY', outOfWindow: 'PENALTY',
+      pitSpeedKmh: 60, driversMin: 1, driversMax: 2,
+      penalty: { missing: 'disqualification de la course (art. 7.3.5)', short: 'Stop & Go + temps manquant (art. 7.3.5)', outOfWindow: 'Stop & Go — arrêt hors fenêtre (art. 7.3.5)' },
+      defaults: { refLap: 96, tank: 40, startFuel: 40, fuelPerLap: 1.2, relays: [['A', 30], ['B', 30]], drivers: ['A', 'B'] },
+      itslive: { cs: 'caterham', folder: 'ferdinand' },
+      rules: [
+        ['3.2', 'Équipage de 1 ou 2 pilotes'],
+        ['7.3.0', 'Course de 40 à 60 minutes'],
+        ['7.3.5', '1 arrêt au stand obligatoire de 2 minutes, équipage à 1 ou 2 pilotes'],
+        ['7.3.5', 'Fenêtre d\'arrêt fixée par le règlement particulier de chaque épreuve'],
+        ['7.3.5', 'Arrêt de moins de 2 minutes : Stop & Go + temps manquant'],
+        ['7.3.5', 'Arrêt hors fenêtre : Stop & Go'],
+        ['7.3.5', 'Arrêt obligatoire non effectué : disqualification'],
+        ['6.1', 'Pitlane 60 km/h sauf disposition du briefing'],
+        ['7.3.6', 'Damier présenté à la voiture de tête']
+      ]
+    }
+  };
+  const DEFAULT_PROFILE = 'TTE_PEUGEOT_RELAIS_2026';
+  const FLAGS = ['GREEN', 'FCY', 'SC', 'RED', 'CHEQUERED'];
+
+  const clone = (x) => JSON.parse(JSON.stringify(x));
+  const num = (v, d) => (Number.isFinite(Number(v)) ? Number(v) : d);
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+  function defaultSetup(profileId) {
+    const p = PROFILES[profileId] || PROFILES[DEFAULT_PROFILE];
+    const d = p.defaults;
+    return {
+      profileId: p.id, circuit: 'Magny-Cours', carNumber: '208',
+      raceMinutes: p.raceMinutes, mandatoryStops: p.mandatoryStops, minPitSeconds: p.minPitSeconds,
+      lastStopDeadlineMin: p.lastStopDeadlineMin || 0, windowOpenMin: p.windowOpenMin || 0, windowCloseMin: p.windowCloseMin || 0,
+      pitSpeedKmh: p.pitSpeedKmh,
+      refLap: d.refLap, tank: d.tank, startFuel: d.startFuel, fuelPerLap: d.fuelPerLap, fuelMargin: 3, reserveLaps: 2,
+      neutralFuelFactor: 0.6, virtualLaps: true,
+      drivers: d.drivers.map((id) => ({ id, name: `Pilote ${id}` })),
+      relayPlan: d.relays.map(([driver, minutes]) => ({ driver, minutes }))
+    };
+  }
+  /* Change de championnat en gardant ce qui appartient à l'équipe (circuit, n°, pilotes, voiture). */
+  function applyProfile(setup, profileId) {
+    const d = defaultSetup(profileId);
+    const keep = { circuit: setup.circuit, carNumber: setup.carNumber, drivers: setup.drivers, refLap: setup.refLap, tank: setup.tank, startFuel: setup.startFuel, fuelPerLap: setup.fuelPerLap, fuelMargin: setup.fuelMargin, reserveLaps: setup.reserveLaps, neutralFuelFactor: setup.neutralFuelFactor, virtualLaps: setup.virtualLaps };
+    const p = PROFILES[d.profileId];
+    const drivers = (keep.drivers || d.drivers).slice(0, p.driversMax);
+    const ids = drivers.map((x) => x.id);
+    const relays = d.relayPlan.map((r, i) => ({ driver: ids[i % ids.length], minutes: r.minutes }));
+    return normalizeSetup(Object.assign({}, d, keep, { drivers, relayPlan: relays }));
+  }
+  const profileOf = (setup) => PROFILES[setup && setup.profileId] || PROFILES[DEFAULT_PROFILE];
+
+  /* Rend un setup cohérent : nombres, pilotes uniques, plan de relais complet
+     (mandatoryStops + 1 relais : le dernier va jusqu'au damier). */
+  function normalizeSetup(input) {
+    const d = defaultSetup(input && input.profileId);
+    const s = Object.assign({}, d, clone(input || {}));
+    ['raceMinutes', 'mandatoryStops', 'minPitSeconds', 'lastStopDeadlineMin', 'windowOpenMin', 'windowCloseMin', 'pitSpeedKmh', 'refLap', 'tank',
+      'startFuel', 'fuelPerLap', 'fuelMargin', 'reserveLaps', 'neutralFuelFactor'].forEach((k) => { s[k] = num(s[k], d[k]); });
+    s.mandatoryStops = Math.max(0, Math.round(s.mandatoryStops));
+    s.refLap = Math.max(1, s.refLap);
+    s.virtualLaps = s.virtualLaps !== false;
+    const seen = new Set();
+    s.drivers = (Array.isArray(s.drivers) ? s.drivers : d.drivers)
+      .map((x, i) => ({ id: String(x.id || x.code || String.fromCharCode(65 + i)).trim().toUpperCase().slice(0, 3) || String.fromCharCode(65 + i), name: String(x.name || 'Pilote').trim() || 'Pilote' }))
+      .filter((x) => (seen.has(x.id) ? false : (seen.add(x.id), true)));
+    if (s.drivers.length === 0) s.drivers = clone(d.drivers);
+    const ids = s.drivers.map((x) => x.id);
+    const plan = Array.isArray(s.relayPlan) ? s.relayPlan : [];
+    s.relayPlan = plan.map((r, i) => ({
+      driver: ids.includes(r.driver) ? r.driver : ids[i % ids.length],
+      minutes: Math.max(1, num(r.minutes, 40))
+    }));
+    const need = s.mandatoryStops + 1;
+    while (s.relayPlan.length < need) {
+      const i = s.relayPlan.length;
+      s.relayPlan.push({ driver: ids[i % ids.length], minutes: 40 });
+    }
+    return s;
+  }
+
+  function validateSetup(setup) {
+    const p = profileOf(setup);
+    const errors = [], warnings = [];
+    if (setup.drivers.length < p.driversMin) errors.push(`${p.driversMin} pilote(s) minimum (${p.short})`);
+    if (setup.drivers.length > p.driversMax) errors.push(`${p.driversMax} pilotes maximum (${p.short})`);
+    if (setup.startFuel > setup.tank) errors.push('Essence de départ supérieure au réservoir');
+    if (p.windowMode === 'window') {
+      if (!(setup.windowCloseMin > setup.windowOpenMin)) errors.push('Fenêtre d\'arrêt : la fermeture doit être après l\'ouverture');
+      if (setup.windowCloseMin > setup.raceMinutes) errors.push('Fenêtre d\'arrêt : fermeture après la fin de course');
+      if (p.windowFromEvent) warnings.push('Fenêtre d\'arrêt : à reprendre du règlement particulier de l\'épreuve (art. 7.3.5)');
+    }
+    if (p.raceMinutesRange && (setup.raceMinutes < p.raceMinutesRange[0] || setup.raceMinutes > p.raceMinutesRange[1]))
+      warnings.push(`Durée hors plage du règlement (${p.raceMinutesRange[0]} à ${p.raceMinutesRange[1]} min)`);
+    const open = windowOpenSeconds(setup), dl = deadlineSeconds(setup);
+    let t = 0;
+    for (let i = 0; i < setup.mandatoryStops; i++) {
+      t += setup.relayPlan[i].minutes * 60;
+      if (t > dl) { warnings.push(`Arrêt #${i + 1} planifié après la ${p.windowMode === 'window' ? 'fermeture de la fenêtre' : 'deadline'} (${hm(dl)})`); break; }
+      if (t < open) { warnings.push(`Arrêt #${i + 1} planifié avant l'ouverture de la fenêtre (${hm(open)})`); break; }
+    }
+    if (setup.mandatoryStops !== p.mandatoryStops || setup.minPitSeconds !== p.minPitSeconds || (p.windowMode === 'deadline' && (setup.raceMinutes !== p.raceMinutes || setup.lastStopDeadlineMin !== p.lastStopDeadlineMin)))
+      warnings.push('Paramètres différents du règlement de base : vérifiez le briefing');
+    return { errors, warnings };
+  }
+  const hm = (sec) => `${Math.floor(sec / 3600)}h${String(Math.floor(sec % 3600 / 60)).padStart(2, '0')}`;
+
+  /* ---- Horloge ------------------------------------------------------------ */
+  function elapsed(race, now) {
+    const c = race.clock;
+    return c.running && c.anchor != null ? c.base + Math.max(0, (now - c.anchor) / 1000) : c.base;
+  }
+  const raceSeconds = (setup) => setup.raceMinutes * 60;
+  /* Fin de la période où un arrêt obligatoire est valable (deadline TTE ou fermeture de fenêtre). */
+  const deadlineSeconds = (setup) => (profileOf(setup).windowMode === 'window' ? setup.windowCloseMin : setup.raceMinutes - setup.lastStopDeadlineMin) * 60;
+  const windowOpenSeconds = (setup) => (profileOf(setup).windowMode === 'window' ? setup.windowOpenMin * 60 : 0);
+
+  /* Classement d'un arrêt selon le règlement du profil — source unique pour le moteur, le mur et le « PIT NOW ? ».
+     Référence horaire = entrée dans la boucle pitlane. */
+  function classifyStop(setup, mandatoryDoneBefore, inElapsed, duration) {
+    const p = profileOf(setup);
+    const open = windowOpenSeconds(setup), close = deadlineSeconds(setup);
+    const early = inElapsed < open, late = inElapsed > close, inWindow = !early && !late;
+    const long = duration + 1e-6 >= setup.minPitSeconds;
+    const need = mandatoryDoneBefore < setup.mandatoryStops;
+    const penalties = [];
+    let type = 'EXTRA';
+    if (need) {
+      if (inWindow && long) type = 'MANDATORY';
+      else if (inWindow && !long) { if (p.shortStop === 'PENALTY') { type = 'MANDATORY'; penalties.push(`${p.penalty.short} — manque ${(setup.minPitSeconds - duration).toFixed(1)} s`); } }
+      else if (!inWindow && long) { if (p.outOfWindow === 'PENALTY') { type = 'MANDATORY'; penalties.push(p.penalty.outOfWindow); } }
+    }
+    return { type, early, late, short: !long, inWindow, penalties };
+  }
+  const mandatoryDone = (race) => race.stops.filter((s) => s.type === 'MANDATORY').length;
+  const currentStint = (race) => race.stints[race.stints.length - 1];
+
+  function createRace(setup, at) {
+    const first = (setup.relayPlan[0] && setup.relayPlan[0].driver) || setup.drivers[0].id;
+    return {
+      v: 4,
+      clock: { running: false, base: 0, anchor: null },
+      laps: 0, lastLapAt: 0, lapLog: [], position: null, flag: 'GREEN',
+      fuel: setup.startFuel, driver: first,
+      stints: [{ n: 1, driver: first, startElapsed: 0, startLap: 0 }],
+      stops: [], pit: null, log: [], createdAt: at || 0
+    };
+  }
+
+  function consumeLap(race, setup) {
+    const neutral = race.flag === 'FCY' || race.flag === 'SC';
+    race.fuel = Math.max(0, race.fuel - setup.fuelPerLap * (neutral ? setup.neutralFuelFactor : 1));
+  }
+
+  /* ---- Réducteur ---------------------------------------------------------- */
+  function apply(race0, setup, ev) {
+    if (ev.type === 'RESET') return createRace(setup, ev.at);
+    const race = clone(race0);
+    const now = ev.at;
+    const el = now != null ? elapsed(race, now) : race.clock.base;
+
+    switch (ev.type) {
+      case 'START':
+        if (!race.clock.running) { race.clock.running = true; race.clock.anchor = now; }
+        break;
+      case 'PAUSE':
+        if (race.clock.running) { race.clock.base = el; race.clock.running = false; race.clock.anchor = null; }
+        break;
+
+      case 'LAP_COMPLETED': {
+        let lt0 = ev.lapTime != null ? Number(ev.lapTime) : null;
+        let at = ev.atElapsed != null ? ev.atElapsed : el;
+        // +1 TOUR manuel : le tour se termine au plus tôt à "dernier passage + tour de réf.".
+        // Si ce moment n'est pas encore atteint, l'horloge saute jusque-là (en marche comme en pause).
+        // Si le tour réel a été plus long, on garde le temps réel : l'horloge ne recule jamais.
+        if (ev.advanceClock === true && !race.pit) {
+          const end = Math.max(el, race.lastLapAt + (lt0 != null ? lt0 : setup.refLap));
+          race.clock.base += end - el;
+          at = end; lt0 = end - race.lastLapAt;
+        }
+        const lt = lt0 != null ? lt0 : Math.max(1, at - race.lastLapAt);
+        // LIVE : `lap` = compteur officiel. Si des passages ont été manqués (réseau), on consomme
+        // le fuel de chaque tour sauté. Un compteur officiel inférieur ou égal est ignoré.
+        const target = ev.lap != null ? Number(ev.lap) : race.laps + 1;
+        if (target <= race.laps) break;
+        for (let i = race.laps; i < target; i++) consumeLap(race, setup);
+        race.laps = target;
+        race.lastLapAt = at;
+        // Nature du tour : 'pit' (passé au stand), 'out' (sortie de stand), 'neutral' (SC / FCY / rouge à un
+        // moment du tour), 'green' (tour propre). Seuls les tours 'green' servent au rythme et aux moyennes.
+        const neutralNow = race.flag === 'SC' || race.flag === 'FCY' || race.flag === 'RED';
+        const k = race.pit ? 'pit' : race.outLap ? 'out' : (race.lapNeutral || neutralNow) ? 'neutral' : 'green';
+        race.lapLog.push({ lap: race.laps, t: +lt.toFixed(3), d: race.driver, s: currentStint(race).n, f: race.flag, k, at: +at.toFixed(1) });
+        race.outLap = false; race.lapNeutral = neutralNow;
+        if (race.lapLog.length > 800) race.lapLog.shift();
+        break;
+      }
+      case 'POSITION_CHANGED':
+        race.position = ev.position > 0 ? Math.round(ev.position) : null;
+        break;
+      case 'RACE_STATUS':
+        if (FLAGS.includes(ev.flag)) race.flag = ev.flag;
+        if (ev.flag === 'SC' || ev.flag === 'FCY' || ev.flag === 'RED') race.lapNeutral = true;
+        // RED : le chrono continue (art. 7-8/2). Seul le damier fige l'horloge.
+        if (ev.flag === 'CHEQUERED' && race.clock.running) { race.clock.base = el; race.clock.running = false; race.clock.anchor = null; }
+        break;
+
+      case 'PIT_IN':
+        if (!race.pit) race.pit = { inElapsed: ev.atElapsed != null ? Math.min(el, ev.atElapsed) : el, n: race.stops.length + 1, lap: race.laps, src: ev.source || 'MANUAL' };
+        break;
+      case 'SYNC_CLOCK':
+        // LIVE : recale l'horloge sur le temps officiel et son état (en marche / arrêtée).
+        race.clock.base = Math.max(0, num(ev.elapsed, el));
+        race.clock.running = ev.running === true;
+        race.clock.anchor = race.clock.running ? now : null;
+        if (race.lastLapAt > race.clock.base) race.lastLapAt = race.clock.base;
+        break;
+      case 'PIT_CANCEL':
+        race.pit = null;
+        break;
+      case 'PIT_OUT': {
+        if (!race.pit) break;
+        const out = ev.atElapsed != null ? Math.max(race.pit.inElapsed, ev.atElapsed) : el;
+        const dur = out - race.pit.inElapsed;
+        const cls = classifyStop(setup, mandatoryDone(race), race.pit.inElapsed, dur);
+        const inDriver = ev.inDriver || race.driver;
+        const driverChange = ev.driverChange === true || inDriver !== race.driver;
+        const fuelAdded = clamp(num(ev.fuelAdded, 0), 0, Math.max(0, setup.tank - race.fuel));
+        race.fuel += fuelAdded;
+        race.stops.push({
+          n: race.stops.length + 1, inElapsed: race.pit.inElapsed, outElapsed: out, duration: dur,
+          type: cls.type, late: cls.late, early: cls.early, short: cls.short, penalties: cls.penalties, fuelAdded, driverChange,
+          outDriver: race.driver, inDriver, lap: race.pit.lap
+        });
+        // Un changement de pilote (même B -> B) ouvre un nouveau stint.
+        if (driverChange) race.stints.push({ n: race.stints.length + 1, driver: inDriver, startElapsed: out, startLap: race.laps });
+        race.driver = inDriver;
+        race.lastLapAt = out;
+        race.outLap = true;
+        race.pit = null;
+        break;
+      }
+
+      /* ---- Corrections manuelles ---- */
+      case 'SET_ELAPSED':
+        race.clock.base = Math.max(0, num(ev.elapsed, el));
+        race.clock.anchor = race.clock.running ? now : null;
+        race.lastLapAt = Math.min(race.lastLapAt, race.clock.base);
+        break;
+      case 'SET_LAPS': {
+        const n = Math.max(0, Math.floor(num(ev.laps, race.laps)));
+        if (!ev.noFuel) for (let i = race.laps; i < n; i++) consumeLap(race, setup);   // pas de remboursement en cas de baisse ; noFuel = recalage LIVE
+        race.laps = n;
+        const st = currentStint(race);
+        if (st.startLap > n) st.startLap = n;
+        race.lastLapAt = el;
+        break;
+      }
+      case 'SET_LAST_LAP':
+        if (race.lapLog.length) race.lapLog[race.lapLog.length - 1].t = Math.max(1, num(ev.lapTime, 0));
+        break;
+      case 'SET_FUEL':
+        race.fuel = clamp(num(ev.fuel, race.fuel), 0, setup.tank);
+        break;
+      case 'SET_DRIVER':
+        if (setup.drivers.some((d) => d.id === ev.driver)) { race.driver = ev.driver; currentStint(race).driver = ev.driver; }
+        break;
+
+      case 'RECOVER': {
+        const r = createRace(setup, now);
+        r.clock = { running: race.clock.running, base: Math.max(0, num(ev.elapsed, 0)), anchor: race.clock.running ? now : null };
+        r.laps = Math.max(0, Math.floor(num(ev.laps, 0)));
+        r.lastLapAt = r.clock.base;
+        r.fuel = clamp(num(ev.fuel, race.fuel), 0, setup.tank);
+        r.driver = ev.driver || race.driver;
+        r.flag = race.flag; r.position = race.position;
+        const mand = Math.max(0, Math.floor(num(ev.mandatoryDone, 0)));
+        const extras = Math.max(0, Math.floor(num(ev.extrasDone, 0)));
+        const stintStart = Math.min(r.clock.base, Math.max(0, num(ev.stintStartElapsed, 0)));
+        let cum = 0;
+        for (let i = 0; i < mand; i++) {
+          cum += (setup.relayPlan[i] ? setup.relayPlan[i].minutes : 40) * 60;
+          const inAt = i === mand - 1 ? Math.max(0, stintStart - setup.minPitSeconds) : cum;
+          r.stops.push({ n: r.stops.length + 1, inElapsed: inAt, outElapsed: inAt + setup.minPitSeconds, duration: setup.minPitSeconds, type: 'MANDATORY', late: false, short: false, fuelAdded: 0, recovered: true });
+        }
+        for (let i = 0; i < extras; i++) r.stops.push({ n: r.stops.length + 1, inElapsed: 0, outElapsed: 0, duration: 0, type: 'EXTRA', late: false, short: true, fuelAdded: 0, recovered: true });
+        r.stints = [{ n: 1, driver: r.driver, startElapsed: stintStart, startLap: Math.min(r.laps, Math.max(0, Math.floor(num(ev.stintStartLap, 0)))) }];
+        r.log = race.log.concat([{ at: +r.clock.base.toFixed(1), type: 'RECOVER' }]);
+        return r;
+      }
+      default:
+        return race0;
+    }
+    if (ev.type !== 'LAP_COMPLETED' && ev.type !== 'SYNC_CLOCK' && ev.type !== 'POSITION_CHANGED') {
+      race.log.push({ at: +el.toFixed(1), type: ev.type });
+      if (race.log.length > 300) race.log.shift();
+    }
+    return race;
+  }
+
+  return {
+    PROFILES, DEFAULT_PROFILE, FLAGS,
+    defaultSetup, normalizeSetup, validateSetup,
+    createRace, apply, elapsed, raceSeconds, deadlineSeconds, windowOpenSeconds, classifyStop, profileOf, applyProfile, mandatoryDone, currentStint
+  };
+});
+</script>
+<script>/* ============================================================================
+   STRATEGY ENGINE — lit le race state, ne le modifie jamais.
+   compute(race, setup, now) -> { targets, fuel, projection, alertes, ... }
+   ========================================================================== */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./race-engine.js'));
+  else root.StrategyEngine = factory(root.RaceEngine);
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (E) {
+  'use strict';
+
+  const pad = (n) => String(Math.floor(n)).padStart(2, '0');
+  const fmt = {
+    hms: (s) => { s = Math.max(0, Math.floor(s)); return `${pad(s / 3600)}:${pad((s % 3600) / 60)}:${pad(s % 60)}`; },
+    hm: (s) => { s = Math.max(0, Math.round(s)); return `${Math.floor(s / 3600)}:${pad((s % 3600) / 60)}`; },
+    ms: (s) => { s = Math.max(0, s); return `${pad(s / 60)}:${(s % 60).toFixed(1).padStart(4, '0')}`; },
+    lap: (s) => { if (s == null || !isFinite(s)) return '--:--.---'; const m = Math.floor(s / 60); return `${m}:${(s - m * 60).toFixed(3).padStart(6, '0')}`; }
+  };
+  const median = (a) => { if (!a.length) return null; const b = [...a].sort((x, y) => x - y), m = b.length >> 1; return b.length % 2 ? b[m] : (b[m - 1] + b[m]) / 2; };
+  const mean = (a) => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : null);
+  const relayAt = (setup, i) => setup.relayPlan[i] || { driver: setup.drivers[i % setup.drivers.length].id, minutes: 40 };
+
+  /* Plan théorique : target arrêt k = somme des durées des relais 1..k */
+  function planTargets(setup) {
+    const dl = E.deadlineSeconds(setup);
+    const out = [];
+    let t = 0;
+    for (let i = 0; i < setup.mandatoryStops; i++) {
+      const r = relayAt(setup, i);
+      t += Number(r.minutes) * 60;
+      out.push({ n: i + 1, at: t, driverOut: r.driver, driverIn: relayAt(setup, i + 1).driver, overDeadline: t > dl, beforeWindow: t < E.windowOpenSeconds(setup) });
+    }
+    return out;
+  }
+
+  /* Plan live : arrêts faits = heure réelle d'entrée ; suivants recalés sur
+     le dernier arrêt obligatoire réel + durées de relais restantes. */
+  function liveTargets(race, setup) {
+    const dl = E.deadlineSeconds(setup);
+    const mand = race.stops.filter((s) => s.type === 'MANDATORY');
+    let anchor = 0;
+    return planTargets(setup).map((p, i) => {
+      if (i < mand.length) { anchor = mand[i].inElapsed; return Object.assign({}, p, { plan: p.at, at: anchor, done: true, stop: mand[i] }); }
+      anchor += Number(relayAt(setup, i).minutes) * 60;
+      return Object.assign({}, p, { plan: p.at, at: anchor, done: false, overDeadline: anchor > dl, beforeWindow: anchor < E.windowOpenSeconds(setup) });
+    });
+  }
+
+  function compute(race, setup, now) {
+    const el = E.elapsed(race, now);
+    const total = E.raceSeconds(setup), dl = E.deadlineSeconds(setup), open = E.windowOpenSeconds(setup), P = E.profileOf(setup);
+    const remaining = Math.max(0, total - el);
+    const mandDone = E.mandatoryDone(race), totalStops = race.stops.length;
+    const stopsLeft = Math.max(0, setup.mandatoryStops - mandDone);
+
+    const stint = E.currentStint(race);
+    /* Tours propres : roulés entièrement en vert, hors tour d'entrée / sortie de stand, sans incident
+       (> 115 % de la médiane des tours propres : tête-à-queue, trafic, ralentissement). */
+    const isGreen = (l) => (l.k ? l.k === 'green' : l.f === 'GREEN');
+    const stintLog = race.lapLog.filter((l) => l.s === stint.n);
+    const greenAll = race.lapLog.filter(isGreen);
+    const ref = median(greenAll.slice(-15).map((l) => l.t)) || setup.refLap;
+    const clean = (l) => isGreen(l) && l.t <= ref * 1.15;
+    const stintClean = stintLog.filter(clean);
+    // Rythme vert = médiane des 5 derniers tours propres du relais (sinon de la course, sinon tour de référence).
+    const greenPace = median(stintClean.slice(-5).map((l) => l.t)) || median(race.lapLog.filter(clean).slice(-5).map((l) => l.t)) || setup.refLap;
+    // Sous SC / FCY : on compte les tours au rythme neutralisé observé (médiane des 3 derniers tours neutralisés).
+    const neutralNow = race.flag === 'SC' || race.flag === 'FCY';
+    const neutralLaps = race.lapLog.filter((l) => l.k === 'neutral' && l.f === race.flag).slice(-3).map((l) => l.t);
+    const neutralPace = neutralNow ? (median(neutralLaps) || greenPace * (race.flag === 'SC' ? 1.4 : 1.25)) : null;
+    const pace = neutralNow ? neutralPace : greenPace;
+    const greenTimes = race.lapLog.filter(clean).map((l) => l.t);
+    const stintInfo = {
+      n: stint.n, driver: stint.driver,
+      laps: Math.max(0, race.laps - stint.startLap),
+      time: Math.max(0, (race.pit ? race.pit.inElapsed : el) - stint.startElapsed),
+      avg: mean(stintClean.map((l) => l.t)), avgLaps: stintClean.length, excluded: stintLog.length - stintClean.length,
+      best: stintClean.length ? Math.min(...stintClean.map((l) => l.t)) : null
+    };
+
+    const conso = setup.fuelPerLap * (1 + setup.fuelMargin / 100);
+    const range = race.fuel / conso;
+    const boxMax = Math.max(0, Math.floor(range - setup.reserveLaps));
+    const plan = planTargets(setup), live = liveTargets(race, setup);
+
+    let next = null;
+    if (stopsLeft > 0) {
+      const t = live[mandDone];
+      const lapsToTarget = Math.max(0, Math.floor((t.at - el) / pace));
+      const fuelAtStop = Math.max(0, race.fuel - lapsToTarget * conso);
+      const isLast = mandDone === setup.mandatoryStops - 1;
+      const nextStintSec = isLast ? Math.max(0, total - Math.max(t.at, el) - setup.minPitSeconds) : Number(relayAt(setup, mandDone + 1).minutes) * 60;
+      const need = (Math.ceil(nextStintSec / greenPace) + setup.reserveLaps) * conso;   // relais suivant : rythme vert
+      const room = Math.max(0, setup.tank - fuelAtStop);
+      const addFuel = Math.min(room, Math.max(0, need - fuelAtStop));
+      next = {
+        n: mandDone + 1, at: t.at, planAt: t.plan, driverIn: t.driverIn, lapsToTarget,
+        targetLap: race.laps + lapsToTarget, fuelAtStop, addFuel, full: addFuel >= room - 0.5,
+        fuelLimited: lapsToTarget > boxMax, overDeadline: t.overDeadline
+      };
+    }
+
+    const lapsToEnd = Math.ceil(remaining / greenPace);
+    const fuelToFinish = Math.max(0, lapsToEnd * conso - race.fuel);
+    const projLaps = race.laps + Math.floor(Math.max(0, remaining - stopsLeft * setup.minPitSeconds) / greenPace);
+
+    let pit = null;
+    if (race.pit) {
+      const inPit = Math.max(0, el - race.pit.inElapsed);
+      // Aperçu : classement si la voiture repart maintenant, et si elle respecte le temps mini.
+      const now_ = E.classifyStop(setup, mandDone, race.pit.inElapsed, inPit);
+      const atMin = E.classifyStop(setup, mandDone, race.pit.inElapsed, Math.max(inPit, setup.minPitSeconds));
+      const late = now_.late, early = now_.early;
+      const canCount = atMin.type === 'MANDATORY';
+      const nextIsLast = mandDone + 1 >= setup.mandatoryStops;
+      const stintSec = canCount
+        ? (nextIsLast ? Math.max(0, total - el - Math.max(0, setup.minPitSeconds - inPit)) : Number(relayAt(setup, mandDone + 1).minutes) * 60)
+        : (next ? Math.max(0, next.at - el) : remaining);
+      const room = Math.max(0, setup.tank - race.fuel);
+      pit = {
+        inPit, late, early, canCount, remainingMin: Math.max(0, setup.minPitSeconds - inPit),
+        willCount: canCount && inPit >= setup.minPitSeconds,
+        countsNow: now_.type === 'MANDATORY', penaltiesNow: now_.penalties, penaltiesAtMin: atMin.penalties,
+        nextDriver: canCount ? relayAt(setup, mandDone + 1).driver : race.driver,
+        fuelAdvice: Math.min(room, Math.max(0, (Math.ceil(stintSec / greenPace) + setup.reserveLaps) * conso - race.fuel))
+      };
+    }
+
+    // Temps de roulage cumulé par pilote
+    const drivers = {};
+    setup.drivers.forEach((d) => { drivers[d.id] = 0; });
+    race.stints.forEach((s, i) => {
+      const nx = race.stints[i + 1];
+      let end;
+      if (nx) { const stop = race.stops.find((x) => x.outElapsed === nx.startElapsed); end = stop ? stop.inElapsed : nx.startElapsed; }
+      else end = race.pit ? race.pit.inElapsed : el;
+      drivers[s.driver] = (drivers[s.driver] || 0) + Math.max(0, end - s.startElapsed);
+    });
+
+    /* ---- Alertes ---- */
+    const alerts = [];
+    const add = (level, text, code) => alerts.push({ level, text, code });
+    const finished = el >= total || race.flag === 'CHEQUERED';   // damier officiel (LIVE) ou temps écoulé
+    if (finished) {
+      add('info', 'TEMPS ÉCOULÉ — DAMIER', 'END');
+      if (stopsLeft > 0) add('critical', `${stopsLeft} arrêt(s) obligatoire(s) manquant(s) : ${P.penalty.missing}`, 'MISSING');
+    } else if (stopsLeft > 0 && !(race.pit && pit.canCount && stopsLeft === 1)) {
+      const left = race.pit && pit.canCount ? stopsLeft - 1 : stopsLeft;
+      const firstAt = race.pit && pit.canCount ? el + pit.remainingMin + pace : el;
+      const slack = dl - (left - 1) * (setup.minPitSeconds + pace) - firstAt;
+      const word = P.windowMode === 'window' ? 'FENÊTRE' : 'DEADLINE';
+      if (slack < 0) add('critical', `${word} ${P.windowMode === 'window' ? 'FERMÉE' : 'DÉPASSÉE'} : ${left} arrêt(s) obligatoire(s) restant(s) → ${P.outOfWindow === 'PENALTY' ? P.penalty.outOfWindow : P.penalty.missing}`, 'DEADLINE');
+      else if (slack < pace * 2) add('critical', `BOX NOW — ${P.windowMode === 'window' ? 'la fenêtre ferme' : 'deadline des arrêts obligatoires'} (${left} restant)`, 'DEADLINE');
+      else if (slack < pace * 6) add('warning', `${P.windowMode === 'window' ? 'Fermeture de fenêtre' : 'Deadline'} proche : ${Math.floor(slack / pace)} tours pour lancer ${left > 1 ? `les ${left} arrêts restants` : 'l\'arrêt obligatoire'}`, 'DEADLINE');
+      if (P.windowMode === 'window' && el < open && !race.pit) {
+        const toOpen = open - el;
+        if (toOpen < 10 * 60 || (next && next.at < open)) add(toOpen < pace * 3 || (next && next.at < open) ? 'warning' : 'info', `FENÊTRE FERMÉE — ouverture dans ${fmt.hms(toOpen).slice(3)} (${fmt.hms(open)}) : ne pas rentrer avant`, 'WINDOW');
+      } else if (P.windowMode === 'window' && el >= open && el <= dl && stopsLeft > 0 && !race.pit) add('info', `FENÊTRE OUVERTE jusqu'à ${fmt.hms(dl)} (encore ${fmt.hms(dl - el).slice(3)})`, 'WINDOW');
+    }
+    if (!race.pit && !finished) {
+      if (boxMax <= 1) add('critical', 'BOX THIS LAP — FUEL', 'FUEL');
+      else if (boxMax <= 3) add('critical', `BOX MAX ${boxMax} TOURS — FUEL`, 'FUEL');
+      if (next) {
+        if (next.fuelLimited && boxMax > 3) add('warning', `Fuel limite avant target : box max ${boxMax} T < target ${next.lapsToTarget} T`, 'FUEL_TARGET');
+        if (next.lapsToTarget <= 1) add('warning', 'TARGET BOX THIS LAP', 'TARGET');
+        else add('info', `TARGET BOX ${next.lapsToTarget} TOURS  ·  MAX ${boxMax} TOURS`, 'TARGET');
+      } else if (fuelToFinish > 0) add('warning', `Fuel insuffisant pour l'arrivée : +${fuelToFinish.toFixed(1)} L (arrêt extra, sans temps mini)`, 'FUEL_END');
+      else add('info', 'ARRÊTS OBLIGATOIRES TERMINÉS — fuel OK jusqu\'au damier', 'DONE');
+    }
+    if (race.pit) {
+      let txt;
+      if (!pit.canCount) txt = pit.late || pit.early ? `AU STAND — hors ${P.windowMode === 'window' ? 'fenêtre' : 'délai'} : ${P.penalty.outOfWindow}` : 'AU STAND — arrêt extra';
+      else if (pit.willCount) txt = `AU STAND — ${fmt.ms(pit.inPit)} · OBLIGATOIRE OK${pit.penaltiesNow.length ? ` · ${pit.penaltiesNow.join(' · ')}` : ''}`;
+      else txt = `AU STAND — ${fmt.ms(pit.inPit)} · obligatoire dans ${fmt.ms(pit.remainingMin)}${P.shortStop === 'PENALTY' ? ` (sinon ${P.penalty.short})` : ' (sinon arrêt extra)'}`;
+      add(pit.canCount && (pit.willCount || P.shortStop !== 'PENALTY') && !pit.penaltiesAtMin.length ? 'info' : 'warning', txt, 'PIT');
+    }
+    const over = live.find((t) => !t.done && t.overDeadline);
+    if (over && !finished) add('warning', `Plan : arrêt #${over.n} projeté à ${fmt.hms(over.at)}, après la ${P.windowMode === 'window' ? 'fermeture de fenêtre' : 'deadline'} ${fmt.hms(dl)} — raccourcir un relais`, 'PLAN');
+    const under = live.find((t) => !t.done && t.at < open);
+    if (under && !finished) add('warning', `Plan : arrêt #${under.n} projeté à ${fmt.hms(under.at)}, avant l'ouverture de fenêtre ${fmt.hms(open)} — allonger le relais`, 'PLAN');
+    if ((race.flag === 'SC' || race.flag === 'FCY') && next && next.at - el < 15 * 60) add('info', `${race.flag} : fenêtre d'arrêt avantageuse (target dans ${Math.max(0, Math.round((next.at - el) / 60))} min)`, 'NEUTRAL');
+    if (race.flag === 'RED') add('info', 'DRAPEAU ROUGE — le chronomètre continue (art. 7-8/2)', 'RED');
+    race.stops.forEach((s) => {
+      if (s.penalties && s.penalties.length) add('critical', `Arrêt #${s.n} : ${s.penalties.join(' · ')}`, 'PENALTY');
+      else if ((s.late || s.early) && s.type === 'EXTRA' && !s.short) add('warning', `Arrêt #${s.n} hors ${P.windowMode === 'window' ? 'fenêtre' : 'délai'} : ${P.penalty.outOfWindow}`, 'LATE');
+    });
+    const order = { critical: 0, warning: 1, info: 2 };
+    alerts.sort((a, b) => order[a.level] - order[b.level]);
+
+    return {
+      el, total, remaining, deadline: dl, windowOpen: open, profile: P, toDeadline: dl - el, finished,
+      mandDone, totalStops, extras: totalStops - mandDone, stopsLeft,
+      stint: stintInfo, last: race.lapLog.length ? race.lapLog[race.lapLog.length - 1].t : null,
+      best: greenTimes.length ? Math.min(...greenTimes) : null,
+      pace, greenPace, neutralPace, paceMode: neutralNow ? race.flag : 'GREEN', conso, range, boxMax, plan, live, next, projLaps, fuelToFinish, pit, drivers,
+      alerts, headline: alerts[0] || { level: 'info', text: 'STRATÉGIE PRÊTE', code: 'READY' }
+    };
+  }
+
+  /* Scénario "PIT NOW ?" : on simule un arrêt au temps mini maintenant. */
+  function whatIfPitNow(race, setup, now) {
+    const el = E.elapsed(race, now), dl = E.deadlineSeconds(setup), mandDone = E.mandatoryDone(race);
+    const st = compute(race, setup, now);
+    const cls = E.classifyStop(setup, mandDone, el, setup.minPitSeconds);
+    const late = cls.late, P = E.profileOf(setup);
+    const counts = cls.type === 'MANDATORY';
+    const sim = JSON.parse(JSON.stringify(race));
+    sim.stops.push({ n: sim.stops.length + 1, inElapsed: el, outElapsed: el + setup.minPitSeconds, duration: setup.minPitSeconds, type: counts ? 'MANDATORY' : 'EXTRA', late });
+    const newTargets = liveTargets(sim, setup).filter((t) => !t.done);
+    const nextDriver = counts ? relayAt(setup, mandDone + 1).driver : race.driver;
+    const stintSec = counts
+      ? (mandDone + 1 < setup.mandatoryStops ? Number(relayAt(setup, mandDone + 1).minutes) * 60 : E.raceSeconds(setup) - el - setup.minPitSeconds)
+      : (st.next ? st.next.at - el : E.raceSeconds(setup) - el);
+    const room = Math.max(0, setup.tank - race.fuel);
+    const fuelAdd = Math.max(0, Math.min(room, (Math.ceil(stintSec / st.greenPace) + setup.reserveLaps) * st.conso - race.fuel));
+    const reasons = [];
+    if (cls.early) reasons.push(`Fenêtre pas encore ouverte (${fmt.hms(E.windowOpenSeconds(setup))}) : ${P.penalty.outOfWindow}`);
+    else if (late) reasons.push(`Entrée après ${P.windowMode === 'window' ? 'la fermeture de fenêtre' : 'la deadline'} : ${P.penalty.outOfWindow}`);
+    else if (!counts) reasons.push('Les arrêts obligatoires sont faits : ce serait un arrêt extra');
+    cls.penalties.forEach((x) => { if (!reasons.includes(x)) reasons.push(x); });
+    const over = newTargets.find((t) => t.overDeadline);
+    if (over) reasons.push(`Arrêt #${over.n} décalé à ${fmt.hms(over.at)}, après la deadline`);
+    return {
+      counts, late, stopNo: counts ? mandDone + 1 : null, nextDriver, fuelAdd, full: fuelAdd >= room - 0.5,
+      newTargets, earlyBy: st.next ? st.next.at - el : null, continueLaps: st.next ? st.next.lapsToTarget : null,
+      boxMax: st.boxMax, valid: counts && !over && !cls.penalties.length, reasons
+    };
+  }
+
+  return { compute, planTargets, liveTargets, whatIfPitNow, fmt, median };
+});
+</script>
+<script>/* ============================================================================
+   TIMING ADAPTER — seule brique qui connaît la source du timing.
+   Contrat : now() -> epoch ms ; poll(race, setup, now) -> [événements normalisés]
+     LAP_COMPLETED   { lap?, lapTime, atElapsed? }
+     POSITION_CHANGED{ position }
+     RACE_STATUS     { flag: GREEN|FCY|SC|RED|CHEQUERED }
+     PIT_IN / PIT_OUT (boucles pitlane, art. 7-7)
+   Le Race Engine ne fait aucune différence entre MANUAL, SIMULATION et LIVE.
+   ========================================================================== */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./race-engine.js'));
+  else root.TimingAdapter = factory(root.RaceEngine);
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (E) {
+  'use strict';
+
+  function mulberry32(a) {
+    return function () { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  }
+
+  /* Génère les tours "dus" depuis le dernier passage (rattrape après refresh). */
+  function dueLaps(race, setup, now, peek, consume, source) {
+    if (!race.clock.running || race.pit || race.flag === 'RED' || race.flag === 'CHEQUERED') return [];
+    const el = E.elapsed(race, now);
+    const out = [];
+    let last = race.lastLapAt;
+    for (let guard = 0; guard < 400; guard++) {
+      const lt = peek(race);
+      if (el - last < lt) break;
+      last += lt;
+      out.push({ type: 'LAP_COMPLETED', at: now, atElapsed: last, lapTime: lt, source });
+      consume();
+    }
+    return out;
+  }
+
+  /* MANUAL : horloge réelle + tours virtuels au temps de référence (désactivables). */
+  function createManualAdapter(opts) {
+    const clock = (opts && opts.clock) || (() => Date.now());
+    return {
+      mode: 'MANUAL', source: 'VIRTUAL TIMING', now: clock,
+      poll(race, setup, now) {
+        if (!setup.virtualLaps) return [];
+        return dueLaps(race, setup, now, () => setup.refLap, () => {}, 'VIRTUAL');
+      }
+    };
+  }
+
+  /* SIMULATION : horloge accélérée (×1, ×10, ×60), tours bruités, position aléatoire. */
+  function createSimulationAdapter(opts) {
+    const o = Object.assign({ speed: 10, seed: 208 }, opts || {});
+    const realClock = o.clock || (() => Date.now());
+    let speed = o.speed, realAnchor = realClock(), virtAnchor = o.startEpoch != null ? o.startEpoch : realAnchor;
+    const rnd = mulberry32(o.seed);
+    let pending = null, position = o.position || 12;
+    const api = {
+      mode: 'SIMULATION', get source() { return `SIMULATION ×${speed}`; }, get speed() { return speed; },
+      now() { return virtAnchor + (realClock() - realAnchor) * speed; },
+      setSpeed(s) { const v = api.now(); realAnchor = realClock(); virtAnchor = v; speed = s; },
+      poll(race, setup, now) {
+        const idx = Math.max(0, setup.drivers.findIndex((d) => d.id === race.driver));
+        const peek = (r) => {
+          if (pending == null) {
+            const flagK = r.flag === 'SC' ? 1.45 : r.flag === 'FCY' ? 1.3 : 1;
+            pending = +(setup.refLap * flagK + idx * 0.5 + (rnd() - 0.45) * 2.2).toFixed(3);
+          }
+          return pending;
+        };
+        const evs = dueLaps(race, setup, now, peek, () => { pending = null; }, 'SIM');
+        if (evs.length && rnd() < 0.3) {
+          position = Math.max(1, Math.min(30, position + (rnd() < 0.55 ? -1 : 1)));
+          evs.push({ type: 'POSITION_CHANGED', at: now, position });
+        }
+        return evs;
+      }
+    };
+    return api;
+  }
+
+  /* LIVE : délégué au connecteur du provider (ItsLive aujourd'hui, Ayre demain). */
+  function createLiveAdapter(opts) {
+    const L = (typeof module === 'object' && module.exports) ? require('./itslive.js') : globalThis.ItsLive;
+    if (!L) throw new Error('Connecteur ItsLive absent');
+    return L.createAdapter(opts);
+  }
+
+  return { createManualAdapter, createSimulationAdapter, createLiveAdapter };
+});
+</script>
+<script>/* ============================================================================
+   ITSLIVE — connecteur live timing (api-live.its-live.net/v1)
+   Relevé le 31/10/2026 sur Caterham Lédenon (session 55, 420R Course 1).
+
+   Protocole public observé : polling HTTP POST toutes les ~3 s, pas de WebSocket.
+     POST Session/GetLastRaceInfo          {cs_id, season, event_id, session_id}
+          -> elapsed_time (ms), remaining_time (ms), race_flag ("GREEN FLAG"...), epoch (s)
+     POST Session/GetRankingWithBestOfAll  {ssid, startPos:1, endPos:99999999, startId}
+          -> ranking[] : seules les voitures modifiées depuis `startId` (data_id incrémental)
+             number, pos, total_lap, lap_time (ms, -1 = aucun), status_img (_TrackPassing,
+             _PitIn, _PitOut, _CheckeredFlag), total_pit_stop, total_pit_time (ms cumulés,
+             boucle d'entrée -> boucle de sortie), current_driver, driver_names[]
+     GET  Session/ListSessions/{cs}/{season}/{event}
+   Le tour par tour (GetLapByLapForWithFlags) est réservé à l'abonnement ItsLive : non utilisé.
+
+   Trois couches indépendantes :
+     parser  : pur, (trame, race, setup) -> événements normalisés   (testable sans réseau)
+     client  : transport HTTP (polling + startId incrémental + reprise sur erreur)
+     replay  : rejoue un enregistrement de trames (tests, répétition sans course en direct)
+   ========================================================================== */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./race-engine.js'));
+  else root.ItsLive = factory(root.RaceEngine);
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (E) {
+  'use strict';
+
+  const API = 'https://api-live.its-live.net/v1/';
+
+  /* ---- Drapeaux ItsLive -> drapeaux Strategy Wall ---- */
+  function mapFlag(raw) {
+    const f = String(raw || '').toUpperCase();
+    if (!f) return null;
+    if (f.includes('CHECKERED') || f.includes('CHEQUERED')) return 'CHEQUERED';
+    if (f.includes('RED')) return 'RED';
+    if (f.includes('SAFETY')) return 'SC';
+    // Jaunes locaux (« YELLOW SECTOR 1 », « YELLOW TURN ») : pas de neutralisation, drapeau inchangé.
+    if (f.includes('YELLOW') && (f.includes('SECTOR') || f.includes('TURN') || f.includes('SECTEUR'))) return null;
+    if (f.includes('FCY') || f.includes('FULL COURSE') || f.includes('CODE 60') || f.includes('VSC') || f.includes('YELLOW')) return 'FCY';
+    if (f.includes('GREEN')) return 'GREEN';
+    return null;                                  // STOP, inconnu : pas de changement de drapeau
+  }
+  const isRunningFlag = (raw) => { const f = String(raw || '').toUpperCase(); return f !== '' && !f.includes('STOP') && !f.includes('CHECKERED') && !f.includes('CHEQUERED'); };
+
+  /* ---- URL publique -> identifiants de session ----
+     https://www.its-live.net/live/caterham/2026/ledenon/55 */
+  function parseUrl(url) {
+    const m = String(url || '').trim().match(/its-live\.net\/live\/([^/?#]+)\/([^/?#]+)(?:\/([^/?#]+))?(?:\/(\d+))?/i);
+    if (!m) return null;
+    return { cs_id: m[1], season: m[2], event_id: m[3] || null, session_id: m[4] != null ? Number(m[4]) : null };
+  }
+
+  const norm = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase().replace(/[^A-Z ]/g, ' ').trim();
+  /* Associe le pilote affiché par ItsLive à un pilote du setup (nom complet ou nom de famille). */
+  function matchDriver(name, drivers) {
+    const n = norm(name);
+    if (!n) return null;
+    const words = n.split(/\s+/).filter((w) => w.length > 2);
+    let best = null, score = 0;
+    drivers.forEach((d) => {
+      const dn = norm(d.name);
+      let s = 0;
+      if (dn && dn === n) s = 3;
+      else if (dn && (n.includes(dn) || dn.includes(n))) s = 2;
+      else if (words.some((w) => dn.split(/\s+/).includes(w))) s = 1;
+      if (s > score) { score = s; best = d.id; }
+    });
+    return best;
+  }
+
+  /* ========================== PARSER (pur) ================================ */
+  function createParser(opts) {
+    const o = Object.assign({ carNumber: null, syncTolerance: 2.5 }, opts || {});
+    const st = { official: null, frozenAt: null, durChecked: false, outWait: 0, car: null, seen: false, lap: null, pos: null, pits: null, pitTime: null, status: null, driverIdx: null, inPit: false, pitInAt: null, flagRaw: null, info: null, lastElapsed: null };
+
+    /* Temps officiel. Mesuré en direct le 31/10 (340R EQ2) : elapsed_time est à jour à chaque
+       réponse (+3,1 s entre deux appels espacés de 3,1 s) ; `epoch` n'avance qu'aux passages.
+       On prend donc elapsed_time tel quel, sans correction par epoch. */
+    function officialElapsed(info) {
+      if (!info || info.elapsed_time == null) return null;
+      return info.elapsed_time / 1000;
+    }
+
+    const isChequered = (raw) => /CHECKERED|CHEQUERED/i.test(String(raw || ''));
+
+    function ingest(frame, race, setup) {
+      const evs = [];
+      const t = frame.t;
+      const info = frame.info || st.info;
+      if (frame.info) st.info = frame.info;
+      const el = officialElapsed(info);
+
+      /* Horloge + drapeau.
+         Relevé session 62 : sous drapeau à damier, ItsLive continue d'avancer elapsed_time
+         jusqu'au STOP (+96 s). L'horloge de course est figée à l'instant du damier. */
+      if (info) {
+        if (isChequered(info.race_flag) && st.frozenAt == null && el != null) st.frozenAt = el;
+        if (info.race_flag && /GREEN|SAFETY|RED|FCY|CODE|YELLOW FLAG/i.test(info.race_flag) && !isChequered(info.race_flag)) st.frozenAt = null;
+        const frozen = st.frozenAt != null;
+        const running = !frozen && isRunningFlag(info.race_flag) && info.elapsed_time > 0;
+        const target = frozen ? st.frozenAt : el;
+        const ours = E.elapsed(race, t);
+        if (target != null && (Math.abs(ours - target) > o.syncTolerance || race.clock.running !== running)) evs.push({ type: 'SYNC_CLOCK', elapsed: target, running });
+        // Drapeau officiel = dernier drapeau ItsLive significatif (les jaunes locaux ne comptent pas).
+        // Comparé à l'état réel du mur à chaque trame : un RESET ou un SETUP validé ne le fait pas perdre.
+        if (info.race_flag !== st.flagRaw) { st.flagRaw = info.race_flag; const f = mapFlag(info.race_flag); if (f) st.official = f; }
+        if (st.official && st.official !== race.flag) evs.push({ type: 'RACE_STATUS', flag: st.official });
+        // Durée de course ItsLive (elapsed + remaining) différente du setup : à signaler une fois.
+        if (!st.durChecked && running && info.remaining_time > 0 && el > 0) {
+          st.durChecked = true;
+          const min = Math.round((info.elapsed_time + info.remaining_time) / 60000);
+          if (Math.abs(min - setup.raceMinutes) > 1) evs.push({ type: 'NOTICE', level: 'warning', text: `ItsLive annonce une course de ${min} min, le setup en prévoit ${setup.raceMinutes} : vérifiez la durée dans SETUP` });
+        }
+      }
+
+      /* Position : comparée à l'état du mur à chaque trame (ItsLive n'envoie la voiture que quand elle change). */
+      const lastPos = ((frame.ranking || []).filter((r) => String(r.number) === String(o.carNumber)).pop() || st.car || {}).pos;
+      if (lastPos > 0 && lastPos !== race.position && st.seen) evs.push({ type: 'POSITION_CHANGED', position: lastPos });
+
+      /* Voiture suivie (enregistrements incrémentaux) */
+      const rec = (frame.ranking || []).filter((r) => String(r.number) === String(o.carNumber)).pop();
+      if (rec) {
+        st.car = rec;
+        const at = el != null ? (st.frozenAt != null ? Math.min(el, st.frozenAt + 3600) : el) : E.elapsed(race, t);
+        const pits = rec.total_pit_stop || 0, pitTime = rec.total_pit_time || 0;
+        if (!st.seen) {
+          st.seen = true;
+          // Première trame : on se cale sans rejouer l'historique (pas de consommation fantôme).
+          if (rec.total_lap !== race.laps) evs.push({ type: 'SET_LAPS', laps: rec.total_lap, noFuel: true, source: 'ITSLIVE' });
+          st.lap = rec.total_lap; st.pits = pits; st.pitTime = pitTime;
+          st.status = rec.status_img; st.driverIdx = rec.current_driver;
+          if (rec.pos) { st.pos = rec.pos; evs.push({ type: 'POSITION_CHANGED', position: rec.pos }); }
+          if (rec.status_img === '_PitIn' && !race.pit) { st.inPit = true; st.pitInAt = at; evs.push({ type: 'PIT_IN', atElapsed: at, source: 'ITSLIVE' }); }
+          const done = st.inPit ? pits - 1 : pits;
+          if (done > race.stops.length) evs.push({ type: 'NOTICE', level: 'warning', text: `ItsLive : ${done} arrêt(s) déjà effectué(s), ${race.stops.length} dans le Strategy Wall — vérifiez via RECOVERY` });
+          return evs;
+        }
+
+        /* Course réinitialisée côté mur (RESET, SETUP validé avant le départ…) : on se recale sans consommer. */
+        if (race.laps !== st.lap && rec.total_lap === st.lap) evs.push({ type: 'SET_LAPS', laps: st.lap, noFuel: true, source: 'ITSLIVE' });
+        /* Tours (lap_time ≤ 0 : -1 / -2 = tour stand ou sans temps) */
+        if (rec.total_lap > st.lap && race.laps !== st.lap) {
+          evs.push({ type: 'SET_LAPS', laps: rec.total_lap, noFuel: true, source: 'ITSLIVE' });
+          st.lap = rec.total_lap;
+        } else if (rec.total_lap > st.lap) {
+          const jump = rec.total_lap - st.lap;
+          evs.push({ type: 'LAP_COMPLETED', lap: rec.total_lap, lapTime: jump === 1 && rec.lap_time > 0 ? rec.lap_time / 1000 : undefined, atElapsed: at, source: 'ITSLIVE' });
+          st.lap = rec.total_lap;
+        }
+        st.pos = rec.pos || st.pos;
+
+        /* Stand — machine à états sur les signaux relevés en course (session 62) :
+             entrée : statut « _PitIn » OU total_pit_stop qui monte (ItsLive l'incrémente à l'ENTRÉE)
+             pendant : statut souvent null (changements de position), à ignorer
+             sortie : statut « _PitOut » OU total_pit_time qui monte
+             durée : delta de total_pit_time (boucle entrée -> boucle sortie, art. 7-9/1) */
+        const edgeIn = rec.status_img === '_PitIn' && st.status !== '_PitIn';
+        const outSignal = rec.status_img === '_PitOut' || pitTime > st.pitTime;
+        if (!st.inPit && (edgeIn || pits > st.pits)) {
+          if (pitTime > st.pitTime && !edgeIn) {
+            // Entrée et sortie manquées (trames perdues) : arrêt reconstruit d'un bloc.
+            const dur = (pitTime - st.pitTime) / 1000;
+            st.inPit = true; st.pitInAt = Math.max(0, at - dur);
+          } else {
+            st.inPit = true; st.pitInAt = at; st.outWait = 0;
+            if (!race.pit) evs.push({ type: 'PIT_IN', atElapsed: at, source: 'ITSLIVE' });
+            st.pits = Math.max(st.pits, pits);
+            st.status = rec.status_img; st.driverIdx = rec.current_driver;
+            return evs;
+          }
+        }
+        if (st.inPit) {
+          st.pits = Math.max(st.pits, pits);
+          if (outSignal) {
+            const durMs = pitTime - st.pitTime;
+            // « _PitOut » arrivé avant la mise à jour du cumul : on attend jusqu'à 2 trames.
+            if (durMs <= 0 && st.outWait < 2) { st.outWait++; }
+            else {
+              const dur = durMs > 0 ? durMs / 1000 : Math.max(0, at - st.pitInAt);
+              const inAt = st.pitInAt;
+              if (!race.pit && !evs.some((e) => e.type === 'PIT_IN')) evs.push({ type: 'PIT_IN', atElapsed: inAt, source: 'ITSLIVE' });
+              const idx = rec.current_driver;
+              const name = rec.driver_names && rec.driver_names[(idx || 0) + 1];
+              // Relevé s74 (Academy, 2 pilotes) : current_driver reste à 0 toute la course, même après le
+              // changement de pilote. Le nom ItsLive n'est donc retenu que si ItsLive signale lui-même un changement ;
+              // sinon c'est la saisie du mur (fenêtre PIT / plan de relais) qui fait foi.
+              const changed = idx != null && st.driverIdx != null && idx !== st.driverIdx;
+              evs.push({
+                type: 'PIT_OUT', atElapsed: (race.pit ? race.pit.inElapsed : inAt) + dur, source: 'ITSLIVE', officialDuration: dur,
+                inDriver: changed ? (matchDriver(name, setup.drivers) || undefined) : undefined, itsDriverChanged: changed, itsDriverName: name || null
+              });
+              st.inPit = false; st.pitInAt = null; st.outWait = 0; st.pitTime = pitTime;
+            }
+          }
+        } else if (pitTime !== st.pitTime) st.pitTime = pitTime;   // cumul modifié hors arrêt (départ des stands…) : absorbé
+
+        /* Voiture plus détectée par le chronométrage */
+        if (rec.status_img === '_MaximumTime' && st.status !== '_MaximumTime') evs.push({ type: 'NOTICE', level: 'critical', text: `ItsLive : #${rec.number} n'est plus détectée par le chronométrage (temps maximum dépassé) — arrêt en piste ?` });
+        st.status = rec.status_img; st.driverIdx = rec.current_driver;
+      }
+      return evs;
+    }
+
+    return {
+      ingest,
+      get car() { return st.car; },
+      get info() { return st.info; },
+      get seen() { return st.seen; },
+      officialElapsed
+    };
+  }
+
+  /* ========================== CLIENT (réseau) ============================= */
+  function createClient(opts) {
+    const o = Object.assign({}, opts);
+    if (!o.intervalMs) o.intervalMs = 3000;
+    if (typeof o.fetch !== 'function') o.fetch = typeof fetch !== 'undefined' ? fetch.bind(globalThis) : null;
+    const ssid = { cs_id: o.ssid.cs_id, season: String(o.ssid.season), event_id: o.ssid.event_id, session_id: Number(o.ssid.session_id) };
+    let timer = null, startId = 0, running = false, busy = false;
+    const status = { state: 'idle', ok: 0, errors: 0, lastOk: null, lastError: null, latency: null };
+    const post = async (path, body) => {
+      const r = await o.fetch(API + path, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body), cache: 'no-store' });
+      if (!r.ok) throw new Error(`HTTP ${r.status} sur ${path}`);
+      return r.json();
+    };
+    async function tick() {
+      if (!running || busy) return;
+      busy = true;
+      const t0 = Date.now();
+      try {
+        const [info, rk] = await Promise.all([
+          post('Session/GetLastRaceInfo', ssid),
+          post('Session/GetRankingWithBestOfAll', { ssid, startPos: 1, endPos: 99999999, startId })
+        ]);
+        const ranking = (rk && rk.ranking) || [];
+        ranking.forEach((r) => { if (r.data_id > startId) startId = r.data_id; });
+        status.state = 'ok'; status.ok++; status.lastOk = Date.now(); status.latency = status.lastOk - t0;
+        o.onFrame && o.onFrame({ t: Date.now(), info, ranking, field: ranking.length });
+      } catch (e) {
+        status.state = 'error'; status.errors++; status.lastError = e && e.message ? e.message : String(e);
+        o.onError && o.onError(status.lastError);
+      } finally {
+        busy = false;
+        if (running) timer = setTimeout(tick, status.state === 'error' ? Math.min(15000, o.intervalMs * 2) : o.intervalMs);
+      }
+    }
+    return {
+      status, ssid,
+      start() { if (running) return; running = true; status.state = 'connecting'; startId = 0; tick(); },
+      stop() { running = false; clearTimeout(timer); status.state = 'idle'; }
+    };
+  }
+
+  async function listSessions(ssid, fetchImpl) {
+    const f = fetchImpl || fetch.bind(globalThis);
+    const r = await f(`${API}Session/ListSessions/${encodeURIComponent(ssid.cs_id)}/${encodeURIComponent(ssid.season)}/${encodeURIComponent(ssid.event_id)}`, { cache: 'no-store' });
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const list = await r.json();
+    return list.map((s) => ({ id: s.session_id, folder: s.folder_name, name: s.race_name, flag: s.race_flag, elapsed: s.elapsed_time / 1000, laps: s.elapsed_lap, remaining: s.remaining_time / 1000, type: s.race_type, start: s.start_epoch, live: isRunningFlag(s.race_flag) }));
+  }
+
+  /* Événements d'une saison (quand l'URL collée s'arrête au championnat). */
+  async function listEvents(cs, season, fetchImpl) {
+    const f = fetchImpl || fetch.bind(globalThis);
+    const r = await f(`${API}Events/ListEvents/${encodeURIComponent(cs)}/${encodeURIComponent(season)}`, { cache: 'no-store' });
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const list = await r.json();
+    const now = Date.now() / 1000;
+    return list.map((e) => ({ id: e.event_id, name: e.name, place: e.location_name, begin: e.begin_epoch, end: e.end_epoch, live: e.begin_epoch <= now && now <= e.end_epoch }))
+      .sort((a, b) => (b.live - a.live) || (b.begin - a.begin));
+  }
+
+  /* Champ de la voiture suivie, pour le choix du n° à la connexion. */
+  async function listCars(ssid, fetchImpl) {
+    const f = fetchImpl || fetch.bind(globalThis);
+    const r = await f(API + 'Session/GetRankingWithBestOfAll', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ssid: Object.assign({}, ssid, { session_id: Number(ssid.session_id) }), startPos: 1, endPos: 99999999, startId: 1 }) });
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const j = await r.json();
+    return (j.ranking || []).sort((a, b) => a.pos - b.pos).map((c) => ({ number: String(c.number), pos: c.pos, name: c.driver_names && c.driver_names[0], team: c.team, laps: c.total_lap }));
+  }
+
+  /* ========================== ADAPTER (contrat TimingAdapter) ============= */
+  /* source : 'client' (réseau) ou 'replay' (enregistrement). Les trames passent toutes par le même parser. */
+  function createAdapter(opts) {
+    const o = Object.assign({ carNumber: null, record: true }, opts);
+    const parser = createParser({ carNumber: o.carNumber });
+    const queue = [];
+    const recording = { v: 1, provider: 'itslive', ssid: o.ssid || null, carNumber: o.carNumber, frames: [] };
+    let client = null, replay = null;
+    const keep = (f) => {
+      queue.push(f);
+      if (o.record && !replay) {
+        recording.frames.push({ t: f.t, info: f.info, ranking: (f.ranking || []).filter((r) => String(r.number) === String(o.carNumber)), field: f.field });
+        if (recording.frames.length > 12000) recording.frames.shift();
+      }
+    };
+    const api = {
+      mode: 'LIVE', parser, recording,
+      get source() { return replay ? `REPLAY ItsLive ×${replay.speed} · #${o.carNumber}` : `LIVE ItsLive · #${o.carNumber}`; },
+      get status() { return replay ? replay.status : client ? client.status : { state: 'idle' }; },
+      now() { return replay ? replay.now() : Date.now(); },
+      start() {
+        if (o.frames) { replay = createReplay(o.frames, o.speed || 10, keep); replay.start(); }
+        else { client = createClient({ ssid: o.ssid, intervalMs: o.intervalMs, fetch: o.fetch, onFrame: keep, onError: o.onError }); client.start(); }
+        return api;
+      },
+      stop() { client && client.stop(); replay && replay.stop(); },
+      setSpeed(s) { replay && replay.setSpeed(s); },
+      feed(frame) { keep(frame); },                 // injection directe (tests, import)
+      poll(race, setup) {
+        const out = [];
+        let r = race;
+        while (queue.length) {
+          const f = queue.shift();
+          const evs = parser.ingest(f, r, setup);
+          evs.forEach((ev) => { ev.at = f.t; if (ev.type !== 'NOTICE') r = E.apply(r, setup, ev); out.push(ev); });
+        }
+        return out;
+      }
+    };
+    return api;
+  }
+
+  /* Rejoue des trames enregistrées sur une horloge virtuelle (×1 à ×60). */
+  function createReplay(frames, speed, emit) {
+    const list = frames.slice().sort((a, b) => a.t - b.t);
+    const t0 = list.length ? list[0].t : Date.now();
+    let realAnchor = Date.now(), virtAnchor = t0, sp = speed, i = 0, timer = null;
+    const status = { state: 'replay', ok: 0, errors: 0, total: list.length, get done() { return i >= list.length; } };
+    const now = () => virtAnchor + (Date.now() - realAnchor) * sp;
+    function pump() {
+      const n = now();
+      while (i < list.length && list[i].t <= n) { emit(Object.assign({}, list[i])); i++; status.ok = i; }
+      if (i >= list.length) status.state = 'replay-end';
+    }
+    return {
+      status, now, get speed() { return sp; },
+      start() { timer = setInterval(pump, 100); pump(); },
+      stop() { clearInterval(timer); },
+      setSpeed(s) { const v = now(); realAnchor = Date.now(); virtAnchor = v; sp = s; }
+    };
+  }
+
+  return { API, mapFlag, parseUrl, matchDriver, createParser, createClient, createAdapter, createReplay, listEvents, listSessions, listCars, isRunningFlag };
+});
+</script>
+<script>/* Flux ItsLive réels enregistrés en direct à Lédenon le 31/10/2026 — tests de non-régression.
+   s58 #701 : 340R Essais Qualificatifs 2 (2 min, tours et horloge)
+   s62 #18  : Ferdinand Cup Course 1 complète (jaunes secteur, SC, arrêt au stand, voiture plus détectée, damier, STOP)
+   s74 #5   : Academy Course 90 min complète, équipage 2 pilotes (2 SC, arrêt 4:12, reclassement après damier) */
+(function (root) {
+  const S58 = {"source":"Caterham Lédenon 2026 · session 58 · 340R Essais Qualificatifs 2 · voiture #701 · enregistré en direct le 31/10/2026 (API ItsLive publique)","ssid":{"cs_id":"caterham","season":"2026","event_id":"ledenon","session_id":58},"carNumber":"701","t0":1793439305876,"epoch0":1793439000,"car":{"number":"701","total_pit_stop":0,"total_pit_time":21577,"current_driver":0,"driver_names":["COWAN David","COWAN David"]},"cols":"dt_ms, elapsed_ms, epoch-epoch0, [data_id,pos,total_lap,lap_time_ms,status_img] | 0 = voiture absente de la trame","rows":[[0,244895,302,[936,15,2,101473,"_TrackPassing"]],[1924,246845,302,0],[2973,247893,302,0],[5050,249954,302,0],[6001,250968,309,0],[7976,252925,309,[998,17,2,101473,"_TrackPassing"]],[9019,253970,309,[998,17,2,101473,"_TrackPassing"]],[10965,255934,309,0],[12734,257691,315,0],[13991,259451,315,[1057,18,2,101473,"_TrackPassing"]],[15030,260494,315,[1057,18,2,101473,"_TrackPassing"]],[16973,262453,315,[1057,18,2,101473,"_TrackPassing"]],[18035,263012,321,[1095,18,2,101473,"_TrackPassing"]],[20018,264993,321,[1095,18,2,101473,"_TrackPassing"]],[21535,266531,321,[1095,18,2,101473,"_TrackPassing"]],[23552,268522,321,[1115,18,2,101473,"_TrackPassing"]],[25542,271048,327,[1115,18,2,101473,"_TrackPassing"]],[27543,273065,327,[1115,18,2,101473,"_TrackPassing"]],[28557,274059,327,[1136,18,2,101473,"_TrackPassing"]],[30560,275587,333,[1136,18,2,101473,"_TrackPassing"]],[31563,276597,333,[1136,18,2,101473,"_TrackPassing"]],[33543,278591,333,[1136,18,2,101473,"_TrackPassing"]],[34721,279732,333,[1136,18,2,101473,"_TrackPassing"]],[36650,282191,339,[1136,18,2,101473,"_TrackPassing"]],[37568,283131,339,[1136,18,2,101473,"_TrackPassing"]],[39589,285128,339,[1176,18,2,101473,"_TrackPassing"]],[40596,286142,339,[1176,18,2,101473,"_TrackPassing"]],[42574,287636,345,[1176,18,2,101473,"_TrackPassing"]],[43595,288642,345,[1196,18,2,101473,"_TrackPassing"]],[45593,290636,345,[1196,18,2,101473,"_TrackPassing"]],[46580,291649,345,[1196,18,2,101473,"_TrackPassing"]],[48632,293825,351,[1196,18,2,101473,"_TrackPassing"]],[49600,294798,351,[1196,18,2,101473,"_TrackPassing"]],[51616,296813,351,[1196,18,2,101473,"_TrackPassing"]],[52700,298419,356,[1196,18,2,101473,"_TrackPassing"]],[54643,300402,356,[1237,18,2,101473,"_TrackPassing"]],[55677,300921,358,[1237,18,2,101473,"_TrackPassing"]],[57635,302895,358,[1237,18,2,101473,"_TrackPassing"]],[58672,303933,358,[1237,18,2,101473,"_TrackPassing"]],[60691,305935,358,[1277,18,2,101473,"_TrackPassing"]],[61726,307428,364,[1277,18,2,101473,"_TrackPassing"]],[63649,309393,364,[1277,18,2,101473,"_TrackPassing"]],[65040,310560,364,[1298,18,2,101473,"_TrackPassing"]],[66675,311910,370,[1298,18,2,101473,"_TrackPassing"]],[67700,312952,370,[1298,18,2,101473,"_TrackPassing"]],[69690,314911,370,[1318,18,2,101473,"_TrackPassing"]],[70724,315957,370,[1318,18,2,101473,"_TrackPassing"]],[73726,319510,376,[1318,18,2,101473,"_TrackPassing"]],[76750,322514,376,[1338,18,2,101473,"_TrackPassing"]],[79746,325055,382,[1338,18,2,101473,"_TrackPassing"]],[82757,328196,386,[1377,18,2,101473,"_TrackPassing"]],[85806,331561,388,[1438,18,2,101473,"_TrackPassing"]],[88769,334576,388,[1438,18,2,101473,"_TrackPassing"]],[91796,336986,394,[1497,18,3,101597,"_MinusPosition"]],[94998,340077,394,[1497,18,3,101597,"_MinusPosition"]],[97818,343569,399,[1537,18,3,101597,"_TrackPassing"]],[100827,346576,399,[1576,18,3,101597,"_TrackPassing"]],[103820,349131,405,[1576,18,3,101597,"_TrackPassing"]],[106852,352148,405,[1597,18,3,101597,"_TrackPassing"]]]};
+  const S74 = {"source":"Caterham Lédenon 2026 · session 74 · Academy Course 90 min · voiture #5 (HIERE / TORELLO) · enregistré par Olivier en direct le 31/10/2026","ssid":{"cs_id":"caterham","season":"2026","event_id":"ledenon","session_id":74},"carNumber":"5","t0":1793451890777,"flags":["READY","GREEN FLAG","YELLOW SECTOR 1","SAFETY CAR","YELLOW SECTOR 3","CHECKERED FLAG","STOP"],"car":{"number":"5","current_driver":0,"driver_names":["HIERE / TORELLO","HIERE Joseph","TORELLO Noe"]},"rows":[[0,0,5400000,0,[5,2,0,0,null,0,0]],[21407,0,5400000,0,0],[42820,0,5400000,0,0],[63624,0,5400000,0,0],[83629,0,5400000,0,0],[103639,0,5400000,0,0],[123640,0,5400000,0,0],[143909,0,5400000,0,0],[165442,0,5400000,0,0],[188643,0,5400000,0,0],[210998,0,5400000,0,0],[232665,0,5400000,0,0],[254926,0,5400000,0,0],[276359,0,5400000,0,0],[298025,0,5400000,0,0],[320148,0,5400000,0,0],[323209,2780,5397220,1,0],[344772,23715,5376285,1,0],[347820,27284,5372716,2,0],[356993,36117,5363883,3,0],[378732,57801,5342199,3,0],[400195,78811,5321189,3,0],[421654,100837,5299163,3,0],[443330,122575,5277425,3,0],[458648,137476,5262524,3,[153,2,1,132388,"_TrackPassing",0,0]],[480152,159039,5240961,3,0],[501833,181276,5218724,3,0],[523320,202316,5197684,3,0],[544862,223868,5176132,3,0],[566372,244940,5155060,3,0],[588360,267306,5132694,3,0],[594477,273202,5126798,1,0],[603689,282911,5117089,1,[451,2,2,145290,"_TrackPassing",0,0]],[625144,304477,5095523,1,0],[646731,326125,5073875,1,0],[668737,348170,5051830,1,0],[690256,369258,5030742,1,0],[699451,379009,5020991,1,[788,2,2,145290,null,0,0]],[705599,384670,5015330,1,[818,2,3,98708,"_TrackPassing",0,0]],[727073,406213,4993787,1,0],[749126,427784,4972216,1,0],[770584,449774,4950226,1,0],[792016,470745,4929255,1,0],[801211,479995,4920005,1,[1171,2,4,100399,"_TrackPassing",0,0]],[822916,501747,4898253,1,0],[844418,523264,4876736,1,0],[865900,544823,4855177,1,0],[887588,566572,4833428,1,0],[902910,582437,4817563,1,[1537,2,5,102359,"_TrackPassing",0,0]],[924430,603468,4796532,1,0],[945878,625028,4774972,1,0],[967369,646621,4753379,1,0],[988813,668094,4731906,1,0],[1001079,680391,4719609,1,[1832,2,5,102359,null,0,0]],[1004160,682977,4717023,1,[1863,2,6,100975,"_TrackPassing",0,0]],[1025658,704562,4695438,1,0],[1047131,726076,4673924,1,0],[1068647,748162,4651838,1,0],[1090086,769158,4630842,1,0],[1102362,781412,4618588,1,[2198,2,6,100975,null,0,0]],[1108604,788141,4611859,1,[2214,2,7,99524,"_TrackPassing",0,0]],[1130068,809772,4590228,1,0],[1151908,831382,4568618,1,0],[1173915,852809,4547191,1,0],[1195341,875129,4524871,1,0],[1198418,877679,4522321,1,[2522,2,7,99524,null,0,0]],[1204562,884352,4515648,1,[2539,3,8,100269,"_MinusPosition",0,0]],[1226010,905350,4494650,1,0],[1247624,926578,4473422,1,0],[1269130,948654,4451346,1,0],[1290886,970522,4429478,1,0],[1297039,976669,4423331,1,[2847,3,8,100269,null,0,0]],[1306229,985856,4414144,1,[2864,3,9,99207,"_TrackPassing",0,0]],[1327918,1007668,4392332,1,0],[1349546,1028811,4371189,1,0],[1371306,1050662,4349338,1,0],[1392938,1072364,4327636,1,0],[1399067,1079010,4320990,1,[3185,3,9,99207,null,0,0]],[1402243,1082121,4317879,1,[3216,3,10,99451,"_TrackPassing",0,0]],[1423927,1103480,4296520,1,0],[1445568,1124600,4275400,1,0],[1467037,1146189,4253811,1,0],[1488542,1167788,4232212,1,0],[1494694,1173913,4226087,1,[3565,3,10,99451,null,0,0]],[1503890,1183638,4216362,1,[3582,3,11,99266,"_TrackPassing",0,0]],[1525335,1204669,4195331,1,0],[1546891,1226750,4173250,1,0],[1568745,1248700,4151300,1,0],[1590516,1270529,4129471,1,0],[1596645,1276162,4123838,1,[3904,3,11,99266,null,0,0]],[1602779,1281811,4118189,1,[3935,3,12,99111,"_TrackPassing",0,0]],[1624283,1303399,4096601,1,0],[1645785,1325450,4074550,1,0],[1667446,1346609,4053391,1,0],[1689138,1368397,4031603,1,0],[1695285,1375073,4024927,1,[4239,3,12,99111,null,0,0]],[1704542,1384353,4015647,1,[4300,3,13,100019,"_TrackPassing",0,0]],[1725983,1405878,3994122,1,0],[1747461,1426912,3973088,1,0],[1768943,1448028,3951972,1,0],[1790449,1469596,3930404,1,[4577,3,13,100019,null,0,0]],[1802709,1482404,3917596,1,[4610,3,14,99392,"_TrackPassing",0,0]],[1824450,1502740,3897260,1,0],[1845967,1524273,3875727,1,0],[1867463,1546265,3853735,1,0],[1888986,1567329,3832671,1,0],[1895133,1574031,3825969,1,[4916,3,14,99392,null,0,0]],[1904339,1582721,3817279,1,[4948,3,15,100520,"_TrackPassing",0,0]],[1925831,1604269,3795731,1,0],[1928886,1608101,3791899,2,0],[1935024,1614383,3785617,3,0],[1956520,1635009,3764991,3,0],[1978015,1657059,3742941,3,0],[1999489,1678151,3721849,3,0],[2017907,1696093,3703907,3,[5274,3,15,100520,null,0,0]],[2027139,1705862,3694138,3,[5322,3,16,121893,"_TrackPassing",0,0]],[2048740,1727512,3672488,3,0],[2070281,1748558,3651442,3,0],[2091771,1770560,3629440,3,0],[2113237,1792065,3607935,3,0],[2134693,1813600,3586400,3,0],[2156092,1835071,3564929,3,0],[2173630,1852130,3547870,1,0],[2181661,1860191,3539809,1,[5672,3,17,156705,"_TrackPassing",0,0]],[2205655,1884322,3515678,1,0],[2229625,1908354,3491646,1,0],[2249636,1928439,3471561,1,0],[2269640,1948470,3451530,1,0],[2281655,1960506,3439494,1,[5955,2,18,99504,"_PlusPosition",0,0]],[2303216,1981659,3418341,1,0],[2325200,2004195,3395805,1,0],[2346682,2025659,3374341,1,0],[2368102,2046633,3353367,1,0],[2377308,2056405,3343595,1,[6308,2,19,99022,"_TrackPassing",0,0]],[2398870,2077543,3322457,1,0],[2420586,2099295,3300705,1,0],[2442314,2121111,3278889,1,0],[2463999,2142811,3257189,1,0],[2476383,2154888,3245112,1,[6618,2,19,99022,null,0,0]],[2479461,2158477,3241523,1,[6633,2,20,98959,"_TrackPassing",0,0]],[2500968,2180046,3219954,1,0],[2522712,2201807,3198193,1,0],[2544643,2223156,3176844,1,0],[2568652,2247741,3152259,1,0],[2576646,2255729,3144271,1,[7026,1,21,99717,"_PlusPosition",0,0]],[2598784,2277420,3122580,1,0],[2620351,2299572,3100428,1,0],[2641873,2320617,3079383,1,0],[2663335,2342230,3057770,1,0],[2680670,2359621,3040379,1,[7379,1,22,99778,"_TrackPassing",0,0]],[2704657,2383624,3016376,1,0],[2728651,2407670,2992330,1,0],[2748675,2427737,2972263,1,0],[2769695,2448259,2951741,1,0],[2781668,2460799,2939201,1,[7731,1,23,99867,"_TrackPassing",0,0]],[2804744,2483950,2916050,1,0],[2826226,2504983,2895017,1,0],[2847743,2527042,2872958,1,0],[2869211,2548588,2851412,1,0],[2878432,2557316,2842684,1,[8126,1,24,100225,"_TrackPassing",0,0]],[2899843,2578355,2821645,1,0],[2921624,2600686,2799314,1,0],[2943139,2621752,2778248,1,0],[2964630,2643791,2756209,1,0],[2979960,2658650,2741350,1,[8491,1,25,99832,"_TrackPassing",0,0]],[3001420,2680196,2719804,1,0],[3022905,2701712,2698288,1,0],[3044411,2723294,2676706,1,0],[3065876,2744840,2655160,1,0],[3078158,2757121,2642879,1,[8901,1,26,99372,"_TrackPassing",0,0]],[3099603,2778650,2621350,1,0],[3121121,2800269,2599731,1,0],[3142645,2821798,2578202,1,0],[3164215,2842950,2557050,1,0],[3173407,2852677,2547323,1,[9236,1,26,-1,"_PitIn",1,0]],[3194940,2873788,2526212,1,0],[3201072,2880412,2519588,1,[9303,2,26,-1,null,1,0]],[3216431,2895321,2504679,1,[9353,4,26,-1,null,1,0]],[3237911,2916868,2483132,1,0],[3253253,2932735,2467265,1,[9466,5,26,-1,null,1,0]],[3274939,2954539,2445461,1,0],[3296399,2975042,2424958,1,0],[3317975,2996693,2403307,1,0],[3339689,3018951,2381049,1,0],[3361169,3040028,2359972,1,0],[3383152,3062072,2337928,1,0],[3404685,3084112,2315888,1,0],[3426211,3105229,2294771,1,[9785,5,27,-2,"_PitOut",1,252404]],[3447946,3127011,2272989,1,0],[3469778,3149359,2250641,1,0],[3491237,3170864,2229136,1,0],[3512790,3191492,2208508,1,0],[3522021,3201226,2198774,1,[9985,5,27,-2,null,1,252404]],[3531236,3209935,2190065,1,[9999,3,28,105714,"_PlusPosition",1,252404]],[3552936,3231688,2168312,1,0],[3574422,3253261,2146739,1,0],[3596142,3275321,2124679,1,0],[3618018,3296925,2103075,1,0],[3633374,3312358,2087642,1,[10184,2,29,103206,"_PlusPosition",1,252404]],[3655110,3334175,2065825,1,0],[3676827,3355600,2044400,1,0],[3698291,3377540,2022460,1,0],[3719725,3399079,2000921,1,0],[3738156,3416970,1983030,1,[10487,1,30,101685,"_PlusPosition",1,252404]],[3759669,3439089,1960911,1,0],[3781376,3460247,1939753,1,0],[3803103,3481970,1918030,1,0],[3824714,3503648,1896352,1,0],[3840063,3519489,1880511,1,[10839,1,31,102293,"_TrackPassing",1,252404]],[3861556,3540541,1859459,1,0],[3883443,3563034,1836966,1,0],[3904909,3583992,1816008,1,0],[3923274,3602992,1797008,4,0],[3941797,3621505,1778495,4,[11148,1,32,102501,"_TrackPassing",1,252404]],[3963319,3643041,1756959,4,0],[3984782,3664606,1735394,4,0],[4006243,3685077,1714923,4,0],[4027742,3706574,1693426,4,0],[4043099,3721915,1678085,1,[11424,1,33,103299,"_TrackPassing",1,252404]],[4064605,3744021,1655979,1,0],[4086204,3765148,1634852,1,0],[4107655,3787166,1612834,1,0],[4129340,3808407,1591593,1,0],[4144970,3824589,1575411,1,[11761,1,34,102451,"_TrackPassing",1,252404]],[4166479,3846123,1553877,1,0],[4188670,3868390,1531610,1,0],[4210101,3889908,1510092,1,0],[4231558,3911417,1488583,1,0],[4247374,3926763,1473237,1,[12037,1,35,101754,"_TrackPassing",1,252404]],[4269158,3948627,1451373,1,0],[4290643,3970198,1429802,1,0],[4312357,3991976,1408024,1,0],[4334035,4013630,1386370,1,0],[4349355,4028466,1371534,1,[12386,1,36,101778,"_TrackPassing",1,252404]],[4370815,4050521,1349479,1,0],[4392271,4072021,1327979,1,0],[4413946,4093296,1306704,1,0],[4435641,4115522,1284478,1,0],[4450969,4130904,1269096,1,[12721,1,37,101205,"_TrackPassing",1,252404]],[4472443,4151896,1248104,1,0],[4493963,4173448,1226552,1,0],[4515435,4195004,1204996,1,0],[4536959,4216602,1183398,1,0],[4552280,4231519,1168481,1,[13013,1,38,102296,"_TrackPassing",1,252404]],[4573770,4253123,1146877,1,0],[4595231,4275160,1124840,1,0],[4617631,4285016,1114984,1,0],[4637635,4316643,1083357,1,0],[4655571,4334048,1065952,1,[13379,1,39,102042,"_TrackPassing",1,252404]],[4676895,4356241,1043759,1,0],[4700654,4379823,1020177,1,0],[4724635,4403842,996158,1,0],[4744653,4424378,975622,1,0],[4756670,4435857,964143,1,[13729,1,40,102032,"_TrackPassing",1,252404]],[4780662,4460342,939658,1,0],[4804647,4484356,915644,1,0],[4824679,4503914,896086,1,0],[4848647,4528416,871584,1,0],[4860682,4540467,859533,1,[14067,1,41,102803,"_TrackPassing",1,252404]],[4883119,4562958,837042,1,0],[4904643,4584552,815448,1,0],[4926372,4605809,794191,1,0],[4947854,4627914,772086,1,0],[4963217,4643260,756740,1,[14374,2,42,103140,"_MinusPosition",1,252404]],[4984672,4664342,735658,1,0],[5006603,4685798,714202,1,0],[5028475,4707775,692225,1,0],[5049955,4729773,670227,1,0],[5062246,4741113,658887,1,[14711,2,42,103140,null,1,252404]],[5068389,4747758,652242,1,[14743,2,43,103075,"_TrackPassing",1,252404]],[5090126,4769559,630441,1,0],[5111601,4790576,609424,1,0],[5133283,4811829,588171,1,0],[5154761,4833827,566173,1,0],[5163978,4843043,556957,1,[15032,2,43,103075,null,1,252404]],[5170115,4848730,551270,1,[15079,2,44,102696,"_TrackPassing",1,252404]],[5191618,4870288,529712,1,0],[5213139,4891928,508072,1,0],[5234610,4913451,486549,1,0],[5256243,4935131,464869,1,0],[5262377,4940773,459227,1,[15381,2,44,102696,null,1,252404]],[5274644,4953105,446895,1,[15412,2,45,102992,"_TrackPassing",1,252404]],[5296088,4975130,424870,1,0],[5317554,4996151,403849,1,0],[5339271,5018415,381585,1,0],[5360739,5039443,360557,1,0],[5367092,5046333,353667,1,[15732,2,45,102992,null,1,252404]],[5370183,5048896,351104,1,[15763,2,46,101394,"_TrackPassing",1,252404]],[5391896,5070621,329379,1,0],[5413413,5092726,307274,1,0],[5434903,5113856,286144,1,0],[5456566,5135058,264942,1,0],[5468956,5147497,252503,1,[16084,2,46,101394,null,1,252404]],[5475095,5154108,245892,1,[16100,2,47,101665,"_TrackPassing",1,252404]],[5496559,5175208,224792,1,0],[5518290,5197503,202497,1,0],[5539799,5218553,181447,1,0],[5561482,5240782,159218,1,0],[5564556,5243313,156687,1,[16372,2,47,101665,null,1,252404]],[5576828,5255632,144368,1,[16450,2,48,102358,"_TrackPassing",1,252404]],[5598322,5277724,122276,1,0],[5619804,5298775,101225,1,0],[5641250,5320259,79741,1,0],[5662948,5341511,58489,1,0],[5669090,5347642,52358,1,[16665,2,48,102358,null,1,252404]],[5678546,5356897,43103,1,[16713,2,49,102035,"_TrackPassing",1,252404]],[5700227,5378672,21328,1,0],[5721736,5400456,0,1,0],[5743172,5421968,0,1,0],[5764618,5443937,0,1,0],[5767676,5446521,0,5,0],[5770757,5449581,0,5,[16988,2,49,102035,null,1,252404]],[5786350,5465251,0,5,[17097,2,50,104799,"_CheckeredFlag",1,252404]],[5801816,5480738,0,5,[17113,1,50,104799,"_CheckeredFlag",1,252404]],[5823271,5502226,0,5,0],[5844740,5524245,0,5,0],[5866703,5545733,0,5,0],[5888195,5567265,0,5,0],[5909900,5589046,0,5,0],[5931910,5610672,0,5,0],[5953398,5631971,0,5,0],[5974873,5651662,0,6,0],[5996287,5651662,0,6,0],[6018037,5651662,0,6,0],[6039447,5651662,0,6,0],[6060864,5651662,0,6,0],[6082380,5651662,0,6,0],[6104111,5651662,0,6,0],[6125947,5651662,0,6,0],[6147351,5651662,0,6,0],[6168778,5651662,0,6,0],[6190175,5651662,0,6,0],[6196290,5651662,0,6,0]]};
+  const S62 = {"source":"Caterham Lédenon 2026 · session 62 · Ferdinand Cup Course 1 · voiture #18 · enregistré par Olivier en direct le 31/10/2026","ssid":{"cs_id":"caterham","season":"2026","event_id":"ledenon","session_id":62},"carNumber":"18","t0":1793440277701,"flags":["READY","GREEN FLAG","YELLOW SECTOR 1","SAFETY CAR","YELLOW SECTOR","CHECKERED FLAG","STOP"],"car":{"number":"18","current_driver":0,"driver_names":["DELANNOY Patrick","DELANNOY Patrick"]},"rows":[[0,0,3600000,0,[28,2,0,0,null,0,0]],[21420,0,3600000,0,0],[42894,0,3600000,0,0],[64345,0,3600000,0,0],[87712,0,3600000,0,0],[109132,0,3600000,0,0],[131725,0,3600000,0,0],[155711,0,3600000,0,0],[179716,0,3600000,0,0],[199863,0,3600000,0,0],[221295,0,3600000,0,0],[243059,0,3600000,0,0],[254718,2375,3597625,1,0],[277115,25156,3574844,1,0],[298633,45727,3554273,1,0],[320190,67300,3532700,1,0],[341600,88281,3511719,1,0],[360174,106913,3493087,1,[182,2,1,101916,"_TrackPassing",0,0]],[381663,128478,3471522,1,0],[404722,152074,3447926,1,0],[425002,171973,3428027,1,0],[446405,193480,3406520,1,0],[458682,205755,3394245,1,[813,1,2,97786,"_PlusPosition",0,0]],[480443,227602,3372398,1,0],[502734,249891,3350109,1,0],[524201,271907,3328093,1,0],[545779,292989,3307011,1,0],[552085,299810,3300190,1,[1522,1,3,95291,"_TrackPassing",0,0]],[573702,321382,3278618,1,0],[596281,343124,3256876,1,0],[617747,364662,3235338,1,0],[633235,380502,3219498,2,0],[645515,392989,3207011,2,[2296,1,4,94815,"_TrackPassing",0,0]],[666962,414459,3185541,2,0],[688977,436473,3163527,2,0],[711122,458677,3141323,2,0],[733033,480643,3119357,2,0],[742404,490099,3109901,2,[3003,1,5,95749,"_TrackPassing",0,0]],[764260,511865,3088135,2,0],[780410,527694,3072306,3,0],[802002,549864,3050136,3,0],[823490,570791,3029209,3,0],[844954,592813,3007187,3,0],[866494,613440,2986560,3,[3785,1,6,123911,"_TrackPassing",0,0]],[887992,634964,2965036,3,0],[909749,656816,2943184,3,0],[931399,678976,2921024,3,0],[952929,700026,2899974,3,0],[974495,721663,2878337,3,0],[996265,743495,2856505,3,0],[1008558,755800,2844200,3,[4628,1,7,142119,"_TrackPassing",0,0]],[1030057,777386,2822614,3,0],[1051585,799457,2800543,3,0],[1073375,821387,2778613,3,0],[1094896,842475,2757525,3,0],[1116935,864007,2735993,3,0],[1138581,886082,2713918,3,0],[1147854,895536,2704464,3,[5473,1,8,138860,"_TrackPassing",0,0]],[1169440,916676,2683324,3,0],[1190894,938751,2661249,3,0],[1212431,959822,2640178,3,0],[1234137,981593,2618407,3,0],[1255560,1003600,2596400,3,0],[1277248,1024846,2575154,3,0],[1289522,1037079,2562921,3,[6250,1,9,140784,"_TrackPassing",0,0]],[1311054,1053119,2546881,3,0],[1332518,1080292,2519708,3,0],[1354191,1102061,2497939,3,0],[1375657,1123628,2476372,3,0],[1397156,1145176,2454824,1,[7067,1,10,109536,"_TrackPassing",0,0]],[1418674,1166793,2433207,1,0],[1440170,1187841,2412159,1,0],[1461934,1209154,2390846,1,0],[1484038,1231780,2368220,1,0],[1490170,1237937,2362063,1,[7839,1,11,94718,"_TrackPassing",0,0]],[1511684,1259552,2340448,1,0],[1533184,1281033,2318967,1,0],[1555053,1302963,2297037,1,0],[1576744,1324756,2275244,1,0],[1588992,1337052,2262948,1,[8610,1,12,95449,"_TrackPassing",0,0]],[1610509,1358626,2241374,1,0],[1632259,1380411,2219589,1,0],[1653796,1402024,2197976,1,0],[1675491,1423239,2176761,1,0],[1687782,1435043,2164957,1,[9295,1,13,94956,"_TrackPassing",0,0]],[1709304,1456662,2143338,1,0],[1730767,1478715,2121285,1,0],[1752331,1499896,2100104,1,0],[1773830,1521437,2078563,1,0],[1779975,1528087,2071913,1,[10043,1,14,95615,"_TrackPassing",0,0]],[1801479,1549691,2050309,1,0],[1822973,1570774,2029226,1,0],[1844455,1592290,2007710,1,0],[1866236,1613646,1986354,1,0],[1878505,1625962,1974038,1,[10661,1,15,95849,"_TrackPassing",0,0]],[1900097,1647616,1952384,1,0],[1922175,1669820,1930180,1,0],[1943903,1691587,1908413,1,0],[1965366,1713588,1886412,1,0],[1971493,1719234,1880766,1,[11296,1,15,-1,"_PitIn",1,0]],[1986944,1734683,1865317,1,[11368,3,15,-1,null,1,0]],[2008628,1756964,1843036,1,0],[2030112,1778084,1821916,1,0],[2033228,1773411,1826589,1,[11600,4,15,-1,null,1,0]],[2054721,1802751,1797249,1,0],[2076555,1824610,1775390,1,0],[2098068,1844184,1755816,1,[11986,4,16,-2,"_PitOut",1,127517]],[2119799,1865907,1734093,1,0],[2141283,1886990,1713010,1,0],[2162905,1909242,1690758,1,0],[2175178,1921534,1678466,1,[12464,4,16,-2,null,1,127517]],[2190550,1936961,1663039,1,[12600,3,17,95988,"_PlusPosition",1,127517]],[2211992,1958047,1641953,1,0],[2233487,1979100,1620900,1,0],[2255018,2001217,1598783,1,0],[2276482,2022195,1577805,1,0],[2291907,2038133,1561867,1,[13125,1,18,97730,"_PlusPosition",1,127517]],[2313503,2059306,1540694,1,0],[2335566,2082011,1517989,1,0],[2357095,2103556,1496444,1,0],[2379165,2125720,1474280,1,0],[2385307,2131347,1468653,1,[13828,1,19,96226,"_TrackPassing",1,127517]],[2406806,2152951,1447049,1,0],[2428298,2173958,1426042,1,0],[2450153,2196205,1403795,1,0],[2471653,2217990,1382010,1,0],[2483917,2229809,1370191,1,[14489,1,20,95182,"_TrackPassing",1,127517]],[2505411,2251804,1348196,1,0],[2526890,2273330,1326670,1,0],[2539638,2285942,1314058,2,0],[2561416,2307769,1292231,1,0],[2583140,2329656,1270344,1,0],[2589294,2335849,1264151,1,[15200,2,20,95182,null,1,127517]],[2610790,2356938,1243062,1,0],[2616919,2363091,1236909,1,[15272,3,20,95182,null,1,127517]],[2620631,2366296,1233704,1,[15344,6,20,95182,null,1,127517]],[2630377,2376022,1223978,1,[15392,7,20,95182,null,1,127517]],[2651891,2398097,1201903,1,[15573,9,20,95182,null,1,127517]],[2654985,2401186,1198814,1,[15620,10,20,95182,null,1,127517]],[2661138,2406845,1193155,1,[15666,11,20,95182,null,1,127517]],[2682692,2428424,1171576,1,0],[2688892,2434616,1165384,1,[15806,12,20,95182,null,1,127517]],[2704223,2450004,1149996,1,[15875,13,20,95182,null,1,127517]],[2719598,2465921,1134079,1,[15968,14,20,95182,null,1,127517]],[2741184,2487118,1112882,1,0],[2750401,2496847,1103153,1,[16132,16,20,95182,null,1,127517]],[2759628,2506082,1093918,1,[16269,17,20,95182,null,1,127517]],[2781095,2527077,1072923,1,0],[2802599,2548673,1051327,1,0],[2824183,2570263,1029737,1,0],[2846284,2592361,1007639,1,0],[2867844,2613520,986480,1,0],[2889398,2635698,964302,1,0],[2907837,2653688,946312,1,[17181,17,20,95182,"_MaximumTime",1,127517]],[2929370,2675877,924123,1,0],[2951161,2697190,902810,1,0],[2972910,2718961,881039,1,0],[2994626,2740772,859228,1,0],[3016277,2762484,837516,1,0],[3037920,2783776,816224,1,0],[3044133,2790417,809583,1,[18070,18,20,95182,"_MaximumTime",1,127517]],[3065777,2811640,788360,1,0],[3087269,2833129,766871,1,0],[3109058,2854961,745039,1,0],[3130911,2876737,723263,1,0],[3153646,2899255,700745,1,0],[3176302,2922837,677163,1,0],[3198155,2944276,655724,1,0],[3219636,2965797,634203,1,0],[3241342,2987598,612402,1,0],[3262858,3008695,591305,1,0],[3284447,3030808,569192,1,0],[3306090,3051962,548038,1,0],[3327644,3073580,526420,1,0],[3349640,3095713,504287,1,0],[3371151,3117301,482699,1,0],[3392988,3139654,460346,1,0],[3414532,3161011,438989,4,0],[3435996,3182443,417557,4,0],[3457517,3203953,396047,4,0],[3479255,3225268,374732,4,0],[3500842,3247461,352539,4,0],[3522385,3268376,331624,4,0],[3543889,3289935,310065,4,0],[3565486,3311505,288495,4,0],[3587332,3333946,266054,4,0],[3608915,3355150,244850,4,0],[3630425,3377121,222879,4,0],[3651918,3398197,201803,4,0],[3673388,3419680,180320,4,0],[3695117,3441963,158037,4,0],[3716902,3463223,136777,4,0],[3738395,3485288,114712,4,0],[3760061,3507044,92956,4,0],[3781719,3528669,71331,4,0],[3803390,3549446,50554,4,0],[3825016,3571162,28838,4,0],[3846490,3593340,6660,4,0],[3868465,3615383,0,4,0],[3890037,3636924,0,4,0],[3911756,3658618,0,4,0],[3927138,3673567,0,5,0],[3948654,3695194,0,5,0],[3970158,3717273,0,5,0],[3991923,3738158,0,5,0],[4013494,3760213,0,5,0],[4025826,3769598,0,6,0],[4032052,3769598,0,6,0]]};
+  function expand58(c) {
+    return { v: 1, provider: 'itslive', source: c.source, ssid: c.ssid, carNumber: c.carNumber,
+      frames: c.rows.map(([dt, el, ep, r]) => ({ t: c.t0 + dt, info: { elapsed_time: el, remaining_time: 900000 - el, race_flag: 'GREEN FLAG', epoch: c.epoch0 + ep },
+        ranking: r ? [Object.assign({ data_id: r[0], pos: r[1], total_lap: r[2], lap_time: r[3], status_img: r[4] }, c.car)] : [] })) };
+  }
+  function expand62(c) {
+    return { v: 1, provider: 'itslive', source: c.source, ssid: c.ssid, carNumber: c.carNumber,
+      frames: c.rows.map(([dt, el, rem, fl, r]) => ({ t: c.t0 + dt, info: { elapsed_time: el, remaining_time: rem, race_flag: c.flags[fl] },
+        ranking: r ? [Object.assign({ data_id: r[0], pos: r[1], total_lap: r[2], lap_time: r[3], status_img: r[4], total_pit_stop: r[5], total_pit_time: r[6] }, c.car)] : [] })) };
+  }
+  const api = { ledenonS58Car701: () => expand58(S58), ledenonS62Car18: () => expand62(S62), ledenonS74Car5: () => expand62(S74) };
+  if (typeof module === 'object' && module.exports) module.exports = api; else root.EswFixtures = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this);
+</script>
+<script>/* ============================================================================
+   TESTS DE NON-RÉGRESSION — à exécuter après chaque évolution.
+   Node : `node tests/run.cjs`   ·   App : bouton TESTS.
+   ========================================================================== */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) module.exports = factory();
+  else root.StrategyTests = factory();
+})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  'use strict';
+
+  function runAll(E, S, T, L) {
+    const results = [];
+    const T0 = 1700000000000, M = 60000;
+    const test = (name, group, fn) => {
+      try { results.push({ name, group, ok: true, detail: fn() || '' }); }
+      catch (e) { results.push({ name, group, ok: false, detail: e.message }); }
+    };
+    const eq = (a, b, msg) => { if (a !== b) throw new Error(`${msg} : attendu ${JSON.stringify(b)}, obtenu ${JSON.stringify(a)}`); };
+    const near = (a, b, msg, eps) => { if (Math.abs(a - b) > (eps || 1e-6)) throw new Error(`${msg} : attendu ${b}, obtenu ${a}`); };
+    const base = () => E.normalizeSetup(E.defaultSetup());
+    const started = (s) => E.apply(E.createRace(s, T0), s, { type: 'START', at: T0 });
+    const pit = (r, s, inMin, durSec, extra) => {
+      r = E.apply(r, s, { type: 'PIT_IN', at: T0 + inMin * M });
+      return E.apply(r, s, Object.assign({ type: 'PIT_OUT', at: T0 + inMin * M + durSec * 1000 }, extra || {}));
+    };
+    const F3 = (x) => x.toFixed(0);
+    const mins = (arr) => arr.map((t) => Math.round(t.at / 60));
+
+    /* ---- Suite demandée ---- */
+    test('+10 tours → -10 × conso fuel', 'Suite', () => {
+      const s = base(); let r = started(s); const f0 = r.fuel;
+      for (let i = 1; i <= 10; i++) r = E.apply(r, s, { type: 'LAP_COMPLETED', at: T0 + i * 92000, lapTime: 92 });
+      eq(r.laps, 10, 'tours'); near(r.fuel, f0 - 10 * s.fuelPerLap, 'fuel (événements)');
+      const r2 = E.apply(started(s), s, { type: 'SET_LAPS', at: T0 + 1000, laps: 10 });
+      near(r2.fuel, f0 - 10 * s.fuelPerLap, 'fuel (correction manuelle)');
+      return `${f0} L → ${r.fuel.toFixed(2)} L`;
+    });
+    test('+1 tour manuel → temps course et stint avancent (pause et START)', 'Suite', () => {
+      const s = base(); const lap = { type: 'LAP_COMPLETED', advanceClock: true };
+      // Horloge en pause
+      let r = E.createRace(s, T0);
+      for (let i = 0; i < 3; i++) r = E.apply(r, s, Object.assign({ at: T0 }, lap));
+      near(E.elapsed(r, T0), 3 * s.refLap, 'pause : temps course');
+      let st = S.compute(r, s, T0);
+      near(st.stint.time, 3 * s.refLap, 'pause : temps stint'); eq(st.stint.laps, 3, 'pause : tours stint');
+      near(r.fuel, s.startFuel - 3 * s.fuelPerLap, 'pause : fuel');
+      // Course lancée, clics rapides (10 s après START) : l'horloge saute d'un tour de réf. par clic
+      let g = started(s);
+      g = E.apply(g, s, Object.assign({ at: T0 + 10000 }, lap));
+      g = E.apply(g, s, Object.assign({ at: T0 + 11000 }, lap));
+      near(E.elapsed(g, T0 + 11000), 2 * s.refLap, 'START : temps course après 2 clics');
+      st = S.compute(g, s, T0 + 11000);
+      near(st.stint.time, 2 * s.refLap, 'START : temps stint'); eq(st.stint.laps, 2, 'START : tours');
+      near(E.elapsed(g, T0 + 21000), 2 * s.refLap + 10, 'START : horloge continue ensuite');
+      // Course lancée, tour réel plus long que la réf. : pas de saut, temps réel conservé
+      let h = E.apply(started(s), s, Object.assign({ at: T0 + 100000 }, lap));
+      near(E.elapsed(h, T0 + 100000), 100, 'tour réel 100 s : pas de saut');
+      near(h.lapLog[0].t, 100, 'tour réel 100 s : temps du tour');
+      return `pause ${F3(3 * s.refLap)} s / START ${F3(2 * s.refLap)} s après clics`;
+    });
+    test('PIT 45 s → arrêt extra', 'Suite', () => {
+      const s = base(); const r = pit(started(s), s, 10, 45);
+      eq(r.stops[0].type, 'EXTRA', 'type'); eq(E.mandatoryDone(r), 0, 'obligatoires'); eq(r.stops.length, 1, 'total');
+    });
+    test('PIT 2:31 → arrêt obligatoire', 'Suite', () => {
+      const s = base(); const r = pit(started(s), s, 40, 151, { inDriver: 'B' });
+      eq(r.stops[0].type, 'MANDATORY', 'type'); eq(E.mandatoryDone(r), 1, 'obligatoires');
+    });
+    test('A 60 / B 30 / B 30 → targets 60 / 90 / 120 min', 'Suite', () => {
+      const s = base();
+      s.relayPlan[0] = { driver: 'A', minutes: 60 }; s.relayPlan[1] = { driver: 'B', minutes: 30 }; s.relayPlan[2] = { driver: 'B', minutes: 30 };
+      eq(mins(S.planTargets(s)).slice(0, 3).join('/'), '60/90/120', 'plan');
+      eq(mins(S.liveTargets(started(s), s)).slice(0, 3).join('/'), '60/90/120', 'live');
+      return mins(S.planTargets(s)).join(' / ') + ' min';
+    });
+    test('changement B → B → nouveau stint mais même pilote', 'Suite', () => {
+      const s = base(); s.relayPlan[0].driver = 'B';
+      let r = started(s); eq(r.driver, 'B', 'pilote départ');
+      r = pit(r, s, 40, 151, { inDriver: 'B', driverChange: true });
+      eq(r.stints.length, 2, 'stints'); eq(r.stints[1].driver, 'B', 'pilote stint 2'); eq(r.driver, 'B', 'pilote en voiture');
+      near(r.stints[1].startElapsed, 40 * 60 + 151, 'début stint 2');
+      eq(S.compute(r, s, T0 + 41 * M).stint.n, 2, 'stint affiché');
+    });
+    test('5 obligatoires + 2 extras → 5/5 obligatoire, 7 total', 'Suite', () => {
+      const s = base(); let r = started(s);
+      [[20, 30], [40, 152], [80, 155], [100, 20], [120, 151], [160, 150], [200, 160]].forEach(([m, d]) => { r = pit(r, s, m, d); });
+      const st = S.compute(r, s, T0 + 201 * M);
+      eq(st.mandDone, 5, 'obligatoires'); eq(st.totalStops, 7, 'total'); eq(st.extras, 2, 'extras'); eq(st.stopsLeft, 0, 'restants');
+    });
+    test('refresh navigateur → course continue', 'Suite', () => {
+      const s = base(); const r = started(s);
+      const restored = JSON.parse(JSON.stringify(r));            // = localStorage puis rechargement
+      near(E.elapsed(restored, T0 + 60 * M), 3600, 'temps écoulé', 1e-3);
+      eq(restored.clock.running, true, 'horloge en marche');
+      const evs = T.createManualAdapter().poll(restored, s, T0 + 60 * M);
+      let r2 = restored; evs.forEach((ev) => { r2 = E.apply(r2, s, ev); });
+      eq(r2.laps, Math.floor(3600 / s.refLap), 'tours rattrapés');
+      near(E.elapsed(r2, T0 + 61 * M), 3660, 'horloge après rattrapage', 1e-3);
+      return `${r2.laps} tours rattrapés`;
+    });
+    test('modification plan → tous les targets suivants recalculés', 'Suite', () => {
+      const s = base(); const before = mins(S.planTargets(s));
+      s.relayPlan[1].minutes = 50;
+      const after = mins(S.planTargets(s));
+      eq(after[0], before[0], 'target #1 inchangé');
+      for (let i = 1; i < after.length; i++) eq(after[i], before[i] + 10, `target #${i + 1}`);
+      let r = pit(started(s), s, 42, 151, { inDriver: 'B' });       // arrêt #1 réel à 42 min
+      const l1 = mins(S.liveTargets(r, s));
+      s.relayPlan[2].minutes = 30;
+      const l2 = mins(S.liveTargets(r, s));
+      eq(l2[0], 42, 'arrêt fait conservé'); eq(l2[1], l1[1], 'arrêt #2 inchangé');
+      for (let i = 2; i < l2.length; i++) eq(l2[i], l1[i] - 10, `live #${i + 1}`);
+      return `plan ${after.join('/')} · live ${l2.join('/')}`;
+    });
+
+    /* ---- Règlement TTE C47-2026 ---- */
+    test('PIT 2:30.0 pile → obligatoire (art. 7-9/1)', 'Règlement', () => {
+      const s = base(); eq(pit(started(s), s, 40, 150).stops[0].type, 'MANDATORY', 'type');
+    });
+    test('Entrée après 3h40 → non comptabilisé (art. 7-9/3)', 'Règlement', () => {
+      const s = base(); const r = pit(started(s), s, 221, 160);
+      eq(r.stops[0].type, 'EXTRA', 'type'); eq(r.stops[0].late, true, 'hors délai');
+    });
+    test('6e arrêt long → extra (5 obligatoires max)', 'Règlement', () => {
+      const s = base(); let r = started(s);
+      [30, 60, 90, 120, 150, 180].forEach((m) => { r = pit(r, s, m, 155); });
+      eq(E.mandatoryDone(r), 5, 'obligatoires'); eq(r.stops[5].type, 'EXTRA', '6e arrêt');
+    });
+    test('Drapeau rouge → le chrono continue (art. 7-8/2)', 'Règlement', () => {
+      const s = base(); const r = E.apply(started(s), s, { type: 'RACE_STATUS', flag: 'RED', at: T0 + 30 * M });
+      near(E.elapsed(r, T0 + 40 * M), 2400, 'temps écoulé', 1e-3);
+    });
+    test('Arrêt obligatoire manquant au damier → 2 tours (art. 7-9/1)', 'Règlement', () => {
+      const s = base(); let r = started(s);
+      [40, 80, 120, 160].forEach((m) => { r = pit(r, s, m, 151); });
+      const st = S.compute(r, s, T0 + 241 * M);
+      eq(st.alerts.some((a) => a.code === 'MISSING' && /2 tours/.test(a.text)), true, 'alerte pénalité');
+    });
+    test('Simulation ×60 → 1 min réelle = 1 h de course', 'Adapter', () => {
+      let real = T0; const a = T.createSimulationAdapter({ speed: 60, clock: () => real });
+      const v0 = a.now(); real += M; eq(a.now() - v0, 60 * M, 'temps virtuel');
+    });
+    /* ---- Profil Ferdinand Cup 2026 (permis FFSA C40-2026) ---- */
+    const fc = (open, close) => { const s = E.applyProfile(base(), 'FERDINAND_CUP_2026'); s.windowOpenMin = open != null ? open : 20; s.windowCloseMin = close != null ? close : 40; return s; };
+    const fcStop = (s, inMin, durSec) => pit(started(s), s, inMin, durSec);
+    test('FC : changement de profil → 60 min, 1 arrêt de 2:00, pilotes et voiture conservés', 'Ferdinand Cup', () => {
+      const t = base(); t.carNumber = '18'; t.drivers = [{ id: 'A', name: 'Jean' }, { id: 'B', name: 'Paul' }, { id: 'C', name: 'Luc' }];
+      const s = E.applyProfile(t, 'FERDINAND_CUP_2026');
+      eq(s.raceMinutes, 60, 'durée'); eq(s.mandatoryStops, 1, 'arrêts'); eq(s.minPitSeconds, 120, 'temps mini');
+      eq(s.carNumber, '18', 'n° conservé'); eq(s.drivers.length, 2, 'pilotes ramenés à 2 max (art. 3.2)');
+      eq(E.applyProfile(s, 'TTE_PEUGEOT_RELAIS_2026').mandatoryStops, 5, 'retour TTE');
+    });
+    test('FC : 1 pilote accepté, 3 refusés (art. 3.2)', 'Ferdinand Cup', () => {
+      const s = fc(); s.drivers = [{ id: 'A', name: 'Solo' }];
+      eq(E.validateSetup(E.normalizeSetup(s)).errors.length, 0, '1 pilote');
+      s.drivers = [{ id: 'A', name: 'a' }, { id: 'B', name: 'b' }, { id: 'C', name: 'c' }];
+      eq(E.validateSetup(E.normalizeSetup(s)).errors.length > 0, true, '3 pilotes');
+    });
+    test('FC : arrêt 2:00 dans la fenêtre → obligatoire sans pénalité', 'Ferdinand Cup', () => {
+      const s = fc(); const r = fcStop(s, 28, 120);
+      eq(r.stops[0].type, 'MANDATORY', 'type'); eq(r.stops[0].penalties.length, 0, 'pénalités');
+    });
+    test('FC : arrêt 1:50 dans la fenêtre → compte + Stop & Go + 10 s (art. 7.3.5)', 'Ferdinand Cup', () => {
+      const s = fc(); const r = fcStop(s, 28, 110);
+      eq(r.stops[0].type, 'MANDATORY', 'compte'); eq(/Stop & Go \+ temps manquant/.test(r.stops[0].penalties[0]), true, 'pénalité');
+      eq(/manque 10\.0 s/.test(r.stops[0].penalties[0]), true, 'temps manquant');
+      eq(S.compute(r, s, T0 + 31 * M).alerts.some((a) => a.code === 'PENALTY' && a.level === 'critical'), true, 'alerte');
+    });
+    test('FC : arrêt 2:05 avant la fenêtre → compte + Stop & Go', 'Ferdinand Cup', () => {
+      const s = fc(); const r = fcStop(s, 15, 125);
+      eq(r.stops[0].type, 'MANDATORY', 'compte'); eq(/hors fenêtre/.test(r.stops[0].penalties[0]), true, 'pénalité');
+    });
+    test('FC : arrêt 30 s avant la fenêtre → extra, l\'obligatoire reste dû', 'Ferdinand Cup', () => {
+      const s = fc(); let r = fcStop(s, 10, 30);
+      eq(r.stops[0].type, 'EXTRA', 'extra'); eq(E.mandatoryDone(r), 0, 'obligatoire restant');
+      r = pit(r, s, 30, 121);
+      eq(r.stops[1].type, 'MANDATORY', 'puis obligatoire'); eq(r.stops[1].penalties.length, 0, 'sans pénalité');
+    });
+    test('FC : pas d\'arrêt au damier → disqualification (art. 7.3.5)', 'Ferdinand Cup', () => {
+      const s = fc(); const st = S.compute(started(s), s, T0 + 61 * M);
+      eq(st.alerts.some((a) => a.code === 'MISSING' && /disqualification/.test(a.text)), true, 'alerte');
+    });
+    test('FC : fenêtre fermée puis ouverte → alertes de fenêtre', 'Ferdinand Cup', () => {
+      const s = fc(20, 40); s.relayPlan[0].minutes = 22;
+      const before = S.compute(started(s), s, T0 + 17 * M);
+      eq(before.alerts.some((a) => a.code === 'WINDOW' && /FENÊTRE FERMÉE/.test(a.text)), true, 'avant ouverture');
+      const inside = S.compute(started(s), s, T0 + 25 * M);
+      eq(inside.alerts.some((a) => a.code === 'WINDOW' && /FENÊTRE OUVERTE/.test(a.text)), true, 'fenêtre ouverte');
+      const w = S.whatIfPitNow(started(s), s, T0 + 12 * M);
+      eq(w.valid, false, 'PIT NOW à 12 min refusé'); eq(w.reasons.some((x) => /pas encore ouverte/.test(x)), true, 'raison');
+    });
+    test('FC : le flux réel Lédenon s62 #18 est conforme (arrêt 28:39, 2:07.5)', 'Ferdinand Cup', () => {
+      if (!L) return 'ignoré';
+      const FX = (typeof module === 'object' && module.exports) ? require('./fixtures.js') : globalThis.EswFixtures;
+      const rec = FX.ledenonS62Car18();
+      const s = fc(20, 40); let r = E.createRace(s, rec.frames[0].t);
+      const a = L.createAdapter({ carNumber: rec.carNumber, record: false });
+      rec.frames.forEach((f) => { a.feed(f); a.poll(r, s).forEach((ev) => { if (ev.type !== 'NOTICE') r = E.apply(r, s, ev); }); });
+      eq(r.stops.length, 1, 'arrêts'); eq(r.stops[0].type, 'MANDATORY', 'obligatoire'); eq(r.stops[0].penalties.length, 0, 'sans pénalité');
+      return 'fenêtre supposée 20–40 min';
+    });
+
+    /* ---- LIVE ItsLive (forme des données relevée à Lédenon, 31/10/2026) ---- */
+    if (L) {
+      const SEC = 1000, EP = 1793438000;          // epoch serveur (s)
+      const info = (elMs, flag, epoch) => ({ data_id: 1, folder_name: '420R', race_name: 'Course 1', elapsed_time: elMs, remaining_time: 0, race_flag: flag || 'GREEN FLAG', epoch: epoch != null ? epoch : EP });
+      const car = (o) => Object.assign({ data_id: 1, number: '208', pos: 5, total_lap: 10, lap_time: 92000, status: 0, status_img: '_TrackPassing', total_pit_stop: 0, total_pit_time: 0, current_driver: 0, driver_names: ['DUPONT / MARTIN', 'DUPONT Jean', 'MARTIN Paul', '', null] }, o);
+      const frame = (elS, c, flag) => ({ t: (EP + 0) * SEC, info: info(elS * SEC, flag, EP), ranking: c ? [c] : [] });
+      const run = (frames, s0) => {
+        const s = s0 || base(); let r = E.createRace(s, EP * SEC);
+        const a = L.createAdapter({ carNumber: '208', record: true });
+        const evs = [];
+        frames.forEach((f) => { a.feed(f); a.poll(r, s).forEach((ev) => { evs.push(ev); if (ev.type !== 'NOTICE') r = E.apply(r, s, ev); }); });
+        return { r, evs, s, a };
+      };
+
+      test('URL ItsLive → identifiants de session', 'Live ItsLive', () => {
+        const p = L.parseUrl('https://www.its-live.net/live/caterham/2026/ledenon/55');
+        eq(JSON.stringify(p), JSON.stringify({ cs_id: 'caterham', season: '2026', event_id: 'ledenon', session_id: 55 }), 'parse');
+        eq(L.parseUrl('https://www.its-live.net/live/caterham/2026').session_id, null, 'sans session');
+      });
+      test('Drapeaux ItsLive → GREEN / FCY / SC / RED / damier', 'Live ItsLive', () => {
+        const m = ['GREEN FLAG', 'YELLOW FLAG', 'SAFETY CAR', 'RED FLAG', 'CHECKERED FLAG', 'STOP', 'YELLOW SECTOR 1', 'YELLOW SECTOR', 'YELLOW TURN', 'READY'].map(L.mapFlag).join(',');
+        eq(m, 'GREEN,FCY,SC,RED,CHEQUERED,,,,,', 'correspondance (jaunes locaux ignorés)');
+      });
+      test('Connexion en cours de course → recalage tours sans consommer', 'Live ItsLive', () => {
+        const { r, s } = run([frame(3600, car({ total_lap: 39, pos: 7 }))]);
+        eq(r.laps, 39, 'tours'); near(r.fuel, s.startFuel, 'fuel inchangé'); eq(r.position, 7, 'position');
+        near(E.elapsed(r, EP * SEC), 3600, 'horloge recalée', 0.01); eq(r.clock.running, true, 'horloge en marche');
+      });
+      test('Passage ligne → tour + temps officiel + fuel', 'Live ItsLive', () => {
+        const { r, s } = run([frame(900, car({ total_lap: 10 })), frame(990, car({ total_lap: 11, lap_time: 90301, pos: 4 }))]);
+        eq(r.laps, 11, 'tours'); near(r.lapLog[r.lapLog.length - 1].t, 90.301, 'temps du tour');
+        near(r.fuel, s.startFuel - s.fuelPerLap, 'fuel'); eq(r.position, 4, 'position');
+      });
+      test('Passages manqués (réseau) → 3 tours = 3 × conso', 'Live ItsLive', () => {
+        const { r, s } = run([frame(900, car({ total_lap: 10 })), frame(1180, car({ total_lap: 13 }))]);
+        eq(r.laps, 13, 'tours'); near(r.fuel, s.startFuel - 3 * s.fuelPerLap, 'fuel');
+      });
+      test('Stand ItsLive 2:31 (boucles) → obligatoire', 'Live ItsLive', () => {
+        const { r } = run([
+          frame(2400, car({ total_lap: 26 })),
+          frame(2440, car({ total_lap: 26, status_img: '_PitIn' })),
+          frame(2600, car({ total_lap: 27, status_img: '_PitOut', total_pit_stop: 1, total_pit_time: 151000, current_driver: 1 }))
+        ]);
+        eq(r.stops.length, 1, 'arrêts'); eq(r.stops[0].type, 'MANDATORY', 'type'); near(r.stops[0].duration, 151, 'durée officielle'); eq(r.pit, null, 'sorti');
+      });
+      test('Stand ItsLive 45 s → extra', 'Live ItsLive', () => {
+        const { r } = run([
+          frame(2400, car({ total_lap: 26 })),
+          frame(2440, car({ status_img: '_PitIn', total_lap: 26 })),
+          frame(2490, car({ status_img: '_TrackPassing', total_lap: 26, total_pit_stop: 1, total_pit_time: 45000 }))
+        ]);
+        eq(r.stops[0].type, 'EXTRA', 'type'); near(r.stops[0].duration, 45, 'durée');
+      });
+      test('Entrée stand non vue → arrêt reconstruit (compteur + cumul)', 'Live ItsLive', () => {
+        const { r } = run([
+          frame(2400, car({ total_lap: 26, total_pit_stop: 1, total_pit_time: 152000 })),
+          frame(4800, car({ total_lap: 51, total_pit_stop: 2, total_pit_time: 152000 + 160000 }))
+        ]);
+        const s = r.stops[r.stops.length - 1];
+        near(s.duration, 160, 'durée'); near(s.inElapsed, 4640, 'entrée'); eq(s.type, 'MANDATORY', 'type');
+      });
+      test('Pilote ItsLive reconnu → bon pilote au relais suivant', 'Live ItsLive', () => {
+        const s = base(); s.drivers = [{ id: 'A', name: 'Jean Dupont' }, { id: 'B', name: 'Paul Martin' }]; s.relayPlan.forEach((x, i) => { x.driver = i % 2 ? 'B' : 'A'; });
+        const { r } = run([
+          frame(2400, car({ total_lap: 26 })),
+          frame(2440, car({ status_img: '_PitIn', total_lap: 26 })),
+          frame(2600, car({ status_img: '_PitOut', total_lap: 27, total_pit_stop: 1, total_pit_time: 155000, current_driver: 1 }))
+        ], s);
+        eq(r.driver, 'B', 'pilote'); eq(r.stints.length, 2, 'stints');
+      });
+      test('Safety car puis damier → drapeau et horloge figée', 'Live ItsLive', () => {
+        const { r } = run([frame(900, car({})), frame(1000, null, 'SAFETY CAR')]);
+        eq(r.flag, 'SC', 'SC');
+        const r2 = run([frame(900, car({})), frame(14400, null, 'CHECKERED FLAG')]).r;
+        eq(r2.flag, 'CHEQUERED', 'damier'); eq(r2.clock.running, false, 'horloge arrêtée'); near(E.elapsed(r2, EP * SEC + 60000), 14400, 'temps figé', 0.01);
+      });
+      test('Temps officiel = elapsed_time, epoch en retard ignoré (relevé réel)', 'Live ItsLive', () => {
+        // Relevé 340R EQ2 : elapsed 136.7 s, epoch 3,5 s plus ancien que la réception.
+        const f = { t: (EP + 3.5) * SEC, info: info(136700, 'GREEN FLAG', EP), ranking: [car({ total_lap: 1 })] };
+        const { r } = run([f]);
+        near(E.elapsed(r, (EP + 3.5) * SEC), 136.7, 'horloge', 0.01);
+      });
+      test('Flux réel Lédenon #701 (59 trames) → tours, temps, position', 'Live ItsLive', () => {
+        const FX = (typeof module === 'object' && module.exports) ? require('./fixtures.js') : globalThis.EswFixtures;
+        const rec = FX.ledenonS58Car701();
+        const s = base(); let r = E.createRace(s, rec.frames[0].t);
+        const a = L.createAdapter({ carNumber: rec.carNumber, record: false });
+        let syncs = 0;
+        rec.frames.forEach((f) => { a.feed(f); a.poll(r, s).forEach((ev) => { if (ev.type === 'SYNC_CLOCK') syncs++; if (ev.type !== 'NOTICE') r = E.apply(r, s, ev); }); });
+        const tEnd = rec.frames[rec.frames.length - 1].t;
+        eq(r.laps, 3, 'tours'); near(r.lapLog[r.lapLog.length - 1].t, 101.597, 'dernier tour officiel');
+        eq(r.position, 18, 'position'); eq(r.flag, 'GREEN', 'drapeau'); eq(r.stops.length, 0, 'aucun arrêt (cumul pit initial absorbé)');
+        near(E.elapsed(r, tEnd), 352.148, 'temps officiel final', 1.0);
+        near(r.fuel, s.startFuel - s.fuelPerLap, '1 tour consommé (connexion à T2)');
+        if (syncs > 3) throw new Error(`horloge recalée ${syncs} fois : dérive anormale`);
+        return `${rec.frames.length} trames · ${syncs} recalage(s) d'horloge`;
+      });
+      test('Course réelle Lédenon s62 #18 → 1 seul arrêt, jaunes secteur ignorés, chrono figé au damier', 'Live ItsLive', () => {
+        const FX = (typeof module === 'object' && module.exports) ? require('./fixtures.js') : globalThis.EswFixtures;
+        const rec = FX.ledenonS62Car18();
+        const s = fc(20, 40);
+        let r = E.createRace(s, rec.frames[0].t);
+        const a = L.createAdapter({ carNumber: rec.carNumber, record: false });
+        const flags = [], notices = [];
+        rec.frames.forEach((f) => { a.feed(f); a.poll(r, s).forEach((ev) => {
+          if (ev.type === 'RACE_STATUS') flags.push(ev.flag);
+          if (ev.type === 'NOTICE') notices.push(ev.text); else r = E.apply(r, s, ev);
+        }); });
+        const tEnd = rec.frames[rec.frames.length - 1].t;
+        eq(r.stops.length, 1, 'un seul arrêt (pas de micro-arrêt fantôme à l\'entrée)');
+        near(r.stops[0].inElapsed, 1719.2, 'entrée stand 28:39', 0.6); near(r.stops[0].duration, 127.517, 'durée officielle', 0.01);
+        eq(r.stops[0].type, 'MANDATORY', 'obligatoire (mini 2:00)');
+        eq(flags.join(','), 'SC,GREEN,CHEQUERED', 'drapeaux (jaunes secteur ignorés)');
+        eq(r.clock.running, false, 'horloge arrêtée');
+        near(E.elapsed(r, tEnd), 3673.6, 'chrono figé au damier malgré elapsed ItsLive qui continue', 0.6);
+        eq(r.laps, 20, 'tours');
+        eq(notices.some((n) => /plus détectée/.test(n)), true, 'alerte voiture non détectée');
+        const stEnd = S.compute(r, s, tEnd);
+        eq(stEnd.finished, true, 'stratégie close au damier'); eq(stEnd.alerts.some((x) => x.code === 'TARGET'), false, 'plus de target box après le damier');
+        return `${rec.frames.length} trames · arrêt 28:39 / 2:07.5 · damier 1:01:13`;
+      });
+      test('Course réelle Academy s74 #5 (90 min, 2 pilotes) → arrêt 4:12, relais au pilote prévu, damier', 'Live ItsLive', () => {
+        const FX = (typeof module === 'object' && module.exports) ? require('./fixtures.js') : globalThis.EswFixtures;
+        const rec = FX.ledenonS74Car5();
+        let s = fc(30, 60); s.raceMinutes = 90;
+        s.drivers = [{ id: 'J', name: 'Joseph Hiere' }, { id: 'N', name: 'Noe Torello' }];
+        s.relayPlan = [{ driver: 'J', minutes: 47 }, { driver: 'N', minutes: 43 }]; s = E.normalizeSetup(s);
+        let r = E.createRace(s, rec.frames[0].t);
+        const a = L.createAdapter({ carNumber: rec.carNumber, record: false });
+        const flags = []; let pitOut = null;
+        rec.frames.forEach((f) => { a.feed(f); a.poll(r, s).forEach((ev) => {
+          if (ev.type === 'RACE_STATUS') flags.push(ev.flag);
+          if (ev.type === 'PIT_OUT') {
+            pitOut = ev;
+            // comme le mur : sans info pilote ItsLive, le pilote prévu au plan repart
+            if (!ev.inDriver) ev = Object.assign({}, ev, { inDriver: S.compute(r, s, f.t).pit.nextDriver, driverChange: true });
+          }
+          if (ev.type !== 'NOTICE') r = E.apply(r, s, ev);
+        }); });
+        const tEnd = rec.frames[rec.frames.length - 1].t;
+        eq(flags.join(','), 'SC,GREEN,SC,GREEN,CHEQUERED', 'drapeaux (3 jaunes secteur ignorés)');
+        eq(r.stops.length, 1, 'un arrêt'); near(r.stops[0].inElapsed, 2852.7, 'entrée 47:32', 0.6); near(r.stops[0].duration, 252.404, 'durée officielle', 0.01);
+        eq(r.stops[0].type, 'MANDATORY', 'obligatoire');
+        eq(pitOut.inDriver, undefined, 'pilote ItsLive ignoré (current_driver figé à 0)');
+        eq(r.driver, 'N', 'Noé repart (plan)'); eq(r.stints.length, 2, 'nouveau stint');
+        eq(r.laps, 50, 'tours'); eq(r.position, 1, 'position finale après reclassement ItsLive');
+        near(E.elapsed(r, tEnd), 5446.5, 'chrono figé au damier (1:30:46)', 0.6); eq(r.clock.running, false, 'arrêté');
+        return `${rec.frames.length} trames · arrêt 47:32 / 4:12.4 · damier 1:30:46`;
+      });
+      test('Academy s74 : course réinitialisée avant le départ → position P2 rétablie aussitôt', 'Live ItsLive', () => {
+        const FX = (typeof module === 'object' && module.exports) ? require('./fixtures.js') : globalThis.EswFixtures;
+        const rec = FX.ledenonS74Car5();
+        const s = fc(30, 60); s.raceMinutes = 90;
+        let r = E.createRace(s, rec.frames[0].t);
+        const a = L.createAdapter({ carNumber: rec.carNumber, record: false });
+        let posAtLap3 = null, reset = false;
+        rec.frames.forEach((f, i) => {
+          if (!reset && f.info.race_flag === 'READY' && i > 3) { r = E.createRace(s, f.t); reset = true; }   // SETUP validé avant le départ
+          a.feed(f); a.poll(r, s).forEach((ev) => { if (ev.type !== 'NOTICE') r = E.apply(r, s, ev); });
+          if (posAtLap3 == null && r.laps === 3) posAtLap3 = r.position;
+        });
+        eq(reset, true, 'réinitialisation simulée'); eq(posAtLap3, 2, 'P2 affichée au tour 3 (avant : P-- jusqu\'au tour 8)');
+        eq(r.laps, 50, 'tours'); eq(r.flag, 'CHEQUERED', 'drapeau');
+      });
+      test('Moyenne et rythme : tours SC, stand et sortie exclus', 'Live ItsLive', () => {
+        const s = base(); let r = started(s); const lap = (sec, t) => { r = E.apply(r, s, { type: 'LAP_COMPLETED', at: T0 + sec * 1000, lapTime: t }); };
+        lap(100, 100); lap(200, 100);                                                       // 2 tours verts
+        r = E.apply(r, s, { type: 'RACE_STATUS', flag: 'SC', at: T0 + 250000 });
+        lap(350, 150); lap(500, 150);                                                       // 2 tours SC
+        r = E.apply(r, s, { type: 'RACE_STATUS', flag: 'GREEN', at: T0 + 550000 });
+        lap(630, 130);                                                                      // tour commencé sous SC → neutralisé
+        lap(730, 100); lap(830, 101);                                                       // verts
+        r = E.apply(r, s, { type: 'PIT_IN', at: T0 + 880000 });
+        lap(900, 70);                                                                       // ligne franchie dans la pitlane
+        r = E.apply(r, s, { type: 'PIT_OUT', at: T0 + 1000000 });
+        lap(1150, 150); lap(1250, 99);                                                      // tour de sortie puis vert
+        eq(r.lapLog.map((l) => l.k).join(','), 'green,green,neutral,neutral,neutral,green,green,pit,out,green', 'nature des tours');
+        let st = S.compute(r, s, T0 + 1260000);
+        near(st.stint.avg, 100, 'moyenne stint (tours propres)', 0.6); eq(st.stint.avgLaps, 5, '5 tours propres (même pilote, même relais)'); eq(st.stint.excluded, 5, '5 exclus : 3 neutralisés, stand, sortie');
+        near(st.greenPace, 100, 'rythme vert', 0.6);
+        r = E.apply(r, s, { type: 'RACE_STATUS', flag: 'SC', at: T0 + 1300000 });
+        st = S.compute(r, s, T0 + 1300000);
+        eq(st.paceMode, 'SC', 'mode SC'); near(st.pace, 150, 'sous SC : tours comptés au rythme SC observé', 0.6);
+        near(st.greenPace, 100, 'rythme vert inchangé pour le carburant du relais suivant', 0.6);
+      });
+      test('Enregistrement → rejeu identique', 'Live ItsLive', () => {
+        const frames = [frame(900, car({ total_lap: 10 })), frame(990, car({ total_lap: 11 })), frame(1080, car({ total_lap: 12, pos: 3 }))];
+        const a = run(frames);
+        const b = run(a.a.recording.frames);
+        eq(b.r.laps, a.r.laps, 'tours'); near(b.r.fuel, a.r.fuel, 'fuel'); eq(b.r.position, 3, 'position');
+        return `${a.a.recording.frames.length} trames`;
+      });
+    }
+    return results;
+  }
+
+  return { runAll };
+});
+</script>
+<script>/* ============================================================================
+   UI STRATEGY WALL — affiche l'état, envoie des commandes.
+   Aucune règle métier ici : tout passe par dispatch() -> Race Engine,
+   puis Strategy Engine pour l'affichage.
+   ========================================================================== */
+(function () {
+  'use strict';
+  const E = window.RaceEngine, S = window.StrategyEngine, T = window.TimingAdapter, TESTS = window.StrategyTests;
+  const F = S.fmt, KEY = 'esw.v4';
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const clone = (x) => JSON.parse(JSON.stringify(x));
+
+  /* ---------- Persistance (localStorage, tolérant) ---------- */
+  function load() {
+    try {
+      const x = JSON.parse(localStorage.getItem(KEY));
+      if (x && x.setup && x.race && x.race.v === 4) return { setup: E.normalizeSetup(x.setup), race: x.race };
+    } catch (e) { /* stockage indisponible */ }
+    const setup = E.normalizeSetup(E.defaultSetup());
+    return { setup, race: E.createRace(setup, Date.now()) };
+  }
+  function save(obj) { try { localStorage.setItem(KEY, JSON.stringify(obj)); } catch (e) { /* ignoré */ } }
+
+  let { setup, race } = load();
+  let mode = 'MANUAL', adapter = T.createManualAdapter(), snapshot = null, simSpeed = 10;
+  let st = null, rowsKey = '';
+  let liveCfg = loadLive(), notices = [], pitPrepared = false;
+  const now = () => adapter.now();
+  // MANUAL et LIVE pilotent la vraie course ; SIMULATION et REPLAY travaillent sur une copie.
+  const persist = () => save(mode === 'MANUAL' || mode === 'LIVE' ? { setup, race } : snapshot);
+  const dn = (id) => (setup.drivers.find((d) => d.id === id) || { name: id || '-' }).name;
+
+  function loadLive() { try { return JSON.parse(localStorage.getItem(KEY + '.live')) || {}; } catch (e) { return {}; } }
+  function saveLive() { try { localStorage.setItem(KEY + '.live', JSON.stringify(liveCfg)); } catch (e) { /* ignoré */ } }
+
+  function dispatch(ev) {
+    ev.at = ev.at != null ? ev.at : now();
+    race = E.apply(race, setup, ev);
+    persist(); render();
+  }
+  function notice(level, text) {
+    if (notices.some((n) => n.text === text)) return;
+    notices.push({ level, text, code: 'LIVE' });
+    if (notices.length > 4) notices.shift();
+  }
+  /* Événements venant du timing : le pit ItsLive ouvre la fenêtre PIT ; à la sortie,
+     litres / pilote / changement viennent de cette fenêtre (ItsLive ne connaît pas le fuel). */
+  function applyTimed(ev) {
+    if (ev.type === 'NOTICE') { notice(ev.level, ev.text); return; }
+    if (ev.type === 'PIT_IN' && ev.source === 'ITSLIVE' && !race.pit) {
+      race = E.apply(race, setup, ev);
+      st = S.compute(race, setup, now());
+      preparePit(); openM('pitModal');
+      return;
+    }
+    if (ev.type === 'PIT_OUT' && ev.source === 'ITSLIVE') {
+      if (!race.pit) return;
+      if (!pitPrepared) { st = S.compute(race, setup, now()); preparePit(); }
+      const formDriver = $('pitDriver').value;
+      const inDriver = ev.inDriver || formDriver || race.driver;
+      const out = Object.assign({}, ev, {
+        inDriver, fuelAdded: Number($('pitFuel').value) || 0,
+        driverChange: ev.itsDriverChanged || $('pitChange').checked || inDriver !== race.driver
+      });
+      race = E.apply(race, setup, out);
+      pitPrepared = false; closeM('pitModal'); rowsKey = '';
+      const last = race.stops[race.stops.length - 1];
+      notice(last.penalties && last.penalties.length ? 'critical' : 'info', `ItsLive : arrêt #${last.n} ${F.ms(last.duration)} → ${last.type === 'MANDATORY' ? 'obligatoire' : 'extra'}${last.penalties && last.penalties.length ? ` · ${last.penalties.join(' · ')}` : (last.late || last.early) && last.type === 'EXTRA' && !last.short ? ' · hors fenêtre / délai' : ''} · ${dn(inDriver)}`);
+      return;
+    }
+    race = E.apply(race, setup, ev);
+  }
+  function tick() {
+    const evs = adapter.poll(race, setup, now());
+    if (evs.length) { evs.forEach(applyTimed); persist(); }
+    render();
+  }
+
+  /* ---------- Modales génériques ---------- */
+  const openM = (id) => { $(id).hidden = false; };
+  const closeM = (id) => { $(id).hidden = true; };
+  const isOpen = (id) => !$(id).hidden;
+  let editCb = null, confirmCb = null;
+  function editField(title, hint, value, onOk) {
+    $('editTitle').textContent = title; $('editHint').textContent = hint; $('editInput').value = value; $('editErr').textContent = '';
+    editCb = onOk; openM('editModal'); setTimeout(() => $('editInput').select(), 20);
+  }
+  $('editForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const err = editCb ? editCb($('editInput').value.trim()) : null;
+    if (err) { $('editErr').textContent = err; return; }
+    closeM('editModal');
+  });
+  $('editCancel').onclick = () => closeM('editModal');
+  function confirmBox(title, text, yes, onYes) {
+    $('confirmTitle').textContent = title; $('confirmText').textContent = text; $('confirmYes').textContent = yes;
+    confirmCb = onYes; openM('confirmModal');
+  }
+  $('confirmNo').onclick = () => closeM('confirmModal');
+  $('confirmYes').onclick = () => { closeM('confirmModal'); if (confirmCb) confirmCb(); };
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    ['editModal', 'confirmModal', 'whatModal', 'liveModal', 'testsModal', 'recoveryModal', 'setupModal'].some((id) => (isOpen(id) ? (closeM(id), true) : false));
+  });
+
+  function parseClock(v) {
+    const a = String(v).trim().split(':').map(Number);
+    if (!a.length || a.some((x) => !Number.isFinite(x) || x < 0)) return null;
+    if (a.length === 3) return a[0] * 3600 + a[1] * 60 + a[2];
+    if (a.length === 2) return a[0] * 60 + a[1];
+    if (a.length === 1) return a[0];
+    return null;
+  }
+
+  /* ---------- Rendu ---------- */
+  function render() {
+    st = S.compute(race, setup, now());
+    const prof = E.PROFILES[setup.profileId];
+
+    const P = st.profile, win = P.windowMode === 'window';
+    $('eventBadge').textContent = `${P.short} · ${setup.circuit}`;
+    $('carBadge').textContent = `#${setup.carNumber}`;
+    $('flagBadge').textContent = race.flag; $('flagBadge').className = `badge flag-${race.flag}`;
+    $('elapsed').textContent = F.hms(st.el); $('remaining').textContent = F.hms(st.remaining);
+    $('sourceLbl').textContent = adapter.source + (mode === 'MANUAL' && !setup.virtualLaps ? ' · OFF' : '');
+    $('srcKpi').textContent = mode === 'LIVE' ? 'ITSLIVE' : mode === 'REPLAY' ? 'REJEU' : mode === 'SIMULATION' ? 'SIMULATION' : (setup.virtualLaps ? 'VIRTUEL' : 'MANUEL');
+    $('footer').textContent = `${prof.name} · ${prof.permit} · Race Engine / Strategy Engine / Timing Adapter / Strategy Wall · V5.2`;
+
+    // Pilote / stint
+    $('curDriver').textContent = dn(race.driver);
+    $('stintMeta').textContent = `RELAIS ${Math.min(st.mandDone + 1, setup.mandatoryStops + 1)} · STINT ${st.stint.n}`;
+    $('stintTime').textContent = F.hms(st.stint.time).slice(st.stint.time >= 3600 ? 0 : 3);
+    $('stintLaps').textContent = st.stint.laps;
+    $('avgLap').textContent = F.lap(st.stint.avg);
+    $('avgLbl').textContent = st.stint.avgLaps ? `MOY. STINT · ${st.stint.avgLaps} T VERTS` : 'MOY. STINT (VERT)';
+    $('avgLap').parentElement.title = `Moyenne des tours propres du relais : ${st.stint.avgLaps} tour(s) retenu(s), ${st.stint.excluded} exclu(s) (SC / FCY / rouge, entrée et sortie de stand, tours > 115 % du rythme)`;
+    $('bestLap').textContent = F.lap(st.stint.best);
+    $('nextDriver').textContent = st.next ? dn(st.next.driverIn) : (st.pit ? dn(st.pit.nextDriver) : '— damier');
+    const maxT = Math.max(1, ...Object.values(st.drivers));
+    $('drvTimes').innerHTML = setup.drivers.map((d) => {
+      const t = st.drivers[d.id] || 0;
+      return `<div class="drv-row ${d.id === race.driver ? 'cur' : ''}"><span class="drv-code">${esc(d.id)}</span><span>${esc(d.name)}</span><span class="mono">${F.hm(t)}</span><span class="drv-bar"><i style="width:${(t / maxT * 100).toFixed(1)}%"></i></span></div>`;
+    }).join('');
+
+    // Live
+    $('position').textContent = race.position ? `P${race.position}` : 'P--';
+    $('paceMeta').textContent = st.paceMode === 'GREEN' ? `RYTHME ${F.lap(st.greenPace)}` : `RYTHME ${st.paceMode} ${F.lap(st.pace)} · VERT ${F.lap(st.greenPace)}`;
+    $('paceMeta').title = 'Rythme = médiane des 5 derniers tours propres du relais. Sous SC / FCY, les tours restants avant le box sont comptés au rythme neutralisé observé.';
+    $('lapCount').textContent = race.laps;
+    $('lastLap').textContent = F.lap(st.last);
+    $('bestAll').textContent = F.lap(st.best);
+    $('finishLap').textContent = st.projLaps;
+    $('fuelEnd').textContent = st.fuelToFinish > 0 ? `+${st.fuelToFinish.toFixed(1)} L` : 'OK';
+    if (win) {
+      $('toDeadlineLbl').textContent = st.el < st.windowOpen ? 'FENÊTRE OUVRE DANS' : 'FENÊTRE FERME DANS';
+      $('toDeadline').textContent = st.el < st.windowOpen ? F.hms(st.windowOpen - st.el) : st.toDeadline > 0 ? F.hms(st.toDeadline) : 'FERMÉE';
+    } else { $('toDeadlineLbl').textContent = 'DEADLINE DANS'; $('toDeadline').textContent = st.toDeadline > 0 ? F.hms(st.toDeadline) : 'PASSÉE'; }
+
+    // Target box
+    const tc = $('targetCard'); tc.classList.remove('warn', 'danger');
+    if (st.next) {
+      $('nextStopNo').textContent = `#${st.next.n}`;
+      const box = Math.min(st.next.lapsToTarget, st.boxMax);
+      $('boxTarget').textContent = st.next.lapsToTarget;
+      $('targetTime').textContent = `à ${F.hms(st.next.at)} · tour ${st.next.targetLap}${st.paceMode !== 'GREEN' ? ` · tours au rythme ${st.paceMode}` : ''}${st.next.fuelLimited ? ` · FUEL MAX ${st.boxMax} T` : ''}`;
+      $('nextStopDriver').textContent = dn(st.next.driverIn);
+      $('fuelAdd').textContent = st.next.full ? 'FULL' : `+${Math.ceil(st.next.addFuel)} L`;
+      $('targetMeta').textContent = `PLAN ${F.hms(st.next.planAt).slice(0, 5)}`;
+      if (!race.pit) { if (box <= 1 || st.boxMax <= 1) tc.classList.add('danger'); else if (box <= 3 || st.next.fuelLimited) tc.classList.add('warn'); }
+    } else {
+      $('nextStopNo').textContent = '✓'; $('boxTarget').textContent = '—'; $('targetTime').textContent = 'arrêts obligatoires terminés';
+      $('nextStopDriver').textContent = 'Damier'; $('fuelAdd').textContent = st.fuelToFinish > 0 ? `splash +${Math.ceil(st.fuelToFinish)} L` : 'fuel OK';
+      $('targetMeta').textContent = '';
+    }
+
+    // Fuel
+    $('fuelRemaining').textContent = race.fuel.toFixed(1);
+    $('fuelBar').style.width = `${Math.max(0, Math.min(100, race.fuel / setup.tank * 100))}%`;
+    $('fuelRes').style.left = `${Math.min(100, setup.reserveLaps * st.conso / setup.tank * 100)}%`;
+    $('tankLbl').textContent = `${setup.tank} L`;
+    $('fuelRef').textContent = `${setup.fuelPerLap.toFixed(2)} L/T`;
+    $('fuelStrat').textContent = `${st.conso.toFixed(2)} L/T`;
+    $('fuelRange').textContent = `${st.range.toFixed(1)} T`;
+    $('boxMax').textContent = `${st.boxMax} T`;
+    $('fuelMeta').textContent = `RÉSERVE ${setup.reserveLaps} T · MARGE ${setup.fuelMargin}%`;
+
+    renderRelays();
+
+    // Arrêts
+    $('stopDots').innerHTML = Array.from({ length: setup.mandatoryStops }, (_, i) => `<span class="dot ${i < st.mandDone ? 'on' : i === st.mandDone ? 'cur' : ''}" title="Arrêt obligatoire #${i + 1}"></span>`).join('');
+    $('stopCount').innerHTML = `${st.mandDone} / ${setup.mandatoryStops} <span class="muted" style="font-size:16px">obligatoires · ${st.totalStops} total</span>`;
+    $('stopsMeta').textContent = st.extras ? `${st.extras} EXTRA` : '';
+    $('deadlineLbl').textContent = win ? 'FENÊTRE D\'ARRÊT' : 'DEADLINE DERNIER';
+    $('deadline').textContent = win ? `${F.hms(st.windowOpen).slice(0, 5)} → ${F.hms(st.deadline).slice(0, 5)}` : F.hms(st.deadline);
+    $('pitMin').textContent = F.ms(setup.minPitSeconds).replace('.0', '');
+    $('stopLog').innerHTML = race.stops.length ? race.stops.slice().reverse().map((s) => {
+      const pen = s.penalties && s.penalties.length;
+      const pill = pen ? '<span class="pill l">OBLIG. + PÉNALITÉ</span>' : (s.late || s.early) && s.type === 'EXTRA' && !s.short ? `<span class="pill l">${win ? 'HORS FENÊTRE' : 'HORS DÉLAI'}</span>` : s.type === 'MANDATORY' ? '<span class="pill m">OBLIG.</span>' : '<span class="pill x">EXTRA</span>';
+      const who = s.recovered ? 'recalage' : `${s.driverChange ? `${esc(s.outDriver)}→${esc(s.inDriver)}` : 'même pilote'}${s.fuelAdded ? ` · +${s.fuelAdded.toFixed(1)} L` : ''}`;
+      return `<div><span>#${s.n}</span><span>${F.hms(s.inElapsed)}</span><span>${F.ms(s.duration)}</span>${pill}<span class="who" title="${esc(pen ? s.penalties.join(' · ') : '')}">${pen ? esc(s.penalties[0]) : who}</span></div>`;
+    }).join('') : '<span class="empty">Aucun arrêt. PIT IN à l\'entrée de la boucle pitlane.</span>';
+
+    // Alertes
+    const ls = liveStatus();
+    const extra = notices.slice();
+    if (ls && mode === 'LIVE' && ls.state === 'error') extra.unshift({ level: 'critical', text: `ITSLIVE INJOIGNABLE — ${ls.error}` });
+    else if (ls && mode === 'LIVE' && ls.age != null && ls.age > 15) extra.unshift({ level: 'critical', text: `DONNÉES ITSLIVE FIGÉES DEPUIS ${ls.age} s — passer en saisie manuelle si besoin` });
+    const order = { critical: 0, warning: 1, info: 2 };
+    const all = st.alerts.concat(extra).sort((a, b) => order[a.level] - order[b.level]);
+    const h = all[0] || st.headline;
+    $('alertBar').className = `alert ${h.level}`;
+    $('alertMain').textContent = h.text;
+    $('alertList').innerHTML = all.slice(1).map((a) => `<span class="chip ${a.level}">${esc(a.text)}</span>`).join('')
+      || `<span class="chip">NEXT ${esc(st.next ? dn(st.next.driverIn) : '—')} · ${esc($('fuelAdd').textContent)}</span>`;
+
+    // Commandes
+    $('pitBtn').textContent = race.pit ? `AU STAND ${F.ms(st.pit.inPit)}` : 'PIT IN';
+    $('pitBtn').classList.toggle('inpit', !!race.pit);
+    $('startBtn').textContent = race.clock.running ? '❚❚ PAUSE' : (st.el > 0 ? '▶ REPRENDRE' : '▶ START');
+    $('startBtn').classList.toggle('running', race.clock.running);
+    $('whatIf').disabled = !!race.pit;
+    $('lapBtn').textContent = '+1 TOUR';
+    $('lapBtn').disabled = !!race.pit;
+    document.querySelectorAll('[data-flag]').forEach((b) => b.classList.toggle('on', b.dataset.flag === race.flag));
+    $('modeManual').classList.toggle('on', mode === 'MANUAL');
+    $('modeSim').classList.toggle('on', mode === 'SIMULATION');
+    $('modeLive').classList.toggle('on', mode === 'LIVE' || mode === 'REPLAY');
+    $('simCtl').hidden = mode !== 'SIMULATION';
+    $('liveCtl').hidden = !ls;
+    if (ls) {
+      $('liveCtl').className = `livectl ${ls.level}`;
+      $('liveTag').textContent = mode === 'REPLAY' ? 'REJEU ITSLIVE · copie de travail' : `ITSLIVE · ${liveCfg.label || ''}`;
+      $('liveState').textContent = ls.text;
+      $('liveExport').hidden = mode !== 'LIVE';
+      $('replaySpeedCtl').hidden = mode !== 'REPLAY';
+      $('liveDisconnect').textContent = mode === 'REPLAY' ? 'Quitter' : 'Déconnecter';
+    }
+    document.querySelectorAll('#simSpeed button').forEach((b) => b.classList.toggle('on', Number(b.dataset.speed) === simSpeed));
+
+    if (race.pit && isOpen('pitModal')) renderPit();
+    if (!race.pit && isOpen('pitModal')) closeM('pitModal');
+  }
+
+  /* Plan de relais : reconstruit seulement si la structure change et sans
+     voler le focus d'un champ en cours d'édition. */
+  function renderRelays() {
+    const box = $('relays');
+    const key = JSON.stringify([setup.relayPlan, setup.drivers, st.live.map((t) => Math.round(t.at)), st.mandDone, race.stops.length, Math.round(st.total)]);
+    if (key === rowsKey || box.contains(document.activeElement)) return;
+    rowsKey = key;
+    const opts = (sel) => setup.drivers.map((d) => `<option value="${esc(d.id)}" ${d.id === sel ? 'selected' : ''}>${esc(d.id)} · ${esc(d.name)}</option>`).join('');
+    let html = '<div class="relay-h"><span>RELAIS</span><span>PILOTE</span><span>DURÉE</span><span>PLAN</span><span>LIVE</span><span>ARRÊT</span></div>';
+    for (let i = 0; i <= setup.mandatoryStops; i++) {
+      const r = setup.relayPlan[i];
+      const final = i === setup.mandatoryStops;
+      const done = i < st.mandDone, cur = i === st.mandDone;
+      const t = st.live[i];
+      let status = '';
+      if (final) status = '<span class="st">→ damier</span>';
+      else if (done) { const s = t.stop; status = `<span class="st"><span class="pill m">OBLIG.</span> ${F.ms(s.duration)}</span>`; }
+      else if (cur) status = race.pit ? '<span class="st amber">AU STAND</span>' : '<span class="st amber">EN COURS</span>';
+      const lastIn = st.mandDone ? st.live[setup.mandatoryStops - 1] : null;
+      const finalMin = Math.max(0, Math.round((st.total - (st.live.length ? st.live[st.live.length - 1].at : 0)) / 60));
+      html += `<div class="relay ${done ? 'done' : ''} ${cur ? 'cur' : ''}">
+        <span class="rn">R${i + 1}</span>
+        <select data-relay-driver="${i}" ${done || (cur && i > 0) ? 'disabled' : ''} aria-label="Pilote relais ${i + 1}">${opts(r.driver)}</select>
+        ${final ? `<span class="t muted">≈${finalMin} min</span>` : `<input data-relay-min="${i}" type="number" min="1" step="1" value="${r.minutes}" ${done ? 'disabled' : ''} aria-label="Durée relais ${i + 1} en minutes">`}
+        <span class="t">${final ? F.hms(st.total).slice(0, 5) : F.hms(t.plan).slice(0, 5)}</span>
+        <span class="t ${!final && (t.overDeadline || t.beforeWindow) ? 'late' : cur ? 'amber' : ''}" title="${!final && t.beforeWindow ? 'avant l\'ouverture de fenêtre' : !final && t.overDeadline ? 'après la fermeture / deadline' : ''}">${final ? '' : F.hms(t.at).slice(0, 5)}</span>
+        ${status}</div>`;
+      void lastIn;
+    }
+    box.innerHTML = html;
+  }
+  $('relays').addEventListener('change', (e) => {
+    const d = e.target.dataset;
+    if (d.relayDriver != null) setup.relayPlan[+d.relayDriver].driver = e.target.value;
+    else if (d.relayMin != null) setup.relayPlan[+d.relayMin].minutes = Math.max(1, Math.round(Number(e.target.value) || 1));
+    else return;
+    setup = E.normalizeSetup(setup);
+    e.target.blur(); rowsKey = ''; persist(); render();
+  });
+
+  /* ---------- PIT ---------- */
+  function preparePit() {
+    const p = st.pit; if (!p) return;
+    $('pitTitle').textContent = `PIT #${race.pit.n}${race.pit.src === 'ITSLIVE' ? ' · ItsLive' : ''}`;
+    $('pitDriver').innerHTML = setup.drivers.map((d) => `<option value="${esc(d.id)}">${esc(d.id)} · ${esc(d.name)}</option>`).join('');
+    $('pitDriver').value = p.nextDriver;
+    $('pitChange').checked = p.canCount || p.nextDriver !== race.driver;
+    $('pitFuel').value = p.fuelAdvice > 0 ? p.fuelAdvice.toFixed(1) : '0';
+    ['ck1', 'ck2', 'ck3'].forEach((id) => { $(id).checked = false; });
+    $('pitLiveNote').hidden = race.pit.src !== 'ITSLIVE';
+    pitPrepared = true;
+  }
+  $('pitBtn').onclick = () => {
+    const fresh = !race.pit;
+    if (fresh) dispatch({ type: 'PIT_IN' });
+    if (fresh || !pitPrepared) preparePit();
+    openM('pitModal'); renderPit();
+  };
+  $('pitDriver').onchange = () => { if ($('pitDriver').value !== race.driver) $('pitChange').checked = true; };
+  function renderPit() {
+    const p = st.pit; if (!p) return;
+    const P = st.profile;
+    $('pitTimer').textContent = F.ms(p.inPit);
+    const el = $('pitStatus');
+    if (!p.canCount) {
+      if (p.early || p.late) { el.textContent = `HORS ${P.windowMode === 'window' ? 'FENÊTRE' : 'DÉLAI'} · ${P.outOfWindow === 'PENALTY' ? 'arrêt court = extra' : 'NON COMPTABILISÉ'}`; el.className = 'pitstatus bad'; }
+      else { el.textContent = 'ARRÊT EXTRA · aucun temps minimum'; el.className = 'pitstatus wait'; }
+    } else if (p.willCount) {
+      el.textContent = `ARRÊT OBLIGATOIRE OK · ${st.mandDone + 1}/${setup.mandatoryStops}${p.penaltiesNow.length ? ` · ${p.penaltiesNow.join(' · ')}` : ''}`;
+      el.className = p.penaltiesNow.length ? 'pitstatus bad' : 'pitstatus ok';
+    } else {
+      el.textContent = `OBLIGATOIRE DANS ${F.ms(p.remainingMin)} · ${P.shortStop === 'PENALTY' ? `sinon ${P.penalty.short}` : 'sinon arrêt extra'}${p.penaltiesAtMin.length ? ` · ${p.penaltiesAtMin.join(' · ')}` : ''}`;
+      el.className = p.penaltiesAtMin.length ? 'pitstatus bad' : 'pitstatus wait';
+    }
+  }
+  $('pitOut').onclick = () => {
+    dispatch({ type: 'PIT_OUT', inDriver: $('pitDriver').value, driverChange: $('pitChange').checked, fuelAdded: Number($('pitFuel').value) || 0 });
+    pitPrepared = false; closeM('pitModal'); rowsKey = '';
+  };
+  $('pitHide').onclick = () => closeM('pitModal');
+  $('pitCancel').onclick = () => confirmBox('Annuler l\'entrée au stand ?', 'L\'arrêt en cours sera effacé (entrée enregistrée par erreur).', 'ANNULER L\'ENTRÉE', () => { dispatch({ type: 'PIT_CANCEL' }); pitPrepared = false; closeM('pitModal'); });
+
+  /* ---------- What if ---------- */
+  $('whatIf').onclick = () => {
+    const w = S.whatIfPitNow(race, setup, now());
+    $('wiCont').textContent = st.next ? `${st.next.lapsToTarget} tours` : '—';
+    $('wiMax').textContent = `${st.boxMax} tours`;
+    $('wiStop').textContent = w.counts ? `#${w.stopNo} obligatoire` : 'extra';
+    $('wiDriver').textContent = dn(w.nextDriver);
+    $('wiFuel').textContent = w.full ? 'FULL' : `+${Math.ceil(w.fuelAdd)} L`;
+    $('wiEarly').textContent = w.earlyBy != null ? `${Math.round(w.earlyBy / 60)} min` : '—';
+    $('wiTargets').textContent = w.newTargets.map((t) => F.hms(t.at).slice(0, 5)).join(' · ') || '—';
+    $('wiValid').innerHTML = w.valid ? '<div class="go">STRATÉGIE VALIDE ✓</div>' : w.reasons.map((r) => `<div class="stop">${esc(r)}</div>`).join('');
+    openM('whatModal');
+  };
+  $('whatClose').onclick = () => closeM('whatModal');
+  $('whatAdopt').onclick = () => { closeM('whatModal'); $('pitBtn').click(); };
+
+  /* ---------- Drapeaux / horloge ---------- */
+  document.querySelectorAll('[data-flag]').forEach((b) => { b.onclick = () => dispatch({ type: 'RACE_STATUS', flag: b.dataset.flag }); });
+  $('startBtn').onclick = () => dispatch({ type: race.clock.running ? 'PAUSE' : 'START' });
+  $('lapBtn').onclick = () => {
+    dispatch({ type: 'LAP_COMPLETED', advanceClock: true });
+  };
+  $('resetBtn').onclick = () => confirmBox('Réinitialiser la course ?', 'Temps, tours, arrêts et fuel repartent de zéro. Le setup et le plan de relais sont conservés.', 'RÉINITIALISER', () => { dispatch({ type: 'RESET' }); rowsKey = ''; });
+
+  /* ---------- Corrections manuelles ---------- */
+  $('elapsed').onclick = () => editField('Temps de course', 'TEMPS ÉCOULÉ (HH:MM:SS)', F.hms(E.elapsed(race, now())), (v) => {
+    const n = parseClock(v); if (n == null) return 'Format attendu : HH:MM:SS';
+    dispatch({ type: 'SET_ELAPSED', elapsed: n }); return null;
+  });
+  $('lapCount').onclick = () => editField('Nombre de tours', 'TOURS COURSE (une hausse consomme le fuel correspondant)', race.laps, (v) => {
+    const n = parseInt(v, 10); if (!Number.isInteger(n) || n < 0) return 'Nombre entier positif attendu';
+    dispatch({ type: 'SET_LAPS', laps: n }); return null;
+  });
+  $('lastLap').onclick = () => editField('Dernier tour', 'TEMPS (M:SS.sss ou secondes)', st.last != null ? F.lap(st.last) : '', (v) => {
+    const n = v.includes(':') ? parseClock(v) : Number(v); if (!Number.isFinite(n) || n <= 0) return 'Exemple : 1:32.450';
+    if (!race.lapLog.length) return 'Aucun tour enregistré à corriger';
+    dispatch({ type: 'SET_LAST_LAP', lapTime: n }); return null;
+  });
+  $('fuelRemaining').onclick = () => editField('Carburant', `LITRES DANS LE RÉSERVOIR (0 à ${setup.tank})`, race.fuel.toFixed(1), (v) => {
+    const n = Number(v.replace(',', '.')); if (!Number.isFinite(n) || n < 0) return 'Valeur en litres attendue';
+    dispatch({ type: 'SET_FUEL', fuel: n }); return null;
+  });
+  $('position').onclick = () => editField('Position', 'POSITION AU CLASSEMENT', race.position || '', (v) => {
+    const n = parseInt(v, 10); if (!(n > 0)) return 'Position ≥ 1 attendue';
+    dispatch({ type: 'POSITION_CHANGED', position: n }); return null;
+  });
+  $('curDriver').onclick = () => editField('Pilote en voiture', `CODE PILOTE (${setup.drivers.map((d) => d.id).join(', ')}) — correction sans nouveau stint`, race.driver, (v) => {
+    const id = v.toUpperCase(); if (!setup.drivers.some((d) => d.id === id)) return 'Code pilote inconnu';
+    dispatch({ type: 'SET_DRIVER', driver: id }); return null;
+  });
+
+  /* ---------- Modes ----------
+     MANUAL  : vraie course, saisie au mur
+     LIVE    : vraie course, pilotée par ItsLive (les commandes manuelles restent possibles)
+     SIMULATION / REPLAY : copie de travail, la vraie course est mise de côté (snapshot) */
+  const isCopy = () => mode === 'SIMULATION' || mode === 'REPLAY';
+  function backToReal() {
+    if (adapter && adapter.stop) adapter.stop();
+    if (isCopy() && snapshot) { setup = snapshot.setup; race = snapshot.race; snapshot = null; }
+    adapter = T.createManualAdapter(); mode = 'MANUAL'; notices = []; pitPrepared = false; rowsKey = '';
+    if (!race.pit) closeM('pitModal');
+  }
+  function enterSim(fresh) {
+    if (!isCopy()) { backToReal(); snapshot = { setup: clone(setup), race: clone(race) }; }
+    else if (mode === 'REPLAY') { adapter.stop(); }
+    adapter = T.createSimulationAdapter({ speed: simSpeed, seed: Math.floor(Math.random() * 1e6) });
+    mode = 'SIMULATION';
+    if (fresh) { race = E.apply(E.createRace(setup, now()), setup, { type: 'START', at: now() }); }
+    rowsKey = ''; render();
+  }
+  function exitToManual() {
+    if (mode === 'LIVE') { liveCfg.active = false; saveLive(); }
+    backToReal(); persist(); render();
+  }
+  $('modeSim').onclick = () => { if (mode !== 'SIMULATION') enterSim(false); };
+  $('modeManual').onclick = () => {
+    if (mode === 'MANUAL') return;
+    if (mode === 'LIVE') confirmBox('Déconnecter ItsLive ?', 'La course continue en MANUAL avec l\'état actuel (tours, arrêts, fuel). Vous pourrez vous reconnecter à tout moment.', 'PASSER EN MANUAL', exitToManual);
+    else confirmBox(mode === 'REPLAY' ? 'Quitter le rejeu ?' : 'Quitter la simulation ?', 'Retour à la vraie course, telle qu\'elle était avant (son horloge a continué de tourner).', 'REVENIR À LA COURSE', exitToManual);
+  };
+  $('simExit').onclick = () => $('modeManual').click();
+  $('simFresh').onclick = () => enterSim(true);
+  $('simSpeed').addEventListener('click', (e) => {
+    const s = Number(e.target.dataset.speed); if (!s) return;
+    simSpeed = s; if (adapter.setSpeed) adapter.setSpeed(s); render();
+  });
+
+  /* ---------- LIVE ItsLive ---------- */
+  const L = window.ItsLive;
+  let lv = { ssid: null, sessions: [], cars: [] };
+  const liveMsg = (t, cls) => { $('liveMsg').className = `note ${cls || ''}`; $('liveMsg').textContent = t; };
+  const netErr = (e) => `${e && e.message ? e.message : e}. Si vous utilisez la page en ligne, ouvrez le fichier strategy-wall-standalone.html : la page publiée ne peut pas appeler ItsLive.`;
+
+  function startLive(cfg, silent) {
+    backToReal();
+    setup.carNumber = String(cfg.carNumber); setup = E.normalizeSetup(setup);
+    adapter = T.createLiveAdapter({ ssid: cfg.ssid, carNumber: cfg.carNumber, intervalMs: cfg.intervalMs || 3000 }).start();
+    mode = 'LIVE';
+    liveCfg = Object.assign({}, cfg, { active: true }); saveLive();
+    if (!silent) notice('info', `Connecté à ItsLive · ${cfg.label || ''} · voiture #${cfg.carNumber}`);
+    const lbl = String(cfg.label || '').toLowerCase();
+    const sug = Object.values(E.PROFILES).find((p) => p.itslive && cfg.ssid && cfg.ssid.cs_id === p.itslive.cs && lbl.includes(p.itslive.folder));
+    if (sug && sug.id !== setup.profileId) notice('warning', `Session ${sug.short} : le profil « ${sug.name} » est conseillé — changez-le dans SETUP`);
+    persist(); render();
+  }
+  function startReplay(rec, speed) {
+    if (!isCopy()) { backToReal(); snapshot = { setup: clone(setup), race: clone(race) }; } else if (adapter.stop) adapter.stop();
+    const car = String(rec.carNumber);
+    setup.carNumber = car;
+    adapter = L.createAdapter({ frames: rec.frames, carNumber: car, speed, record: false }).start();
+    mode = 'REPLAY'; notices = []; rowsKey = '';
+    race = E.createRace(setup, now());
+    notice('info', `Rejeu de ${rec.frames.length} trames ItsLive · voiture #${car}`);
+    closeM('liveModal'); render();
+  }
+
+  async function loadUrl() {
+    const p = L.parseUrl($('liveUrl').value);
+    if (!p) { liveMsg('Lien non reconnu. Exemple : https://www.its-live.net/live/caterham/2026/ledenon/55', 'stop'); return; }
+    lv.ssid = p;
+    $('liveEventRow').hidden = true; $('liveSessionRow').hidden = true; $('liveCarRow').hidden = true; $('liveConnect').disabled = true;
+    try {
+      if (!p.event_id) {
+        liveMsg('Chargement des événements…');
+        const evs = await L.listEvents(p.cs_id, p.season);
+        if (!evs.length) { liveMsg('Aucun événement pour ce championnat.', 'stop'); return; }
+        $('liveEvent').innerHTML = evs.map((e) => `<option value="${esc(e.id)}">${e.live ? '● EN COURS · ' : ''}${esc(e.name)} · ${new Date(e.begin * 1000).toLocaleDateString('fr-FR')}</option>`).join('');
+        $('liveEventRow').hidden = false;
+        p.event_id = evs[0].id;
+      }
+      await loadSessions(p.session_id);
+    } catch (e) { liveMsg(netErr(e), 'stop'); }
+  }
+  async function loadSessions(pick) {
+    lv.ssid.event_id = $('liveEventRow').hidden ? lv.ssid.event_id : $('liveEvent').value;
+    liveMsg('Chargement des sessions…');
+    const list = (await L.listSessions(lv.ssid)).sort((a, b) => (b.live - a.live) || (b.id - a.id));
+    lv.sessions = list;
+    if (!list.length) { liveMsg('Aucune session publiée pour cet événement.', 'stop'); return; }
+    $('liveSession').innerHTML = list.map((s) => `<option value="${s.id}">${s.live ? '● EN DIRECT · ' : ''}${esc(s.folder)} · ${esc(s.name)} · ${esc(String(s.flag || '').toLowerCase())}</option>`).join('');
+    $('liveSession').value = String(pick != null && list.some((s) => s.id === pick) ? pick : list[0].id);
+    $('liveSessionRow').hidden = false;
+    await loadCars();
+  }
+  async function loadCars() {
+    lv.ssid.session_id = Number($('liveSession').value);
+    liveMsg('Chargement des engagés…');
+    lv.cars = await L.listCars(lv.ssid);
+    const want = String(liveCfg.carNumber || setup.carNumber);
+    $('liveCar').innerHTML = lv.cars.map((c) => `<option value="${esc(c.number)}">#${esc(c.number)} · P${c.pos} · ${esc(c.name || '')}${c.team ? ` · ${esc(c.team)}` : ''}</option>`).join('');
+    if (lv.cars.some((c) => c.number === want)) $('liveCar').value = want;
+    $('liveCarRow').hidden = false; $('liveConnect').disabled = !lv.cars.length;
+    const s = lv.sessions.find((x) => x.id === lv.ssid.session_id);
+    liveMsg(lv.cars.length ? `${lv.cars.length} voitures · session ${s && s.live ? 'en direct' : 'terminée ou pas encore lancée'}${lv.cars.some((c) => c.number === want) ? '' : ` · #${want} absente, choisissez la voiture à suivre`}` : 'Aucune voiture dans cette session pour le moment.', s && s.live ? 'go' : '');
+  }
+  $('modeLive').onclick = () => {
+    if (mode === 'LIVE') { openM('liveModal'); return; }
+    $('liveUrl').value = liveCfg.url || 'https://www.its-live.net/live/caterham/2026';
+    $('liveInterval').value = String(liveCfg.intervalMs || 3000);
+    $('liveEventRow').hidden = true; $('liveSessionRow').hidden = true; $('liveCarRow').hidden = true; $('liveConnect').disabled = true;
+    liveMsg('Collez le lien ItsLive du championnat ou de la session, puis CHARGER.');
+    openM('liveModal');
+  };
+  $('liveLoad').onclick = loadUrl;
+  $('liveUrl').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); loadUrl(); } });
+  $('liveEvent').onchange = () => loadSessions().catch((e) => liveMsg(netErr(e), 'stop'));
+  $('liveSession').onchange = () => loadCars().catch((e) => liveMsg(netErr(e), 'stop'));
+  $('liveClose').onclick = () => closeM('liveModal');
+  $('liveConnect').onclick = () => {
+    const s = lv.sessions.find((x) => x.id === lv.ssid.session_id);
+    const go = () => {
+      startLive({ url: $('liveUrl').value.trim(), ssid: Object.assign({}, lv.ssid), carNumber: $('liveCar').value, intervalMs: Number($('liveInterval').value), label: s ? `${s.folder} · ${s.name}` : '' });
+      closeM('liveModal');
+    };
+    const touched = race.laps > 0 || race.stops.length > 0 || E.elapsed(race, now()) > 0;
+    if (touched) confirmBox('Connecter ItsLive à la course en cours ?', 'Temps, tours, position et drapeaux seront recalés sur ItsLive. Le fuel et les arrêts déjà saisis sont conservés. Pour repartir de zéro, faites d\'abord RESET COURSE.', 'CONNECTER', go);
+    else go();
+  };
+  $('liveDisconnect').onclick = () => $('modeManual').click();
+  $('liveExport').onclick = () => {
+    const rec = adapter.recording;
+    if (!rec || !rec.frames.length) { notice('warning', 'Rien à exporter : aucune trame ItsLive reçue'); render(); return; }
+    const blob = new Blob([JSON.stringify(Object.assign({}, rec, { exportedAt: new Date().toISOString(), label: liveCfg.label }))], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `itslive-${(liveCfg.ssid && liveCfg.ssid.event_id) || 'session'}-${(liveCfg.ssid && liveCfg.ssid.session_id) || ''}-car${rec.carNumber}.json`;
+    document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  };
+  $('replayStart').onclick = () => {
+    const f = $('replayFile').files[0];
+    if (!f) { liveMsg('Choisissez d\'abord un fichier d\'enregistrement (.json).', 'stop'); return; }
+    const rd = new FileReader();
+    rd.onload = () => {
+      try {
+        const rec = JSON.parse(rd.result);
+        if (!rec || !Array.isArray(rec.frames) || !rec.frames.length) throw new Error('aucune trame');
+        startReplay(rec, Number($('replaySpeed').value));
+      } catch (e) { liveMsg(`Fichier illisible : ${e.message}`, 'stop'); }
+    };
+    rd.readAsText(f);
+  };
+
+  function liveStatus() {
+    if (mode !== 'LIVE' && mode !== 'REPLAY') return null;
+    const s = adapter.status || {};
+    const age = s.lastOk ? Math.round((Date.now() - s.lastOk) / 1000) : null;
+    const car = adapter.parser && adapter.parser.car;
+    let text, level = 'ok';
+    if (mode === 'REPLAY') { text = `${s.ok || 0}/${s.total || 0} trames${s.state === 'replay-end' ? ' · terminé' : ''}`; }
+    else if (s.state === 'connecting') { text = 'connexion…'; level = 'wait'; }
+    else if (s.state === 'error') { text = `erreur (${s.errors}) : ${s.lastError}`; level = 'bad'; }
+    else { text = `màj il y a ${age != null ? age : '–'} s · ${s.latency != null ? s.latency : '–'} ms`; if (age != null && age > 15) level = 'bad'; }
+    if (mode === 'LIVE' && s.state !== 'connecting' && adapter.parser && adapter.parser.info && !car) { text += ` · #${setup.carNumber} pas encore vue`; level = level === 'ok' ? 'wait' : level; }
+    if (car) text = `#${car.number} P${car.pos} · T${car.total_lap} · ${text}`;
+    return { text, level, age, state: s.state, error: s.lastError };
+  }
+
+  /* ---------- Tests ---------- */
+  function runTests() {
+    const res = TESTS.runAll(E, S, T, window.ItsLive);
+    const ok = res.filter((r) => r.ok).length;
+    $('testsBadge').textContent = `${ok}/${res.length}`;
+    $('testsBadge').className = ok === res.length ? 'tests-ok' : 'tests-ko';
+    let g = '';
+    $('testsList').innerHTML = res.map((r) => {
+      const head = r.group !== g ? `<div class="g">${esc((g = r.group).toUpperCase())}</div>` : '';
+      return `${head}<div class="r"><span class="${r.ok ? 'go' : 'stop'}">${r.ok ? '✓' : '✗'}</span><span>${esc(r.name)}</span>${r.detail ? `<span class="d">${esc(r.detail)}</span>` : ''}</div>`;
+    }).join('');
+  }
+  $('testsOpen').onclick = () => { runTests(); openM('testsModal'); };
+  $('testsRun').onclick = runTests;
+  $('testsClose').onclick = () => closeM('testsModal');
+
+  /* ---------- Setup ---------- */
+  const FIELDS = [
+    ['circuit', 'CIRCUIT', 'text'], ['carNumber', 'N° VOITURE', 'text'], ['raceMinutes', 'DURÉE COURSE (MIN)', 'number', 1],
+    ['mandatoryStops', 'ARRÊTS OBLIGATOIRES', 'number', 1], ['minPitSeconds', 'ARRÊT MINI (S)', 'number', 1], ['lastStopDeadlineMin', 'DEADLINE (MIN AVANT FIN)', 'number', 1, 'deadline'],
+    ['windowOpenMin', 'FENÊTRE : OUVERTURE (MIN)', 'number', 1, 'window'], ['windowCloseMin', 'FENÊTRE : FERMETURE (MIN)', 'number', 1, 'window'],
+    ['pitSpeedKmh', 'VITESSE PITLANE (KM/H)', 'number', 1], ['refLap', 'TOUR DE RÉFÉRENCE (S)', 'number', 0.1], ['tank', 'RÉSERVOIR (L)', 'number', 0.1],
+    ['startFuel', 'ESSENCE DÉPART (L)', 'number', 0.1], ['fuelPerLap', 'CONSO RÉF. (L/TOUR)', 'number', 0.01], ['fuelMargin', 'MARGE FUEL (%)', 'number', 0.1],
+    ['reserveLaps', 'RÉSERVE (TOURS)', 'number', 1], ['neutralFuelFactor', 'CONSO SOUS FCY/SC (×)', 'number', 0.05]
+  ];
+  let draft = null;
+  function readFields() {
+    FIELDS.forEach(([k, , type]) => { const el = $(`f_${k}`); if (!el) return; draft[k] = type === 'number' ? Number(el.value) : el.value; });
+    draft.virtualLaps = $('f_virtualLaps').checked;
+  }
+  function renderSetup() {
+    const prof = E.PROFILES[draft.profileId];
+    $('setupFields').innerHTML = `<div class="field profile-field"><label for="f_profile">CHAMPIONNAT · RÈGLEMENT</label><select id="f_profile">${Object.values(E.PROFILES).map((p) => `<option value="${p.id}" ${p.id === draft.profileId ? 'selected' : ''}>${esc(p.name)} · ${esc(p.permit)}</option>`).join('')}</select></div>`
+      + FIELDS.filter((f) => !f[4] || f[4] === prof.windowMode).map(([k, label, type, step]) => `<div class="field"><label for="f_${k}">${label}</label><input id="f_${k}" type="${type}" ${step ? `step="${step}"` : ''} value="${esc(draft[k])}"></div>`).join('')
+      + `<div class="field check" style="align-self:end"><input id="f_virtualLaps" type="checkbox" ${draft.virtualLaps ? 'checked' : ''}><label for="f_virtualLaps">TOURS VIRTUELS EN MANUAL</label></div>`;
+    $('setupRelays').innerHTML = '';
+    renderSetupLists();
+    $('rulesList').innerHTML = prof.rules.map(([a, t]) => `<div><b>Art. ${esc(a)}</b>${esc(t)}</div>`).join('');
+  }
+  /* Les champs pilotes ne sont redessinés que si la liste change (ajout / retrait / profil) :
+     redessiner pendant une saisie ferait perdre le focus et le texte tapé. */
+  function renderSetupLists() { renderSetupDrivers(); renderSetupPlan(); }
+  function renderSetupDrivers() {
+    const prof = E.PROFILES[draft.profileId];
+    $('setupDrivers').innerHTML = draft.drivers.map((d, i) => `<div class="drow">
+      <input data-dcode="${i}" value="${esc(d.id)}" maxlength="3" aria-label="Code pilote">
+      <input data-dname="${i}" value="${esc(d.name)}" aria-label="Nom pilote">
+      <button class="btn sm" data-ddel="${i}" ${draft.drivers.length <= prof.driversMin ? 'disabled' : ''} aria-label="Retirer le pilote">×</button></div>`).join('');
+    $('addDriver').disabled = draft.drivers.length >= prof.driversMax;
+  }
+  /* Mis à jour en place : les <select> et <input> existants sont conservés tant que le nombre de relais
+     ne change pas, pour ne jamais retirer un champ que l'utilisateur est en train de cliquer. */
+  function renderSetupPlan() {
+    const norm = E.normalizeSetup(draft);
+    const plan = S.planTargets(norm);
+    const box = $('setupRelays');
+    const fresh = box.querySelectorAll('.srow').length !== norm.relayPlan.length || box.dataset.stops !== String(norm.mandatoryStops);
+    if (fresh) {
+      box.dataset.stops = String(norm.mandatoryStops);
+      box.innerHTML = norm.relayPlan.map((r, i) => {
+        const end = i >= norm.mandatoryStops;
+        return `<div class="srow"><span class="mono">R${i + 1}</span>
+          <select data-rdrv="${i}" aria-label="Pilote relais ${i + 1}"></select>
+          ${end ? '<span class="t">→ damier</span>' : `<input data-rmin="${i}" type="number" min="1" value="${r.minutes}" aria-label="Minutes relais ${i + 1}">`}
+          <span class="t" data-rbox="${i}"></span><span class="t" data-rwarn="${i}"></span></div>`;
+      }).join('');
+    }
+    const optsKey = JSON.stringify(norm.drivers);
+    norm.relayPlan.forEach((r, i) => {
+      const end = i >= norm.mandatoryStops;
+      const sel = box.querySelector(`[data-rdrv="${i}"]`);
+      if (sel.dataset.k !== optsKey) { sel.innerHTML = norm.drivers.map((d) => `<option value="${esc(d.id)}">${esc(d.id)} · ${esc(d.name)}</option>`).join(''); sel.dataset.k = optsKey; }
+      if (sel.value !== r.driver) sel.value = r.driver;
+      const min = box.querySelector(`[data-rmin="${i}"]`);
+      if (min && document.activeElement !== min && Number(min.value) !== r.minutes) min.value = r.minutes;
+      box.querySelector(`[data-rbox="${i}"]`).textContent = end ? '' : `box ${F.hms(plan[i].at).slice(0, 5)}`;
+      const w = box.querySelector(`[data-rwarn="${i}"]`);
+      const bad = !end && (plan[i].overDeadline || plan[i].beforeWindow);
+      w.textContent = !bad ? '' : plan[i].beforeWindow ? 'AVANT FENÊTRE' : (E.profileOf(norm).windowMode === 'window' ? 'APRÈS FENÊTRE' : 'HORS DEADLINE');
+      w.className = `t ${bad ? 'stop' : ''}`;
+    });
+    const v = E.validateSetup(norm);
+    $('setupErrors').innerHTML = v.errors.map((e) => `<div class="e">✗ ${esc(e)}</div>`).join('') + v.warnings.map((x) => `<div class="w">! ${esc(x)}</div>`).join('');
+    $('setupSave').disabled = v.errors.length > 0;
+  }
+  $('setupOpen').onclick = () => { draft = clone(setup); renderSetup(); openM('setupModal'); };
+  $('setupClose').onclick = () => closeM('setupModal');
+  $('setupModal').addEventListener('input', (e) => {
+    const t = e.target, d = t.dataset;
+    if (d.dname != null) draft.drivers[+d.dname].name = t.value;
+    else if (d.dcode != null) { const old = draft.drivers[+d.dcode].id; const nu = t.value.toUpperCase(); draft.drivers[+d.dcode].id = nu; draft.relayPlan.forEach((r) => { if (r.driver === old) r.driver = nu; }); }
+  });
+  $('setupModal').addEventListener('change', (e) => {
+    const t = e.target, d = t.dataset;
+    if (t.id === 'f_profile') { readFields(); draft = E.applyProfile(draft, t.value); renderSetup(); return; }
+    if (d.rdrv != null) { draft = E.normalizeSetup(draft); draft.relayPlan[+d.rdrv].driver = t.value; }
+    else if (d.rmin != null) { draft = E.normalizeSetup(draft); draft.relayPlan[+d.rmin].minutes = Math.max(1, Math.round(Number(t.value) || 1)); }
+    else if (['f_mandatoryStops', 'f_raceMinutes', 'f_lastStopDeadlineMin', 'f_windowOpenMin', 'f_windowCloseMin', 'f_minPitSeconds', 'f_startFuel', 'f_tank'].includes(t.id)) { readFields(); draft = E.normalizeSetup(draft); }
+    else if (d.dcode == null && d.dname == null) return;
+    renderSetupPlan();
+  });
+  $('setupModal').addEventListener('click', (e) => {
+    const del = e.target.closest('[data-ddel]');
+    if (del && !del.disabled) { const id = draft.drivers[+del.dataset.ddel].id; draft.drivers.splice(+del.dataset.ddel, 1); draft.relayPlan.forEach((r) => { if (r.driver === id) r.driver = null; }); renderSetupLists(); }
+  });
+  $('addDriver').onclick = () => {
+    const used = new Set(draft.drivers.map((d) => d.id));
+    let c = 65; while (used.has(String.fromCharCode(c))) c++;
+    draft.drivers.push({ id: String.fromCharCode(c), name: `Pilote ${String.fromCharCode(c)}` }); renderSetupLists();
+  };
+  $('setupSave').onclick = () => {
+    readFields();
+    const norm = E.normalizeSetup(draft);
+    if (E.validateSetup(norm).errors.length) return;
+    const fresh = E.elapsed(race, now()) === 0 && race.laps === 0 && race.stops.length === 0;
+    setup = norm;
+    if (fresh) race = E.createRace(setup, now());
+    rowsKey = ''; persist(); closeM('setupModal'); render();
+  };
+
+  /* ---------- Recovery ---------- */
+  $('recoveryOpen').onclick = () => {
+    $('rTime').value = F.hms(st.el); $('rLaps').value = race.laps;
+    $('rDriver').innerHTML = setup.drivers.map((d) => `<option value="${esc(d.id)}" ${d.id === race.driver ? 'selected' : ''}>${esc(d.id)} · ${esc(d.name)}</option>`).join('');
+    const s = E.currentStint(race);
+    $('rStintTime').value = F.hms(s.startElapsed); $('rStintLap').value = s.startLap;
+    $('rFuel').value = race.fuel.toFixed(1); $('rMand').value = st.mandDone; $('rExtra').value = st.extras; $('recErr').textContent = '';
+    closeM('setupModal'); openM('recoveryModal');
+  };
+  $('recoveryClose').onclick = () => { closeM('recoveryModal'); openM('setupModal'); };
+  $('recoveryApply').onclick = () => {
+    const el = parseClock($('rTime').value), ss = parseClock($('rStintTime').value);
+    const laps = parseInt($('rLaps').value, 10), sl = parseInt($('rStintLap').value, 10);
+    const mand = parseInt($('rMand').value, 10), ex = parseInt($('rExtra').value, 10);
+    if (el == null || ss == null || ss > el || !(laps >= 0) || !(sl >= 0) || sl > laps || !(mand >= 0) || mand > setup.mandatoryStops || !(ex >= 0)) {
+      $('recErr').innerHTML = '<div class="e">Vérifiez les valeurs : début de stint ≤ temps course, tours cohérents, obligatoires ≤ ' + setup.mandatoryStops + '.</div>'; return;
+    }
+    dispatch({ type: 'RECOVER', elapsed: el, laps, driver: $('rDriver').value, stintStartElapsed: ss, stintStartLap: sl, fuel: Number($('rFuel').value), mandatoryDone: mand, extrasDone: ex });
+    rowsKey = ''; closeM('recoveryModal');
+  };
+
+  /* ---------- Démarrage ---------- */
+  runTests();
+  document.querySelectorAll('#replaySpeedCtl button').forEach((b) => { b.onclick = () => { adapter.setSpeed && adapter.setSpeed(Number(b.dataset.rs)); document.querySelectorAll('#replaySpeedCtl button').forEach((x) => x.classList.toggle('on', x === b)); }; });
+  // Refresh navigateur pendant un LIVE : reconnexion automatique, la course reprend là où elle était.
+  if (liveCfg.active && liveCfg.ssid && liveCfg.carNumber && window.ItsLive) {
+    try { startLive(liveCfg, true); notice('info', 'Reconnexion automatique à ItsLive après rechargement'); } catch (e) { liveCfg.active = false; saveLive(); }
+  }
+  tick();
+  setInterval(tick, 200);
+})();
+</script>
+
+</body>
+</html>
