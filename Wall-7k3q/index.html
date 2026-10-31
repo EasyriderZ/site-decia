@@ -3,6 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#080b0e">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 </head>
 <body>
 <title>Endurance Strategy Wall</title>
@@ -2070,7 +2075,7 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
     $('elapsed').textContent = F.hms(st.el); $('remaining').textContent = F.hms(st.remaining);
     $('sourceLbl').textContent = adapter.source + (mode === 'MANUAL' && !setup.virtualLaps ? ' · OFF' : '');
     $('srcKpi').textContent = mode === 'LIVE' ? 'ITSLIVE' : mode === 'REPLAY' ? 'REJEU' : mode === 'SIMULATION' ? 'SIMULATION' : (setup.virtualLaps ? 'VIRTUEL' : 'MANUEL');
-    $('footer').textContent = `${prof.name} · ${prof.permit} · Race Engine / Strategy Engine / Timing Adapter / Strategy Wall · V5.2`;
+    $('footer').textContent = `${prof.name} · ${prof.permit} · Race Engine / Strategy Engine / Timing Adapter / Strategy Wall · V5.5`;
 
     // Pilote / stint
     $('curDriver').textContent = dn(race.driver);
@@ -2639,5 +2644,6 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
 })();
 </script>
 
+<script>if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) { window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); }); }</script>
 </body>
 </html>
