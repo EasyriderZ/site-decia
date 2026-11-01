@@ -52,6 +52,7 @@ button:disabled{cursor:not-allowed;opacity:.45}
 .flag-SC{background:var(--sc);color:#1f0e00;border-color:var(--sc)}
 .flag-RED{background:var(--stop);color:#fff;border-color:var(--stop)}
 .flag-CHEQUERED{background:repeating-conic-gradient(var(--fg) 0 25%,var(--sunk) 0 50%) 0 0/12px 12px;color:var(--sunk);text-shadow:0 0 3px var(--fg)}
+.badge.wake{font-size:11px;color:var(--go);border-color:var(--go);background:transparent}
 .clock{display:flex;align-items:baseline;gap:8px;margin-left:auto}
 .clock-el{font-family:var(--f-mono);font-size:26px;font-weight:600;background:none;border:0;padding:0;border-bottom:1px dashed var(--line-2)}
 .clock-sep{color:var(--dim)}
@@ -107,6 +108,9 @@ button:disabled{cursor:not-allowed;opacity:.45}
 .kpi span{font-size:10px;letter-spacing:.14em;color:var(--muted);font-weight:700}
 .kpi b{font-family:var(--f-mono);font-size:19px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .kpi b.editable{justify-self:start}
+.kpi.warn{border-color:var(--amber)}.kpi.warn b{color:var(--amber)}
+.kpi.bad{border-color:var(--stop)}.kpi.bad b{color:var(--stop)}
+.drv-row .ok{color:var(--go)} .drv-row .need{color:var(--amber)}
 .drv{display:grid;gap:5px}
 .drv-row{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:8px;align-items:center;font-size:13px}
 .drv-code{font-family:var(--f-display);font-weight:700;text-align:center;border:1px solid var(--line-2);border-radius:3px}
@@ -140,6 +144,7 @@ button:disabled{cursor:not-allowed;opacity:.45}
 .relay .rn{font-family:var(--f-display);font-weight:700;font-size:17px}
 .relay select,.relay input,.field input,.field select,.edit input,.pitform input,.pitform select{background:var(--bg);border:1px solid var(--line-2);border-radius:5px;padding:6px 7px;width:100%;min-width:0}
 .relay input{text-align:right;font-family:var(--f-mono)}
+.relay input.over{border-color:var(--stop);color:var(--stop)}
 .relay .t{font-family:var(--f-mono);font-size:13px}
 .relay .t.late{color:var(--stop)}
 .relay .st{font-size:12px;color:var(--muted)}
@@ -234,12 +239,13 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
 </style>
 
 <header class="topbar">
-  <div class="brand">Strategy Wall <span class="ver">V4</span></div>
+  <div class="brand">Strategy Wall <span class="ver">V6</span></div>
   <div class="badges"><span class="badge" id="eventBadge">TTE</span><span class="badge" id="carBadge">#208</span><span class="badge flag-GREEN" id="flagBadge">GREEN</span></div>
   <div class="clock">
     <button class="clock-el editable" id="elapsed" title="Ajuster le temps de course">00:00:00</button>
     <span class="clock-sep">/</span><span class="clock-rem" id="remaining">04:00:00</span><span class="clock-lbl">RESTANT</span>
   </div>
+  <span class="badge wake" id="wakeTag" hidden title="L'écran reste allumé tant que l'appli est au premier plan">ÉCRAN ON</span>
   <div class="tb-actions">
     <button class="btn" id="testsOpen">TESTS <b id="testsBadge">–</b></button>
     <button class="btn" id="setupOpen">⚙ SETUP</button>
@@ -254,7 +260,7 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
     </div>
     <div class="simctl" id="simCtl" hidden>
       <span class="simtag">SIMULATION · l'état MANUAL est conservé</span>
-      <div class="seg" id="simSpeed"><button data-speed="1">×1</button><button data-speed="10" class="on">×10</button><button data-speed="60">×60</button></div>
+      <div class="seg" id="simSpeed"><button data-speed="1">×1</button><button data-speed="10" class="on">×10</button><button data-speed="60">×60</button><button data-speed="300" title="Une 24 h en moins de 5 minutes">×300</button></div>
       <button class="btn sm" id="simFresh">Course neuve</button>
       <button class="btn sm" id="simExit">Quitter</button>
     </div>
@@ -275,7 +281,7 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
       <div class="body">
         <div><button class="big editable" id="curDriver" title="Corriger le pilote en voiture">Pilote A</button><div class="sublbl amber" style="margin-top:6px">EN VOITURE</div></div>
         <div class="kpis">
-          <div class="kpi"><span>STINT</span><b id="stintTime">00:00</b></div>
+          <div class="kpi" id="stintKpi"><span id="stintLbl">STINT</span><b id="stintTime">00:00</b></div>
           <div class="kpi"><span>TOURS STINT</span><b id="stintLaps">0</b></div>
           <div class="kpi"><span id="avgLbl">MOY. STINT (VERT)</span><b id="avgLap">--</b></div>
           <div class="kpi" title="Meilleur tour propre du relais"><span>MEILLEUR STINT</span><b id="bestLap">--</b></div>
@@ -289,7 +295,7 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
       <h2>LIVE / COURSE <span class="meta"><span id="srcKpi">VIRTUEL</span> · <span id="paceMeta">PACE --</span></span></h2>
       <div class="body center">
         <button class="pos editable" id="position" title="Ajuster la position">P--</button>
-        <div class="sublbl">POSITION</div>
+        <div class="sublbl" id="posLbl">POSITION</div>
         <div class="kpis k3" style="text-align:left">
           <div class="kpi"><span>TOUR</span><b class="editable" id="lapCount" title="Ajuster le nombre de tours">0</b></div>
           <div class="kpi"><span>DERNIER</span><b class="editable" id="lastLap" title="Corriger le dernier tour">--</b></div>
@@ -304,7 +310,7 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
     <article class="card tb-card" id="targetCard">
       <h2>TARGET BOX <span class="meta" id="targetMeta"></span></h2>
       <div class="body center">
-        <div class="sublbl">ARRÊT OBLIGATOIRE</div>
+        <div class="sublbl" id="tbLbl">ARRÊT OBLIGATOIRE</div>
         <div class="big amber" id="nextStopNo">#1</div>
         <div><span class="huge" id="boxTarget">--</span> <span class="tb-unit">TOURS</span></div>
         <div class="mono muted" id="targetTime">à --:--:--</div>
@@ -342,7 +348,7 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
         <div class="stopcount" id="stopCount">0 / 5 <span class="muted" style="font-size:16px">obligatoires · 0 total</span></div>
         <div class="kpis">
           <div class="kpi"><span id="deadlineLbl">DEADLINE DERNIER</span><b class="stop" id="deadline">03:40:00</b></div>
-          <div class="kpi"><span>ARRÊT MINI</span><b id="pitMin">02:30</b></div>
+          <div class="kpi"><span id="pitMinLbl">ARRÊT MINI</span><b id="pitMin">02:30</b></div>
         </div>
         <div class="stoplog" id="stopLog"></div>
       </div>
@@ -478,6 +484,7 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
     <div><button class="btn sm" id="addDriver">+ PILOTE</button></div>
     <h3>PLAN DE RELAIS AU DÉPART</h3>
     <div class="list" id="setupRelays"></div>
+    <div id="relayBtns" class="inline" hidden><button class="btn sm" id="addRelay">+ RELAIS</button><button class="btn sm" id="delRelay">− RELAIS</button><span class="note" id="relaySum"></span></div>
     <div class="errors" id="setupErrors"></div>
     <details><summary>RÈGLEMENT APPLIQUÉ</summary><div class="rules" id="rulesList" style="margin-top:8px"></div></details>
     <div class="actions"><button class="btn left" id="recoveryOpen">RECOVERY / RECALAGE</button><button class="btn" id="setupClose">ANNULER</button><button class="btn btn-primary" id="setupSave">VALIDER LE SETUP</button></div>
@@ -496,7 +503,7 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
       <div class="field"><label for="rStintTime">DÉBUT STINT (HH:MM:SS)</label><input id="rStintTime"></div>
       <div class="field"><label for="rStintLap">DÉBUT STINT (TOUR)</label><input id="rStintLap" type="number" min="0"></div>
       <div class="field"><label for="rFuel">FUEL ESTIMÉ (L)</label><input id="rFuel" type="number" step="0.1" min="0"></div>
-      <div class="field"><label for="rMand">ARRÊTS OBLIGATOIRES FAITS</label><input id="rMand" type="number" min="0"></div>
+      <div class="field"><label for="rMand" id="rMandLbl">ARRÊTS OBLIGATOIRES FAITS</label><input id="rMand" type="number" min="0"></div>
       <div class="field"><label for="rExtra">ARRÊTS EXTRA FAITS</label><input id="rExtra" type="number" min="0"></div>
     </div>
     <div class="errors" id="recErr"></div>
@@ -537,6 +544,7 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
       penalty: { missing: '2 tours par arrêt manquant (art. 7-9/1)', short: 'arrêt non comptabilisé (art. 7-9/1)', outOfWindow: 'arrêt non comptabilisé + 1 tour (art. 7-9/3)' },
       defaults: { refLap: 92, tank: 50, startFuel: 50, fuelPerLap: 1.45, relays: [['A', 40], ['B', 40], ['C', 40], ['A', 40], ['B', 40], ['C', 40]], drivers: ['A', 'B', 'C'] },
       itslive: null,
+      pitNote: 'Ravitaillement interdit pendant le changement de pilote (art. 4-2/3-2.6) · moteur arrêté avant remplissage (art. 7-9/4-2) · pitlane 60 km/h.',
       rules: [
         ['3-2', 'Course de 4 h, 2 à 6 pilotes par équipage'],
         ['7-9/1', '5 arrêts obligatoires de 2\'30 mini entre boucle d\'entrée et boucle de sortie'],
@@ -560,6 +568,7 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
       penalty: { missing: 'disqualification de la course (art. 7.3.5)', short: 'Stop & Go + temps manquant (art. 7.3.5)', outOfWindow: 'Stop & Go — arrêt hors fenêtre (art. 7.3.5)' },
       defaults: { refLap: 96, tank: 40, startFuel: 40, fuelPerLap: 1.2, relays: [['A', 30], ['B', 30]], drivers: ['A', 'B'] },
       itslive: { cs: 'caterham', folder: 'ferdinand' },
+      pitNote: 'Arrêt obligatoire de 2:00 minimum dans la fenêtre (art. 7.3.5) · pitlane 60 km/h.',
       rules: [
         ['3.2', 'Équipage de 1 ou 2 pilotes'],
         ['7.3.0', 'Course de 40 à 60 minutes'],
@@ -570,6 +579,32 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
         ['7.3.5', 'Arrêt obligatoire non effectué : disqualification'],
         ['6.1', 'Pitlane 60 km/h sauf disposition du briefing'],
         ['7.3.6', 'Damier présenté à la voiture de tête']
+      ]
+    },
+    VDEV_ENDURANCE_VHC_2026: {
+      id: 'VDEV_ENDURANCE_VHC_2026', short: 'V de V VHC',
+      name: 'Endurance VHC V de V 2026',
+      permit: 'Permis FFSA C26-2026 (additif 11/03/2026)',
+      // Pas d'arrêt obligatoire : le plan est une suite de relais, bornée par le temps de conduite.
+      planMode: 'relays', raceMinutes: 1440, mandatoryStops: 0, minPitSeconds: 0,
+      windowMode: 'none', shortStop: 'EXTRA', outOfWindow: 'EXTRA',
+      maxStintMin: 130, minDriverMin: 60, maxFillL: 78,
+      pitSpeedKmh: 50, driversMin: 2, driversMax: 4,
+      penalty: { missing: '—', short: '—', outOfWindow: '—', maxStint: 'dépassement du temps de conduite par relais : rapport aux commissaires (art. 3.2)', minDriver: 'temps de conduite minimum non atteint (art. 3.2)' },
+      defaults: { refLap: 140, tank: 80, startFuel: 78, fuelPerLap: 2.4,
+        relays: [['A', 120], ['B', 120], ['C', 120], ['A', 120], ['B', 120], ['C', 120], ['A', 120], ['B', 120], ['C', 120], ['A', 120], ['B', 120], ['C', 120]], drivers: ['A', 'B', 'C'] },
+      itslive: { cs: '2thvdev', folder: '' },
+      pitNote: 'Ravitaillement à la station officielle, moteur arrêté, 78 L max (SP) / 98 L (GT, Tourisme) · pas de changement de pilote pendant le plein (Stop & Go 2 min) · pitlane 50 km/h.',
+      rules: [
+        ['3.2', 'Équipage de 2, 3 ou 4 pilotes'],
+        ['3.2', 'Temps de conduite maximum : 2 h 10 d\'affilée par pilote et par relais ; le pilote sort de la voiture entre 2 relais'],
+        ['3.2', 'Temps de conduite minimum : 1 h par pilote sur la course'],
+        ['3.2', 'Le temps du pilote s\'arrête à la boucle d\'entrée s\'il descend ; le suivant démarre à la boucle de sortie ; un arrêt sans changement compte pour le pilote au volant'],
+        ['7.3.1', 'Drapeau rouge : course et chrono continuent ; le temps de conduite n\'est pas compté'],
+        ['4.2.1.2', 'Ravitaillement à la station officielle uniquement : 78 L max par plein (Sport-Prototypes), 98 L (GT et Tourisme), moteur arrêté'],
+        ['Annexe 1', 'Changement de pilote pendant un ravitaillement : Stop & Go de 2 minutes'],
+        ['6.3', 'Voie des stands à 50 km/h'],
+        ['9.3.3', 'Classement de classe : 60 % des tours du premier de la classe']
       ]
     }
   };
@@ -590,6 +625,7 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
       pitSpeedKmh: p.pitSpeedKmh,
       refLap: d.refLap, tank: d.tank, startFuel: d.startFuel, fuelPerLap: d.fuelPerLap, fuelMargin: 3, reserveLaps: 2,
       neutralFuelFactor: 0.6, virtualLaps: true,
+      maxStintMin: p.maxStintMin || 0, minDriverMin: p.minDriverMin || 0, maxFillL: p.maxFillL || 0,
       drivers: d.drivers.map((id) => ({ id, name: `Pilote ${id}` })),
       relayPlan: d.relays.map(([driver, minutes]) => ({ driver, minutes }))
     };
@@ -605,13 +641,18 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
     return normalizeSetup(Object.assign({}, d, keep, { drivers, relayPlan: relays }));
   }
   const profileOf = (setup) => PROFILES[setup && setup.profileId] || PROFILES[DEFAULT_PROFILE];
+  /* Plan : en mode 'relays' (V de V), les arrêts du plan sont les fins de relais (changement de pilote) ;
+     sinon ce sont les arrêts obligatoires. */
+  const isRelays = (setup) => profileOf(setup).planMode === 'relays';
+  const plannedStops = (setup) => (isRelays(setup) ? Math.max(0, setup.relayPlan.length - 1) : setup.mandatoryStops);
+  const planStopsDone = (race, setup) => (isRelays(setup) ? race.stops.filter((x) => x.driverChange) : race.stops.filter((x) => x.type === 'MANDATORY'));
 
   /* Rend un setup cohérent : nombres, pilotes uniques, plan de relais complet
      (mandatoryStops + 1 relais : le dernier va jusqu'au damier). */
   function normalizeSetup(input) {
     const d = defaultSetup(input && input.profileId);
     const s = Object.assign({}, d, clone(input || {}));
-    ['raceMinutes', 'mandatoryStops', 'minPitSeconds', 'lastStopDeadlineMin', 'windowOpenMin', 'windowCloseMin', 'pitSpeedKmh', 'refLap', 'tank',
+    ['raceMinutes', 'mandatoryStops', 'minPitSeconds', 'lastStopDeadlineMin', 'windowOpenMin', 'windowCloseMin', 'maxStintMin', 'minDriverMin', 'maxFillL', 'pitSpeedKmh', 'refLap', 'tank',
       'startFuel', 'fuelPerLap', 'fuelMargin', 'reserveLaps', 'neutralFuelFactor'].forEach((k) => { s[k] = num(s[k], d[k]); });
     s.mandatoryStops = Math.max(0, Math.round(s.mandatoryStops));
     s.refLap = Math.max(1, s.refLap);
@@ -627,7 +668,7 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
       driver: ids.includes(r.driver) ? r.driver : ids[i % ids.length],
       minutes: Math.max(1, num(r.minutes, 40))
     }));
-    const need = s.mandatoryStops + 1;
+    const need = profileOf(s).planMode === 'relays' ? 2 : s.mandatoryStops + 1;
     while (s.relayPlan.length < need) {
       const i = s.relayPlan.length;
       s.relayPlan.push({ driver: ids[i % ids.length], minutes: 40 });
@@ -646,6 +687,17 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
       if (setup.windowCloseMin > setup.raceMinutes) errors.push('Fenêtre d\'arrêt : fermeture après la fin de course');
       if (p.windowFromEvent) warnings.push('Fenêtre d\'arrêt : à reprendre du règlement particulier de l\'épreuve (art. 7.3.5)');
     }
+    if (p.planMode === 'relays') {
+      const mins = setup.relayPlan.map((r) => r.minutes);
+      const last = setup.raceMinutes - mins.slice(0, -1).reduce((a, b) => a + b, 0);
+      if (last <= 0) errors.push(`Plan : les relais dépassent la durée de course (${setup.raceMinutes} min) — supprimez un relais ou raccourcissez-en un`);
+      const all = mins.slice(0, -1).concat([Math.max(0, last)]);
+      all.forEach((m, i) => { if (setup.maxStintMin && m > setup.maxStintMin) warnings.push(`Relais R${i + 1} prévu ${m} min : au-delà des ${setup.maxStintMin} min autorisées par relais (art. 3.2)`); });
+      if (setup.minDriverMin) setup.drivers.forEach((d) => {
+        const tot = setup.relayPlan.reduce((a, r, i) => a + (r.driver === d.id ? all[i] : 0), 0);
+        if (tot < setup.minDriverMin) warnings.push(`${d.name} : ${tot} min prévues, minimum ${setup.minDriverMin} min par pilote (art. 3.2)`);
+      });
+    }
     if (p.raceMinutesRange && (setup.raceMinutes < p.raceMinutesRange[0] || setup.raceMinutes > p.raceMinutesRange[1]))
       warnings.push(`Durée hors plage du règlement (${p.raceMinutesRange[0]} à ${p.raceMinutesRange[1]} min)`);
     const open = windowOpenSeconds(setup), dl = deadlineSeconds(setup);
@@ -655,7 +707,7 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
       if (t > dl) { warnings.push(`Arrêt #${i + 1} planifié après la ${p.windowMode === 'window' ? 'fermeture de la fenêtre' : 'deadline'} (${hm(dl)})`); break; }
       if (t < open) { warnings.push(`Arrêt #${i + 1} planifié avant l'ouverture de la fenêtre (${hm(open)})`); break; }
     }
-    if (setup.mandatoryStops !== p.mandatoryStops || setup.minPitSeconds !== p.minPitSeconds || (p.windowMode === 'deadline' && (setup.raceMinutes !== p.raceMinutes || setup.lastStopDeadlineMin !== p.lastStopDeadlineMin)))
+    if (p.planMode !== 'relays' && (setup.mandatoryStops !== p.mandatoryStops || setup.minPitSeconds !== p.minPitSeconds || (p.windowMode === 'deadline' && (setup.raceMinutes !== p.raceMinutes || setup.lastStopDeadlineMin !== p.lastStopDeadlineMin))))
       warnings.push('Paramètres différents du règlement de base : vérifiez le briefing');
     return { errors, warnings };
   }
@@ -668,7 +720,7 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
   }
   const raceSeconds = (setup) => setup.raceMinutes * 60;
   /* Fin de la période où un arrêt obligatoire est valable (deadline TTE ou fermeture de fenêtre). */
-  const deadlineSeconds = (setup) => (profileOf(setup).windowMode === 'window' ? setup.windowCloseMin : setup.raceMinutes - setup.lastStopDeadlineMin) * 60;
+  const deadlineSeconds = (setup) => { const m = profileOf(setup).windowMode; return (m === 'window' ? setup.windowCloseMin : m === 'none' ? setup.raceMinutes : setup.raceMinutes - setup.lastStopDeadlineMin) * 60; };
   const windowOpenSeconds = (setup) => (profileOf(setup).windowMode === 'window' ? setup.windowOpenMin * 60 : 0);
 
   /* Classement d'un arrêt selon le règlement du profil — source unique pour le moteur, le mur et le « PIT NOW ? ».
@@ -754,7 +806,13 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
       case 'POSITION_CHANGED':
         race.position = ev.position > 0 ? Math.round(ev.position) : null;
         break;
+      case 'CLASS_POSITION':
+        race.classPos = ev.position > 0 ? { pos: Math.round(ev.position), cls: String(ev.cls || ''), n: ev.n || null } : null;
+        break;
       case 'RACE_STATUS':
+        // Périodes de drapeau rouge (temps de conduite non compté en V de V, art. 7.3.1).
+        if (ev.flag === 'RED' && race.flag !== 'RED') race.redFrom = el;
+        if (ev.flag !== 'RED' && race.flag === 'RED' && race.redFrom != null) { (race.reds = race.reds || []).push([race.redFrom, el]); race.redFrom = null; }
         if (FLAGS.includes(ev.flag)) race.flag = ev.flag;
         if (ev.flag === 'SC' || ev.flag === 'FCY' || ev.flag === 'RED') race.lapNeutral = true;
         // RED : le chrono continue (art. 7-8/2). Seul le damier fige l'horloge.
@@ -834,10 +892,12 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
         const extras = Math.max(0, Math.floor(num(ev.extrasDone, 0)));
         const stintStart = Math.min(r.clock.base, Math.max(0, num(ev.stintStartElapsed, 0)));
         let cum = 0;
+        const relays = isRelays(setup);
         for (let i = 0; i < mand; i++) {
           cum += (setup.relayPlan[i] ? setup.relayPlan[i].minutes : 40) * 60;
-          const inAt = i === mand - 1 ? Math.max(0, stintStart - setup.minPitSeconds) : cum;
-          r.stops.push({ n: r.stops.length + 1, inElapsed: inAt, outElapsed: inAt + setup.minPitSeconds, duration: setup.minPitSeconds, type: 'MANDATORY', late: false, short: false, fuelAdded: 0, recovered: true });
+          const d = relays ? 0 : setup.minPitSeconds;
+          const inAt = i === mand - 1 ? Math.max(0, stintStart - d) : cum;
+          r.stops.push({ n: r.stops.length + 1, inElapsed: inAt, outElapsed: inAt + d, duration: d, type: relays ? 'EXTRA' : 'MANDATORY', driverChange: relays, late: false, short: false, fuelAdded: 0, recovered: true });
         }
         for (let i = 0; i < extras; i++) r.stops.push({ n: r.stops.length + 1, inElapsed: 0, outElapsed: 0, duration: 0, type: 'EXTRA', late: false, short: true, fuelAdded: 0, recovered: true });
         r.stints = [{ n: 1, driver: r.driver, startElapsed: stintStart, startLap: Math.min(r.laps, Math.max(0, Math.floor(num(ev.stintStartLap, 0)))) }];
@@ -847,7 +907,7 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
       default:
         return race0;
     }
-    if (ev.type !== 'LAP_COMPLETED' && ev.type !== 'SYNC_CLOCK' && ev.type !== 'POSITION_CHANGED') {
+    if (ev.type !== 'LAP_COMPLETED' && ev.type !== 'SYNC_CLOCK' && ev.type !== 'POSITION_CHANGED' && ev.type !== 'CLASS_POSITION') {
       race.log.push({ at: +el.toFixed(1), type: ev.type });
       if (race.log.length > 300) race.log.shift();
     }
@@ -857,7 +917,7 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
   return {
     PROFILES, DEFAULT_PROFILE, FLAGS,
     defaultSetup, normalizeSetup, validateSetup,
-    createRace, apply, elapsed, raceSeconds, deadlineSeconds, windowOpenSeconds, classifyStop, profileOf, applyProfile, mandatoryDone, currentStint
+    createRace, apply, elapsed, raceSeconds, deadlineSeconds, windowOpenSeconds, classifyStop, profileOf, applyProfile, isRelays, plannedStops, planStopsDone, mandatoryDone, currentStint
   };
 });
 </script>
@@ -887,7 +947,7 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
     const dl = E.deadlineSeconds(setup);
     const out = [];
     let t = 0;
-    for (let i = 0; i < setup.mandatoryStops; i++) {
+    for (let i = 0; i < E.plannedStops(setup); i++) {
       const r = relayAt(setup, i);
       t += Number(r.minutes) * 60;
       out.push({ n: i + 1, at: t, driverOut: r.driver, driverIn: relayAt(setup, i + 1).driver, overDeadline: t > dl, beforeWindow: t < E.windowOpenSeconds(setup) });
@@ -895,14 +955,16 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
     return out;
   }
 
-  /* Plan live : arrêts faits = heure réelle d'entrée ; suivants recalés sur
-     le dernier arrêt obligatoire réel + durées de relais restantes. */
+  /* Plan live : arrêts faits = heure réelle d'entrée ; suivants recalés sur le dernier arrêt du plan réel
+     (arrêt obligatoire, ou fin de relais en mode relais) + durées de relais restantes.
+     En mode relais, la durée d'un relais = temps de conduite, compté depuis la sortie de stand. */
   function liveTargets(race, setup) {
     const dl = E.deadlineSeconds(setup);
-    const mand = race.stops.filter((s) => s.type === 'MANDATORY');
+    const mand = E.planStopsDone(race, setup);
+    const relays = E.isRelays(setup);
     let anchor = 0;
     return planTargets(setup).map((p, i) => {
-      if (i < mand.length) { anchor = mand[i].inElapsed; return Object.assign({}, p, { plan: p.at, at: anchor, done: true, stop: mand[i] }); }
+      if (i < mand.length) { anchor = relays ? mand[i].outElapsed : mand[i].inElapsed; return Object.assign({}, p, { plan: p.at, at: mand[i].inElapsed, done: true, stop: mand[i] }); }
       anchor += Number(relayAt(setup, i).minutes) * 60;
       return Object.assign({}, p, { plan: p.at, at: anchor, done: false, overDeadline: anchor > dl, beforeWindow: anchor < E.windowOpenSeconds(setup) });
     });
@@ -914,6 +976,12 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
     const remaining = Math.max(0, total - el);
     const mandDone = E.mandatoryDone(race), totalStops = race.stops.length;
     const stopsLeft = Math.max(0, setup.mandatoryStops - mandDone);
+    const relays = E.isRelays(setup);
+    const planDone = E.planStopsDone(race, setup).length, plannedStops = E.plannedStops(setup);
+    const planLeft = Math.max(0, plannedStops - planDone);
+    // Périodes de drapeau rouge (y compris en cours) : temps de conduite non compté (V de V art. 7.3.1).
+    const reds = (race.reds || []).concat(race.redFrom != null ? [[race.redFrom, el]] : []);
+    const redOverlap = (a, b) => reds.reduce((acc, [f, t]) => acc + Math.max(0, Math.min(b, t) - Math.max(a, f)), 0);
 
     const stint = E.currentStint(race);
     /* Tours propres : roulés entièrement en vert, hors tour d'entrée / sortie de stand, sans incident
@@ -932,10 +1000,12 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
     const neutralPace = neutralNow ? (median(neutralLaps) || greenPace * (race.flag === 'SC' ? 1.4 : 1.25)) : null;
     const pace = neutralNow ? neutralPace : greenPace;
     const greenTimes = race.lapLog.filter(clean).map((l) => l.t);
+    const stintEnd = race.pit ? race.pit.inElapsed : el;
     const stintInfo = {
       n: stint.n, driver: stint.driver,
       laps: Math.max(0, race.laps - stint.startLap),
-      time: Math.max(0, (race.pit ? race.pit.inElapsed : el) - stint.startElapsed),
+      time: Math.max(0, stintEnd - stint.startElapsed),
+      driving: Math.max(0, stintEnd - stint.startElapsed - redOverlap(stint.startElapsed, stintEnd)),
       avg: mean(stintClean.map((l) => l.t)), avgLaps: stintClean.length, excluded: stintLog.length - stintClean.length,
       best: stintClean.length ? Math.min(...stintClean.map((l) => l.t)) : null
     };
@@ -944,20 +1014,31 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
     const range = race.fuel / conso;
     const boxMax = Math.max(0, Math.floor(range - setup.reserveLaps));
     const plan = planTargets(setup), live = liveTargets(race, setup);
+    // Plein maximum autorisé par arrêt (V de V : 78 L Sport-Prototypes, 98 L GT / Tourisme).
+    const fillCap = setup.maxFillL > 0 ? setup.maxFillL : Infinity;
+
+    // Temps de conduite restant avant la limite par relais (mode relais) ; marge de 30 s pour la boucle d'entrée.
+    const maxStint = setup.maxStintMin > 0 ? setup.maxStintMin * 60 : null;
+    const drvRemain = maxStint != null ? maxStint - stintInfo.driving : null;
+    const drvBoxMax = drvRemain != null ? Math.max(0, Math.floor((drvRemain - 30) / pace)) : null;
 
     let next = null;
-    if (stopsLeft > 0) {
-      const t = live[mandDone];
+    if (planLeft > 0 && (relays || stopsLeft > 0)) {
+      const idx = relays ? planDone : mandDone;
+      const t = live[idx];
       const lapsToTarget = Math.max(0, Math.floor((t.at - el) / pace));
-      const fuelAtStop = Math.max(0, race.fuel - lapsToTarget * conso);
-      const isLast = mandDone === setup.mandatoryStops - 1;
-      const nextStintSec = isLast ? Math.max(0, total - Math.max(t.at, el) - setup.minPitSeconds) : Number(relayAt(setup, mandDone + 1).minutes) * 60;
+      // Arrêt effectif = la contrainte la plus courte : plan, carburant, temps de conduite.
+      const cands = [['PLAN', lapsToTarget], ['FUEL', boxMax]].concat(drvBoxMax != null ? [['CONDUITE', drvBoxMax]] : []);
+      const [limitedBy, boxLaps] = cands.reduce((a, b) => (b[1] < a[1] ? b : a));
+      const fuelAtStop = Math.max(0, race.fuel - boxLaps * conso);
+      const isLast = idx === plannedStops - 1;
+      const nextStintSec = isLast ? Math.max(0, total - Math.max(t.at, el) - setup.minPitSeconds) : Number(relayAt(setup, idx + 1).minutes) * 60;
       const need = (Math.ceil(nextStintSec / greenPace) + setup.reserveLaps) * conso;   // relais suivant : rythme vert
-      const room = Math.max(0, setup.tank - fuelAtStop);
+      const room = Math.max(0, Math.min(setup.tank - fuelAtStop, fillCap));
       const addFuel = Math.min(room, Math.max(0, need - fuelAtStop));
       next = {
-        n: mandDone + 1, at: t.at, planAt: t.plan, driverIn: t.driverIn, lapsToTarget,
-        targetLap: race.laps + lapsToTarget, fuelAtStop, addFuel, full: addFuel >= room - 0.5,
+        n: idx + 1, at: t.at, planAt: t.plan, driverIn: t.driverIn, lapsToTarget, boxLaps, limitedBy,
+        targetLap: race.laps + boxLaps, fuelAtStop, addFuel, full: addFuel >= room - 0.5, capped: room === fillCap,
         fuelLimited: lapsToTarget > boxMax, overDeadline: t.overDeadline
       };
     }
@@ -974,16 +1055,18 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
       const atMin = E.classifyStop(setup, mandDone, race.pit.inElapsed, Math.max(inPit, setup.minPitSeconds));
       const late = now_.late, early = now_.early;
       const canCount = atMin.type === 'MANDATORY';
-      const nextIsLast = mandDone + 1 >= setup.mandatoryStops;
-      const stintSec = canCount
-        ? (nextIsLast ? Math.max(0, total - el - Math.max(0, setup.minPitSeconds - inPit)) : Number(relayAt(setup, mandDone + 1).minutes) * 60)
+      const planIdx = relays ? planDone : mandDone;
+      const advances = relays ? planLeft > 0 : canCount;   // l'arrêt fait avancer le plan (relais suivant)
+      const nextIsLast = planIdx + 1 >= plannedStops;
+      const stintSec = advances
+        ? (nextIsLast ? Math.max(0, total - el - Math.max(0, setup.minPitSeconds - inPit)) : Number(relayAt(setup, planIdx + 1).minutes) * 60)
         : (next ? Math.max(0, next.at - el) : remaining);
-      const room = Math.max(0, setup.tank - race.fuel);
+      const room = Math.max(0, Math.min(setup.tank - race.fuel, fillCap));
       pit = {
         inPit, late, early, canCount, remainingMin: Math.max(0, setup.minPitSeconds - inPit),
         willCount: canCount && inPit >= setup.minPitSeconds,
         countsNow: now_.type === 'MANDATORY', penaltiesNow: now_.penalties, penaltiesAtMin: atMin.penalties,
-        nextDriver: canCount ? relayAt(setup, mandDone + 1).driver : race.driver,
+        nextDriver: advances ? relayAt(setup, planIdx + 1).driver : race.driver, relays, capped: room === fillCap,
         fuelAdvice: Math.min(room, Math.max(0, (Math.ceil(stintSec / greenPace) + setup.reserveLaps) * conso - race.fuel))
       };
     }
@@ -996,8 +1079,13 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
       let end;
       if (nx) { const stop = race.stops.find((x) => x.outElapsed === nx.startElapsed); end = stop ? stop.inElapsed : nx.startElapsed; }
       else end = race.pit ? race.pit.inElapsed : el;
-      drivers[s.driver] = (drivers[s.driver] || 0) + Math.max(0, end - s.startElapsed);
+      drivers[s.driver] = (drivers[s.driver] || 0) + Math.max(0, end - s.startElapsed - redOverlap(s.startElapsed, end));
     });
+    // Minimum de conduite par pilote : ce qui manque encore à chacun.
+    const minDrv = setup.minDriverMin > 0 ? setup.minDriverMin * 60 : 0;
+    const driverDeficit = {};
+    if (minDrv) setup.drivers.forEach((d) => { driverDeficit[d.id] = Math.max(0, minDrv - (drivers[d.id] || 0)); });
+    const deficitTotal = Object.values(driverDeficit).reduce((a, b) => a + b, 0);
 
     /* ---- Alertes ---- */
     const alerts = [];
@@ -1019,22 +1107,38 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
         if (toOpen < 10 * 60 || (next && next.at < open)) add(toOpen < pace * 3 || (next && next.at < open) ? 'warning' : 'info', `FENÊTRE FERMÉE — ouverture dans ${fmt.hms(toOpen).slice(3)} (${fmt.hms(open)}) : ne pas rentrer avant`, 'WINDOW');
       } else if (P.windowMode === 'window' && el >= open && el <= dl && stopsLeft > 0 && !race.pit) add('info', `FENÊTRE OUVERTE jusqu'à ${fmt.hms(dl)} (encore ${fmt.hms(dl - el).slice(3)})`, 'WINDOW');
     }
+    /* Temps de conduite (V de V art. 3.2) */
+    const dname = (id) => ((setup.drivers.find((d) => d.id === id) || {}).name || id);
+    if (maxStint != null && !race.pit && !finished) {
+      const who = dname(race.driver);
+      if (drvRemain <= 0) add('critical', `TEMPS DE CONDUITE DÉPASSÉ — ${who} au-delà de ${fmt.hm(maxStint)} (${P.penalty.maxStint})`, 'DRIVE');
+      else if (drvBoxMax <= 1) add('critical', `BOX THIS LAP — fin des ${fmt.hm(maxStint)} de ${who}`, 'DRIVE');
+      else if (drvBoxMax <= 3) add('warning', `BOX MAX ${drvBoxMax} TOURS — ${who} atteint ${fmt.hm(maxStint)} de conduite`, 'DRIVE');
+      else if (drvRemain < 20 * 60) add('info', `${who} : limite de ${fmt.hm(maxStint)} dans ${fmt.hms(drvRemain).slice(3)}`, 'DRIVE');
+    }
+    if (minDrv) {
+      const short = setup.drivers.filter((d) => driverDeficit[d.id] > 0);
+      if (finished && short.length) add('critical', `Minimum ${fmt.hm(minDrv)} non atteint : ${short.map((d) => dname(d.id)).join(', ')} (${P.penalty.minDriver})`, 'MIN_DRIVER');
+      else if (!finished && short.length && remaining - deficitTotal < 60 * 60) add(remaining - deficitTotal < 15 * 60 ? 'critical' : 'warning', `Minimum ${fmt.hm(minDrv)} par pilote : il manque ${short.map((d) => `${dname(d.id)} ${fmt.hm(driverDeficit[d.id])}`).join(', ')} — ${fmt.hm(Math.max(0, remaining))} de course restante`, 'MIN_DRIVER');
+    }
     if (!race.pit && !finished) {
       if (boxMax <= 1) add('critical', 'BOX THIS LAP — FUEL', 'FUEL');
       else if (boxMax <= 3) add('critical', `BOX MAX ${boxMax} TOURS — FUEL`, 'FUEL');
       if (next) {
         if (next.fuelLimited && boxMax > 3) add('warning', `Fuel limite avant target : box max ${boxMax} T < target ${next.lapsToTarget} T`, 'FUEL_TARGET');
-        if (next.lapsToTarget <= 1) add('warning', 'TARGET BOX THIS LAP', 'TARGET');
-        else add('info', `TARGET BOX ${next.lapsToTarget} TOURS  ·  MAX ${boxMax} TOURS`, 'TARGET');
+        const why = next.limitedBy === 'CONDUITE' ? ' (2H10)' : next.limitedBy === 'FUEL' ? ' (FUEL)' : '';
+        if (next.boxLaps <= 1) add('warning', `TARGET BOX THIS LAP${why}`, 'TARGET');
+        else add('info', `TARGET BOX ${next.boxLaps} TOURS${why}  ·  MAX FUEL ${boxMax} T${drvBoxMax != null ? `  ·  MAX CONDUITE ${drvBoxMax} T` : ''}`, 'TARGET');
       } else if (fuelToFinish > 0) add('warning', `Fuel insuffisant pour l'arrivée : +${fuelToFinish.toFixed(1)} L (arrêt extra, sans temps mini)`, 'FUEL_END');
-      else add('info', 'ARRÊTS OBLIGATOIRES TERMINÉS — fuel OK jusqu\'au damier', 'DONE');
+      else add('info', relays ? 'DERNIER RELAIS — fuel OK jusqu\'au damier' : 'ARRÊTS OBLIGATOIRES TERMINÉS — fuel OK jusqu\'au damier', 'DONE');
     }
     if (race.pit) {
       let txt;
-      if (!pit.canCount) txt = pit.late || pit.early ? `AU STAND — hors ${P.windowMode === 'window' ? 'fenêtre' : 'délai'} : ${P.penalty.outOfWindow}` : 'AU STAND — arrêt extra';
+      if (relays) txt = `AU STAND — ${fmt.ms(pit.inPit)}${planLeft > 0 ? ` · relais suivant : ${dname(pit.nextDriver)}` : ''}${pit.capped ? ` · plein limité à ${setup.maxFillL} L` : ''}`;
+      else if (!pit.canCount) txt = pit.late || pit.early ? `AU STAND — hors ${P.windowMode === 'window' ? 'fenêtre' : 'délai'} : ${P.penalty.outOfWindow}` : 'AU STAND — arrêt extra';
       else if (pit.willCount) txt = `AU STAND — ${fmt.ms(pit.inPit)} · OBLIGATOIRE OK${pit.penaltiesNow.length ? ` · ${pit.penaltiesNow.join(' · ')}` : ''}`;
       else txt = `AU STAND — ${fmt.ms(pit.inPit)} · obligatoire dans ${fmt.ms(pit.remainingMin)}${P.shortStop === 'PENALTY' ? ` (sinon ${P.penalty.short})` : ' (sinon arrêt extra)'}`;
-      add(pit.canCount && (pit.willCount || P.shortStop !== 'PENALTY') && !pit.penaltiesAtMin.length ? 'info' : 'warning', txt, 'PIT');
+      add(relays || (pit.canCount && (pit.willCount || P.shortStop !== 'PENALTY') && !pit.penaltiesAtMin.length) ? 'info' : 'warning', txt, 'PIT');
     }
     const over = live.find((t) => !t.done && t.overDeadline);
     if (over && !finished) add('warning', `Plan : arrêt #${over.n} projeté à ${fmt.hms(over.at)}, après la ${P.windowMode === 'window' ? 'fermeture de fenêtre' : 'deadline'} ${fmt.hms(dl)} — raccourcir un relais`, 'PLAN');
@@ -1051,6 +1155,7 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
 
     return {
       el, total, remaining, deadline: dl, windowOpen: open, profile: P, toDeadline: dl - el, finished,
+      relays, planDone, plannedStops, planLeft, maxStint, drvRemain, drvBoxMax, minDriver: minDrv, driverDeficit, reds,
       mandDone, totalStops, extras: totalStops - mandDone, stopsLeft,
       stint: stintInfo, last: race.lapLog.length ? race.lapLog[race.lapLog.length - 1].t : null,
       best: greenTimes.length ? Math.min(...greenTimes) : null,
@@ -1061,10 +1166,30 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
 
   /* Scénario "PIT NOW ?" : on simule un arrêt au temps mini maintenant. */
   function whatIfPitNow(race, setup, now) {
-    const el = E.elapsed(race, now), dl = E.deadlineSeconds(setup), mandDone = E.mandatoryDone(race);
+    const el = E.elapsed(race, now), mandDone = E.mandatoryDone(race);
     const st = compute(race, setup, now);
+    const P = E.profileOf(setup);
+    const room = Math.max(0, Math.min(setup.tank - race.fuel, setup.maxFillL > 0 ? setup.maxFillL : Infinity));
+    if (st.relays) {
+      // Mode relais : pas d'arrêt obligatoire ; on regarde le relais suivant et le recalage du plan.
+      const advances = st.planLeft > 0;
+      const idx = st.planDone;
+      const nextDriver = advances ? relayAt(setup, idx + 1).driver : race.driver;
+      const sim = JSON.parse(JSON.stringify(race));
+      sim.stops.push({ n: sim.stops.length + 1, inElapsed: el, outElapsed: el + 180, duration: 180, type: 'EXTRA', driverChange: advances });
+      const newTargets = liveTargets(sim, setup).filter((t) => !t.done);
+      const stintSec = advances ? (idx + 1 < st.plannedStops ? Number(relayAt(setup, idx + 1).minutes) * 60 : E.raceSeconds(setup) - el) : (st.next ? st.next.at - el : E.raceSeconds(setup) - el);
+      const fuelAdd = Math.max(0, Math.min(room, (Math.ceil(stintSec / st.greenPace) + setup.reserveLaps) * st.conso - race.fuel));
+      const reasons = [];
+      newTargets.forEach((t, i) => { const m = Number(relayAt(setup, idx + 1 + i).minutes); if (setup.maxStintMin && m > setup.maxStintMin) reasons.push(`Relais R${idx + 2 + i} prévu ${m} min : au-delà de ${setup.maxStintMin} min`); });
+      return {
+        counts: false, relays: true, late: false, stopNo: advances ? idx + 1 : null, nextDriver, fuelAdd, full: fuelAdd >= room - 0.5,
+        newTargets, earlyBy: st.next ? st.next.at - el : null, continueLaps: st.next ? st.next.boxLaps : null,
+        boxMax: st.boxMax, valid: !reasons.length, reasons
+      };
+    }
     const cls = E.classifyStop(setup, mandDone, el, setup.minPitSeconds);
-    const late = cls.late, P = E.profileOf(setup);
+    const late = cls.late;
     const counts = cls.type === 'MANDATORY';
     const sim = JSON.parse(JSON.stringify(race));
     sim.stops.push({ n: sim.stops.length + 1, inElapsed: el, outElapsed: el + setup.minPitSeconds, duration: setup.minPitSeconds, type: counts ? 'MANDATORY' : 'EXTRA', late });
@@ -1073,7 +1198,6 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
     const stintSec = counts
       ? (mandDone + 1 < setup.mandatoryStops ? Number(relayAt(setup, mandDone + 1).minutes) * 60 : E.raceSeconds(setup) - el - setup.minPitSeconds)
       : (st.next ? st.next.at - el : E.raceSeconds(setup) - el);
-    const room = Math.max(0, setup.tank - race.fuel);
     const fuelAdd = Math.max(0, Math.min(room, (Math.ceil(stintSec / st.greenPace) + setup.reserveLaps) * st.conso - race.fuel));
     const reasons = [];
     if (cls.early) reasons.push(`Fenêtre pas encore ouverte (${fmt.hms(E.windowOpenSeconds(setup))}) : ${P.penalty.outOfWindow}`);
@@ -1252,7 +1376,7 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
   /* ========================== PARSER (pur) ================================ */
   function createParser(opts) {
     const o = Object.assign({ carNumber: null, syncTolerance: 2.5 }, opts || {});
-    const st = { official: null, frozenAt: null, durChecked: false, outWait: 0, car: null, seen: false, lap: null, pos: null, pits: null, pitTime: null, status: null, driverIdx: null, inPit: false, pitInAt: null, flagRaw: null, info: null, lastElapsed: null };
+    const st = { field: {}, official: null, frozenAt: null, durChecked: false, outWait: 0, car: null, seen: false, lap: null, pos: null, pits: null, pitTime: null, status: null, driverIdx: null, inPit: false, pitInAt: null, flagRaw: null, info: null, lastElapsed: null };
 
     /* Temps officiel. Mesuré en direct le 31/10 (340R EQ2) : elapsed_time est à jour à chaque
        réponse (+3,1 s entre deux appels espacés de 3,1 s) ; `epoch` n'avance qu'aux passages.
@@ -1297,6 +1421,15 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
       /* Position : comparée à l'état du mur à chaque trame (ItsLive n'envoie la voiture que quand elle change). */
       const lastPos = ((frame.ranking || []).filter((r) => String(r.number) === String(o.carNumber)).pop() || st.car || {}).pos;
       if (lastPos > 0 && lastPos !== race.position && st.seen) evs.push({ type: 'POSITION_CHANGED', position: lastPos });
+
+      /* Classement complet tenu à jour (ItsLive n'envoie que les voitures modifiées) → position dans la classe. */
+      (frame.ranking || []).forEach((r) => { if (r && r.number != null) st.field[String(r.number)] = { pos: r.pos, cls: r.cat || r.class || r.group || '' }; });
+      const me = st.field[String(o.carNumber)];
+      if (me && me.cls && me.pos > 0) {
+        const same = Object.values(st.field).filter((c) => c.cls === me.cls && c.pos > 0);
+        const cp = 1 + same.filter((c) => c.pos < me.pos).length;
+        if (!race.classPos || race.classPos.pos !== cp || race.classPos.cls !== me.cls || race.classPos.n !== same.length) evs.push({ type: 'CLASS_POSITION', position: cp, cls: me.cls, n: same.length });
+      }
 
       /* Voiture suivie (enregistrements incrémentaux) */
       const rec = (frame.ranking || []).filter((r) => String(r.number) === String(o.carNumber)).pop();
@@ -1466,13 +1599,15 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
     const o = Object.assign({ carNumber: null, record: true }, opts);
     const parser = createParser({ carNumber: o.carNumber });
     const queue = [];
+    // Enregistrement allégé : la voiture suivie en entier, les autres réduites à n° / position / classe.
+    const slim = (r) => ({ data_id: r.data_id, number: r.number, pos: r.pos, total_lap: r.total_lap, lap_time: r.lap_time, status_img: r.status_img, total_pit_stop: r.total_pit_stop, total_pit_time: r.total_pit_time, current_driver: r.current_driver, driver_names: (r.driver_names || []).slice(0, 5), cat: r.cat || r.class || r.group || '' });
     const recording = { v: 1, provider: 'itslive', ssid: o.ssid || null, carNumber: o.carNumber, frames: [] };
     let client = null, replay = null;
     const keep = (f) => {
       queue.push(f);
       if (o.record && !replay) {
-        recording.frames.push({ t: f.t, info: f.info, ranking: (f.ranking || []).filter((r) => String(r.number) === String(o.carNumber)), field: f.field });
-        if (recording.frames.length > 12000) recording.frames.shift();
+        recording.frames.push({ t: f.t, info: f.info, ranking: (f.ranking || []).filter((r) => String(r.number) === String(o.carNumber)).map(slim), field: f.field, cls: (f.ranking || []).filter((r) => String(r.number) !== String(o.carNumber)).map((r) => [String(r.number), r.pos, r.cat || r.class || r.group || '']) });
+        if (recording.frames.length > 40000) recording.frames.shift();   // 24 h à 3 s = 28 800 trames
       }
     };
     const api = {
@@ -1511,7 +1646,11 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
     const now = () => virtAnchor + (Date.now() - realAnchor) * sp;
     function pump() {
       const n = now();
-      while (i < list.length && list[i].t <= n) { emit(Object.assign({}, list[i])); i++; status.ok = i; }
+      while (i < list.length && list[i].t <= n) {
+        const f = Object.assign({}, list[i]);
+        if (Array.isArray(f.cls)) f.ranking = (f.ranking || []).concat(f.cls.map(([number, pos, cat]) => ({ number, pos, cat })));
+        emit(f); i++; status.ok = i;
+      }
       if (i >= list.length) status.state = 'replay-end';
     }
     return {
@@ -1747,6 +1886,100 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
       rec.frames.forEach((f) => { a.feed(f); a.poll(r, s).forEach((ev) => { if (ev.type !== 'NOTICE') r = E.apply(r, s, ev); }); });
       eq(r.stops.length, 1, 'arrêts'); eq(r.stops[0].type, 'MANDATORY', 'obligatoire'); eq(r.stops[0].penalties.length, 0, 'sans pénalité');
       return 'fenêtre supposée 20–40 min';
+    });
+
+    /* ---- Profil Endurance VHC V de V 2026 (2 Tours d'Horloge, 24 h) ---- */
+    const vdev = () => {
+      const s = E.applyProfile(base(), 'VDEV_ENDURANCE_VHC_2026');
+      s.drivers = [{ id: 'X', name: 'Xavier Michel' }, { id: 'C', name: 'Christian Vaglio-Giors' }, { id: 'G', name: 'Gislain Genecand' }];
+      s.relayPlan = Array.from({ length: 12 }, (_, i) => ({ driver: ['X', 'C', 'G'][i % 3], minutes: 120 }));
+      s.refLap = 140; s.fuelPerLap = 2.4; s.tank = 80; s.startFuel = 78;
+      return E.normalizeSetup(s);
+    };
+    const change = (r, s, inMin, durSec, driver, fuel) => {
+      r = E.apply(r, s, { type: 'PIT_IN', at: T0 + inMin * M });
+      return E.apply(r, s, { type: 'PIT_OUT', at: T0 + inMin * M + durSec * 1000, inDriver: driver, driverChange: true, fuelAdded: fuel || 0 });
+    };
+    test('V de V : profil 24 h, 0 arrêt obligatoire, plan de 12 relais (#28, 3 pilotes)', 'V de V 24 h', () => {
+      const s = vdev();
+      eq(s.raceMinutes, 1440, 'durée'); eq(s.mandatoryStops, 0, 'arrêts obligatoires'); eq(s.maxStintMin, 130, '2 h 10'); eq(s.minDriverMin, 60, '1 h mini'); eq(s.maxFillL, 78, '78 L SP');
+      eq(E.plannedStops(s), 11, '11 fins de relais'); eq(E.validateSetup(s).errors.length, 0, 'plan valide');
+      eq(S.planTargets(s).map((t) => Math.round(t.at / 3600)).join(','), '2,4,6,8,10,12,14,16,18,20,22', 'fins de relais toutes les 2 h');
+    });
+    test('V de V : 2 à 4 pilotes ; relais de 140 min signalé (art. 3.2)', 'V de V 24 h', () => {
+      const s = vdev(); s.drivers = [{ id: 'X', name: 'Solo' }];
+      eq(E.validateSetup(E.normalizeSetup(s)).errors.length > 0, true, '1 pilote refusé');
+      const t = vdev(); t.relayPlan[3].minutes = 140;
+      eq(E.validateSetup(t).warnings.some((w) => /R4 prévu 140 min/.test(w)), true, 'relais trop long');
+    });
+    test('V de V : alertes 2 h 10 — BOX MAX puis BOX THIS LAP puis DÉPASSÉ', 'V de V 24 h', () => {
+      const s = vdev(); let r = started(s);
+      eq(S.compute(r, s, T0 + 60 * M).alerts.some((a) => a.code === 'DRIVE'), false, 'rien à 1 h');
+      let st = S.compute(r, s, T0 + 122 * M);
+      eq(st.alerts.some((a) => a.code === 'DRIVE' && /BOX MAX 3 TOURS/.test(a.text)), true, `à 2 h 02 : ${st.drvBoxMax} T`);
+      st = S.compute(r, s, T0 + 127 * M);
+      eq(st.alerts.some((a) => a.code === 'DRIVE' && a.level === 'critical' && /BOX THIS LAP/.test(a.text)), true, 'à 2 h 07');
+      st = S.compute(r, s, T0 + 131 * M);
+      eq(st.alerts.some((a) => a.code === 'DRIVE' && /DÉPASSÉ/.test(a.text)), true, 'à 2 h 11');
+      return `marge à 2 h 02 : ${S.compute(r, s, T0 + 122 * M).drvBoxMax} tours`;
+    });
+    test('V de V : target box = contrainte la plus courte (plan / fuel / 2 h 10)', 'V de V 24 h', () => {
+      const s = vdev(); s.relayPlan[0].minutes = 140; s.startFuel = 78; s.fuelPerLap = 1.0;
+      let st = S.compute(started(s), s, T0 + 100 * M);
+      eq(st.next.limitedBy, 'CONDUITE', `plan 140 min mais limite 2 h 10 → ${st.next.boxLaps} T`);
+      s.fuelPerLap = 2.4;
+      st = S.compute(started(s), s, T0 + 30 * M);
+      eq(st.next.limitedBy, 'FUEL', 'carburant plus court que le plan');
+    });
+    test('V de V : relais et temps par pilote ; arrêt sans changement compté au pilote', 'V de V 24 h', () => {
+      const s = vdev(); let r = started(s);
+      r = pit(r, s, 60, 90);                                       // ravitaillement sans changement : le relais continue
+      eq(r.stints.length, 1, 'même relais'); eq(E.planStopsDone(r, s).length, 0, 'pas de fin de relais');
+      r = change(r, s, 118, 240, 'C', 60);
+      eq(E.planStopsDone(r, s).length, 1, 'relais 1 terminé');
+      const st = S.compute(r, s, T0 + 180 * M);
+      near(st.drivers.X, 118 * 60, 'Xavier : 1 h 58 (arrêt de 1 min 30 inclus)', 1); near(st.drivers.C, 180 * 60 - (118 * 60 + 240), 'Christian depuis la sortie', 1);
+      eq(st.next.n, 2, 'prochaine fin de relais'); eq(st.next.driverIn, 'G', 'Gislain ensuite');
+      near(st.next.at, 118 * 60 + 240 + 120 * 60, 'recalée sur la sortie réelle + 2 h', 1);
+    });
+    test('V de V : drapeau rouge non compté dans le temps de conduite (art. 7.3.1)', 'V de V 24 h', () => {
+      const s = vdev(); let r = started(s);
+      r = E.apply(r, s, { type: 'RACE_STATUS', flag: 'RED', at: T0 + 100 * M });
+      r = E.apply(r, s, { type: 'RACE_STATUS', flag: 'GREEN', at: T0 + 130 * M });
+      const st = S.compute(r, s, T0 + 140 * M);
+      near(st.stint.driving, 110 * 60, 'conduite 1 h 50 (30 min de rouge exclues)', 1); near(st.drivers.X, 110 * 60, 'total pilote', 1);
+      eq(st.alerts.some((a) => a.code === 'DRIVE' && /DÉPASSÉ/.test(a.text)), false, 'pas de dépassement à 2 h 20 de course');
+    });
+    test('V de V : plein limité à 78 L (art. 4.2.1.2)', 'V de V 24 h', () => {
+      const s = vdev(); s.tank = 100; s.startFuel = 20; s.fuelPerLap = 3;
+      let r = started(s);
+      r = E.apply(r, s, { type: 'PIT_IN', at: T0 + 10 * M });
+      const st = S.compute(r, s, T0 + 11 * M);
+      eq(st.pit.fuelAdvice <= 78, true, `conseil ${st.pit.fuelAdvice.toFixed(1)} L`); eq(st.pit.capped, true, 'plafond signalé');
+    });
+    test('V de V : minimum 1 h par pilote — alerte quand il ne reste plus le temps', 'V de V 24 h', () => {
+      const s = vdev(); let r = started(s);
+      r = change(r, s, 120, 200, 'C'); r = change(r, s, 1300, 200, 'X');       // Gislain n'a jamais roulé
+      const st = S.compute(r, s, T0 + 1390 * M);
+      eq(st.alerts.some((a) => a.code === 'MIN_DRIVER' && /Gislain Genecand 1:00/.test(a.text)), true, 'Gislain : il manque 1 h');
+      const end = S.compute(r, s, T0 + 1441 * M);
+      eq(end.alerts.some((a) => a.code === 'MIN_DRIVER' && a.level === 'critical' && /non atteint/.test(a.text)), true, 'au damier');
+    });
+    test('V de V : position de classe calculée sur le classement ItsLive complet (SP 1)', 'V de V 24 h', () => {
+      if (!L) return 'ignoré';
+      const s = vdev(); s.carNumber = '28'; let r = E.createRace(s, T0);
+      const a = L.createAdapter({ carNumber: '28', record: false });
+      const car = (n, pos, cat, extra) => Object.assign({ data_id: pos, number: n, pos, total_lap: 10, lap_time: 140000, status_img: '_TrackPassing', total_pit_stop: 0, total_pit_time: 0, current_driver: 0, driver_names: ['', 'MICHEL Xavier'], cat }, extra);
+      const info = { elapsed_time: 1500000, remaining_time: 84900000, race_flag: 'GREEN FLAG' };
+      const feed = (ranking) => { a.feed({ t: T0, info, ranking }); a.poll(r, s).forEach((ev) => { if (ev.type !== 'NOTICE') r = E.apply(r, s, ev); }); };
+      feed([car('11', 1, 'H-SC'), car('40', 2, 'S2000'), car('55', 3, 'SP 1'), car('28', 6, 'SP 1'), car('21', 4, 'SP 3'), car('7', 5, 'SP 1')]);
+      eq(r.position, 6, 'général'); eq(r.classPos.pos, 3, 'P3 en SP 1'); eq(r.classPos.n, 3, '3 voitures en SP 1');
+      feed([car('55', 7, 'SP 1')]);                                            // seule la #55 change (envoi incrémental)
+      eq(r.classPos.pos, 2, 'P2 en SP 1 après le recul de la #55');
+    });
+    test('V de V : PIT NOW → relais suivant et plan recalé', 'V de V 24 h', () => {
+      const s = vdev(); const w = S.whatIfPitNow(started(s), s, T0 + 100 * M);
+      eq(w.relays, true, 'mode relais'); eq(w.nextDriver, 'C', 'Christian'); near(w.newTargets[0].at, 100 * 60 + 180 + 120 * 60, 'fin de relais 2 recalée', 1);
     });
 
     /* ---- LIVE ItsLive (forme des données relevée à Lédenon, 31/10/2026) ---- */
@@ -2075,12 +2308,21 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
     $('elapsed').textContent = F.hms(st.el); $('remaining').textContent = F.hms(st.remaining);
     $('sourceLbl').textContent = adapter.source + (mode === 'MANUAL' && !setup.virtualLaps ? ' · OFF' : '');
     $('srcKpi').textContent = mode === 'LIVE' ? 'ITSLIVE' : mode === 'REPLAY' ? 'REJEU' : mode === 'SIMULATION' ? 'SIMULATION' : (setup.virtualLaps ? 'VIRTUEL' : 'MANUEL');
-    $('footer').textContent = `${prof.name} · ${prof.permit} · Race Engine / Strategy Engine / Timing Adapter / Strategy Wall · V5.5`;
+    $('footer').textContent = `${prof.name} · ${prof.permit} · Race Engine / Strategy Engine / Timing Adapter / Strategy Wall · V6.0`;
 
     // Pilote / stint
     $('curDriver').textContent = dn(race.driver);
-    $('stintMeta').textContent = `RELAIS ${Math.min(st.mandDone + 1, setup.mandatoryStops + 1)} · STINT ${st.stint.n}`;
-    $('stintTime').textContent = F.hms(st.stint.time).slice(st.stint.time >= 3600 ? 0 : 3);
+    const rel = st.relays;
+    $('stintMeta').textContent = rel ? `RELAIS ${Math.min(st.planDone + 1, st.plannedStops + 1)}/${st.plannedStops + 1} · STINT ${st.stint.n}` : `RELAIS ${Math.min(st.mandDone + 1, setup.mandatoryStops + 1)} · STINT ${st.stint.n}`;
+    if (st.maxStint != null) {
+      // Temps de conduite du relais (hors drapeau rouge) et ce qu'il reste avant la limite par relais.
+      $('stintLbl').textContent = st.drvRemain > 0 ? `CONDUITE · RESTE ${F.hms(st.drvRemain).slice(st.drvRemain >= 3600 ? 0 : 3)}` : 'CONDUITE · LIMITE DÉPASSÉE';
+      $('stintTime').textContent = F.hms(st.stint.driving).slice(st.stint.driving >= 3600 ? 0 : 3);
+      $('stintKpi').className = `kpi ${st.drvRemain <= 0 ? 'bad' : st.drvRemain < 15 * 60 ? 'warn' : ''}`;
+    } else {
+      $('stintLbl').textContent = 'STINT'; $('stintKpi').className = 'kpi';
+      $('stintTime').textContent = F.hms(st.stint.time).slice(st.stint.time >= 3600 ? 0 : 3);
+    }
     $('stintLaps').textContent = st.stint.laps;
     $('avgLap').textContent = F.lap(st.stint.avg);
     $('avgLbl').textContent = st.stint.avgLaps ? `MOY. STINT · ${st.stint.avgLaps} T VERTS` : 'MOY. STINT (VERT)';
@@ -2090,11 +2332,14 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
     const maxT = Math.max(1, ...Object.values(st.drivers));
     $('drvTimes').innerHTML = setup.drivers.map((d) => {
       const t = st.drivers[d.id] || 0;
-      return `<div class="drv-row ${d.id === race.driver ? 'cur' : ''}"><span class="drv-code">${esc(d.id)}</span><span>${esc(d.name)}</span><span class="mono">${F.hm(t)}</span><span class="drv-bar"><i style="width:${(t / maxT * 100).toFixed(1)}%"></i></span></div>`;
+      const need = st.minDriver ? st.driverDeficit[d.id] : 0;
+      const mark = st.minDriver ? (need > 0 ? ` <span class="need" title="Minimum ${F.hm(st.minDriver)} par pilote">−${F.hm(need)}</span>` : ' <span class="ok" title="Minimum atteint">✓</span>') : '';
+      return `<div class="drv-row ${d.id === race.driver ? 'cur' : ''}"><span class="drv-code">${esc(d.id)}</span><span>${esc(d.name)}</span><span class="mono">${F.hm(t)}${mark}</span><span class="drv-bar"><i style="width:${(t / maxT * 100).toFixed(1)}%"></i></span></div>`;
     }).join('');
 
     // Live
     $('position').textContent = race.position ? `P${race.position}` : 'P--';
+    $('posLbl').textContent = race.classPos ? `GÉNÉRAL · P${race.classPos.pos} EN ${race.classPos.cls}${race.classPos.n ? ` (${race.classPos.n})` : ''}` : 'POSITION';
     $('paceMeta').textContent = st.paceMode === 'GREEN' ? `RYTHME ${F.lap(st.greenPace)}` : `RYTHME ${st.paceMode} ${F.lap(st.pace)} · VERT ${F.lap(st.greenPace)}`;
     $('paceMeta').title = 'Rythme = médiane des 5 derniers tours propres du relais. Sous SC / FCY, les tours restants avant le box sont comptés au rythme neutralisé observé.';
     $('lapCount').textContent = race.laps;
@@ -2105,21 +2350,26 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
     if (win) {
       $('toDeadlineLbl').textContent = st.el < st.windowOpen ? 'FENÊTRE OUVRE DANS' : 'FENÊTRE FERME DANS';
       $('toDeadline').textContent = st.el < st.windowOpen ? F.hms(st.windowOpen - st.el) : st.toDeadline > 0 ? F.hms(st.toDeadline) : 'FERMÉE';
-    } else { $('toDeadlineLbl').textContent = 'DEADLINE DANS'; $('toDeadline').textContent = st.toDeadline > 0 ? F.hms(st.toDeadline) : 'PASSÉE'; }
+    } else if (st.maxStint != null) { $('toDeadlineLbl').textContent = `LIMITE ${F.hm(st.maxStint)} DANS`; $('toDeadline').textContent = st.drvRemain > 0 ? F.hms(st.drvRemain) : 'DÉPASSÉE'; }
+    else { $('toDeadlineLbl').textContent = 'DEADLINE DANS'; $('toDeadline').textContent = st.toDeadline > 0 ? F.hms(st.toDeadline) : 'PASSÉE'; }
 
     // Target box
     const tc = $('targetCard'); tc.classList.remove('warn', 'danger');
     if (st.next) {
-      $('nextStopNo').textContent = `#${st.next.n}`;
-      const box = Math.min(st.next.lapsToTarget, st.boxMax);
-      $('boxTarget').textContent = st.next.lapsToTarget;
-      $('targetTime').textContent = `à ${F.hms(st.next.at)} · tour ${st.next.targetLap}${st.paceMode !== 'GREEN' ? ` · tours au rythme ${st.paceMode}` : ''}${st.next.fuelLimited ? ` · FUEL MAX ${st.boxMax} T` : ''}`;
+      $('tbLbl').textContent = rel ? `FIN DU RELAIS ${st.next.n}` : 'ARRÊT OBLIGATOIRE';
+      $('nextStopNo').textContent = rel ? `R${st.next.n} → R${st.next.n + 1}` : `#${st.next.n}`;
+      // Nombre affiché = contrainte la plus courte (plan, carburant, temps de conduite).
+      const box = st.next.boxLaps;
+      $('boxTarget').textContent = box;
+      const why = { PLAN: '', FUEL: ' · LIMITÉ PAR LE FUEL', CONDUITE: ` · LIMITÉ PAR LES ${F.hm(st.maxStint || 0)} DE CONDUITE` }[st.next.limitedBy];
+      $('targetTime').textContent = `plan ${F.hms(st.next.at)} · tour ${st.next.targetLap}${why}${st.paceMode !== 'GREEN' ? ` · tours au rythme ${st.paceMode}` : ''}`;
       $('nextStopDriver').textContent = dn(st.next.driverIn);
-      $('fuelAdd').textContent = st.next.full ? 'FULL' : `+${Math.ceil(st.next.addFuel)} L`;
+      $('fuelAdd').textContent = st.next.full ? (st.next.capped ? `PLEIN MAX ${setup.maxFillL} L` : 'FULL') : `+${Math.ceil(st.next.addFuel)} L`;
       $('targetMeta').textContent = `PLAN ${F.hms(st.next.planAt).slice(0, 5)}`;
-      if (!race.pit) { if (box <= 1 || st.boxMax <= 1) tc.classList.add('danger'); else if (box <= 3 || st.next.fuelLimited) tc.classList.add('warn'); }
+      if (!race.pit) { if (box <= 1 || st.boxMax <= 1) tc.classList.add('danger'); else if (box <= 3 || st.next.limitedBy !== 'PLAN') tc.classList.add('warn'); }
     } else {
-      $('nextStopNo').textContent = '✓'; $('boxTarget').textContent = '—'; $('targetTime').textContent = 'arrêts obligatoires terminés';
+      $('tbLbl').textContent = rel ? 'DERNIER RELAIS' : 'ARRÊT OBLIGATOIRE';
+      $('nextStopNo').textContent = '✓'; $('boxTarget').textContent = '—'; $('targetTime').textContent = rel ? 'jusqu\'au damier' : 'arrêts obligatoires terminés';
       $('nextStopDriver').textContent = 'Damier'; $('fuelAdd').textContent = st.fuelToFinish > 0 ? `splash +${Math.ceil(st.fuelToFinish)} L` : 'fuel OK';
       $('targetMeta').textContent = '';
     }
@@ -2138,15 +2388,18 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
     renderRelays();
 
     // Arrêts
+    $('stopDots').hidden = rel;
     $('stopDots').innerHTML = Array.from({ length: setup.mandatoryStops }, (_, i) => `<span class="dot ${i < st.mandDone ? 'on' : i === st.mandDone ? 'cur' : ''}" title="Arrêt obligatoire #${i + 1}"></span>`).join('');
-    $('stopCount').innerHTML = `${st.mandDone} / ${setup.mandatoryStops} <span class="muted" style="font-size:16px">obligatoires · ${st.totalStops} total</span>`;
+    $('stopCount').innerHTML = rel ? `${st.planDone} / ${st.plannedStops} <span class="muted" style="font-size:16px">relais terminés · ${st.totalStops} arrêt${st.totalStops > 1 ? 's' : ''}</span>`
+      : `${st.mandDone} / ${setup.mandatoryStops} <span class="muted" style="font-size:16px">obligatoires · ${st.totalStops} total</span>`;
     $('stopsMeta').textContent = st.extras ? `${st.extras} EXTRA` : '';
-    $('deadlineLbl').textContent = win ? 'FENÊTRE D\'ARRÊT' : 'DEADLINE DERNIER';
-    $('deadline').textContent = win ? `${F.hms(st.windowOpen).slice(0, 5)} → ${F.hms(st.deadline).slice(0, 5)}` : F.hms(st.deadline);
-    $('pitMin').textContent = F.ms(setup.minPitSeconds).replace('.0', '');
+    $('deadlineLbl').textContent = rel ? 'CONDUITE MAX / RELAIS' : win ? 'FENÊTRE D\'ARRÊT' : 'DEADLINE DERNIER';
+    $('deadline').textContent = rel ? F.hm(st.maxStint || 0) : win ? `${F.hms(st.windowOpen).slice(0, 5)} → ${F.hms(st.deadline).slice(0, 5)}` : F.hms(st.deadline);
+    $('pitMinLbl').textContent = rel ? 'MINIMUM PAR PILOTE' : 'ARRÊT MINI';
+    $('pitMin').textContent = rel ? F.hm(st.minDriver || 0) : F.ms(setup.minPitSeconds).replace('.0', '');
     $('stopLog').innerHTML = race.stops.length ? race.stops.slice().reverse().map((s) => {
       const pen = s.penalties && s.penalties.length;
-      const pill = pen ? '<span class="pill l">OBLIG. + PÉNALITÉ</span>' : (s.late || s.early) && s.type === 'EXTRA' && !s.short ? `<span class="pill l">${win ? 'HORS FENÊTRE' : 'HORS DÉLAI'}</span>` : s.type === 'MANDATORY' ? '<span class="pill m">OBLIG.</span>' : '<span class="pill x">EXTRA</span>';
+      const pill = rel ? (s.driverChange ? '<span class="pill m">RELAIS</span>' : '<span class="pill x">ARRÊT</span>') : pen ? '<span class="pill l">OBLIG. + PÉNALITÉ</span>' : (s.late || s.early) && s.type === 'EXTRA' && !s.short ? `<span class="pill l">${win ? 'HORS FENÊTRE' : 'HORS DÉLAI'}</span>` : s.type === 'MANDATORY' ? '<span class="pill m">OBLIG.</span>' : '<span class="pill x">EXTRA</span>';
       const who = s.recovered ? 'recalage' : `${s.driverChange ? `${esc(s.outDriver)}→${esc(s.inDriver)}` : 'même pilote'}${s.fuelAdded ? ` · +${s.fuelAdded.toFixed(1)} L` : ''}`;
       return `<div><span>#${s.n}</span><span>${F.hms(s.inElapsed)}</span><span>${F.ms(s.duration)}</span>${pill}<span class="who" title="${esc(pen ? s.penalties.join(' · ') : '')}">${pen ? esc(s.penalties[0]) : who}</span></div>`;
     }).join('') : '<span class="empty">Aucun arrêt. PIT IN à l\'entrée de la boucle pitlane.</span>';
@@ -2196,26 +2449,27 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
      voler le focus d'un champ en cours d'édition. */
   function renderRelays() {
     const box = $('relays');
-    const key = JSON.stringify([setup.relayPlan, setup.drivers, st.live.map((t) => Math.round(t.at)), st.mandDone, race.stops.length, Math.round(st.total)]);
+    const key = JSON.stringify([setup.relayPlan, setup.drivers, st.live.map((t) => Math.round(t.at)), st.mandDone, st.planDone, race.stops.length, Math.round(st.total), !!race.pit]);
     if (key === rowsKey || box.contains(document.activeElement)) return;
     rowsKey = key;
     const opts = (sel) => setup.drivers.map((d) => `<option value="${esc(d.id)}" ${d.id === sel ? 'selected' : ''}>${esc(d.id)} · ${esc(d.name)}</option>`).join('');
     let html = '<div class="relay-h"><span>RELAIS</span><span>PILOTE</span><span>DURÉE</span><span>PLAN</span><span>LIVE</span><span>ARRÊT</span></div>';
-    for (let i = 0; i <= setup.mandatoryStops; i++) {
+    const nPlan = st.plannedStops, nDone = st.relays ? st.planDone : st.mandDone;
+    for (let i = 0; i <= nPlan; i++) {
       const r = setup.relayPlan[i];
-      const final = i === setup.mandatoryStops;
-      const done = i < st.mandDone, cur = i === st.mandDone;
+      const final = i === nPlan;
+      const done = i < nDone, cur = i === nDone;
       const t = st.live[i];
       let status = '';
       if (final) status = '<span class="st">→ damier</span>';
-      else if (done) { const s = t.stop; status = `<span class="st"><span class="pill m">OBLIG.</span> ${F.ms(s.duration)}</span>`; }
+      else if (done) { const s = t.stop; status = `<span class="st"><span class="pill m">${st.relays ? 'FAIT' : 'OBLIG.'}</span> ${F.ms(s.duration)}</span>`; }
       else if (cur) status = race.pit ? '<span class="st amber">AU STAND</span>' : '<span class="st amber">EN COURS</span>';
-      const lastIn = st.mandDone ? st.live[setup.mandatoryStops - 1] : null;
+      const lastIn = null;
       const finalMin = Math.max(0, Math.round((st.total - (st.live.length ? st.live[st.live.length - 1].at : 0)) / 60));
       html += `<div class="relay ${done ? 'done' : ''} ${cur ? 'cur' : ''}">
         <span class="rn">R${i + 1}</span>
         <select data-relay-driver="${i}" ${done || (cur && i > 0) ? 'disabled' : ''} aria-label="Pilote relais ${i + 1}">${opts(r.driver)}</select>
-        ${final ? `<span class="t muted">≈${finalMin} min</span>` : `<input data-relay-min="${i}" type="number" min="1" step="1" value="${r.minutes}" ${done ? 'disabled' : ''} aria-label="Durée relais ${i + 1} en minutes">`}
+        ${final ? `<span class="t ${st.maxStint && finalMin * 60 > st.maxStint ? 'late' : 'muted'}" title="${st.maxStint && finalMin * 60 > st.maxStint ? 'au-delà de la limite de conduite par relais' : ''}">≈${finalMin} min</span>` : `<input data-relay-min="${i}" type="number" min="1" step="1" value="${r.minutes}" ${done ? 'disabled' : ''} class="${st.maxStint && r.minutes * 60 > st.maxStint ? 'over' : ''}" title="${st.maxStint && r.minutes * 60 > st.maxStint ? `au-delà des ${F.hm(st.maxStint)} autorisées par relais` : ''}" aria-label="Durée relais ${i + 1} en minutes">`}
         <span class="t">${final ? F.hms(st.total).slice(0, 5) : F.hms(t.plan).slice(0, 5)}</span>
         <span class="t ${!final && (t.overDeadline || t.beforeWindow) ? 'late' : cur ? 'amber' : ''}" title="${!final && t.beforeWindow ? 'avant l\'ouverture de fenêtre' : !final && t.overDeadline ? 'après la fermeture / deadline' : ''}">${final ? '' : F.hms(t.at).slice(0, 5)}</span>
         ${status}</div>`;
@@ -2238,7 +2492,8 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
     $('pitTitle').textContent = `PIT #${race.pit.n}${race.pit.src === 'ITSLIVE' ? ' · ItsLive' : ''}`;
     $('pitDriver').innerHTML = setup.drivers.map((d) => `<option value="${esc(d.id)}">${esc(d.id)} · ${esc(d.name)}</option>`).join('');
     $('pitDriver').value = p.nextDriver;
-    $('pitChange').checked = p.canCount || p.nextDriver !== race.driver;
+    $('pitChange').checked = p.relays ? st.planLeft > 0 : (p.canCount || p.nextDriver !== race.driver);
+    $('pitNote').textContent = st.profile.pitNote || '';
     $('pitFuel').value = p.fuelAdvice > 0 ? p.fuelAdvice.toFixed(1) : '0';
     ['ck1', 'ck2', 'ck3'].forEach((id) => { $(id).checked = false; });
     $('pitLiveNote').hidden = race.pit.src !== 'ITSLIVE';
@@ -2256,7 +2511,10 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
     const P = st.profile;
     $('pitTimer').textContent = F.ms(p.inPit);
     const el = $('pitStatus');
-    if (!p.canCount) {
+    if (p.relays) {
+      el.textContent = st.planLeft > 0 ? `FIN DU RELAIS ${st.planDone + 1} · ${dn(p.nextDriver)} repart${p.capped ? ` · plein max ${setup.maxFillL} L` : ''}` : `ARRÊT · dernier relais, ${dn(race.driver)} reste en voiture`;
+      el.className = 'pitstatus ok';
+    } else if (!p.canCount) {
       if (p.early || p.late) { el.textContent = `HORS ${P.windowMode === 'window' ? 'FENÊTRE' : 'DÉLAI'} · ${P.outOfWindow === 'PENALTY' ? 'arrêt court = extra' : 'NON COMPTABILISÉ'}`; el.className = 'pitstatus bad'; }
       else { el.textContent = 'ARRÊT EXTRA · aucun temps minimum'; el.className = 'pitstatus wait'; }
     } else if (p.willCount) {
@@ -2510,7 +2768,8 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
   /* ---------- Setup ---------- */
   const FIELDS = [
     ['circuit', 'CIRCUIT', 'text'], ['carNumber', 'N° VOITURE', 'text'], ['raceMinutes', 'DURÉE COURSE (MIN)', 'number', 1],
-    ['mandatoryStops', 'ARRÊTS OBLIGATOIRES', 'number', 1], ['minPitSeconds', 'ARRÊT MINI (S)', 'number', 1], ['lastStopDeadlineMin', 'DEADLINE (MIN AVANT FIN)', 'number', 1, 'deadline'],
+    ['mandatoryStops', 'ARRÊTS OBLIGATOIRES', 'number', 1, 'mand'], ['minPitSeconds', 'ARRÊT MINI (S)', 'number', 1, 'mand'],
+    ['maxStintMin', 'CONDUITE MAX PAR RELAIS (MIN)', 'number', 1, 'relays'], ['minDriverMin', 'CONDUITE MIN PAR PILOTE (MIN)', 'number', 1, 'relays'], ['maxFillL', 'PLEIN MAX PAR ARRÊT (L)', 'number', 1, 'relays'], ['lastStopDeadlineMin', 'DEADLINE (MIN AVANT FIN)', 'number', 1, 'deadline'],
     ['windowOpenMin', 'FENÊTRE : OUVERTURE (MIN)', 'number', 1, 'window'], ['windowCloseMin', 'FENÊTRE : FERMETURE (MIN)', 'number', 1, 'window'],
     ['pitSpeedKmh', 'VITESSE PITLANE (KM/H)', 'number', 1], ['refLap', 'TOUR DE RÉFÉRENCE (S)', 'number', 0.1], ['tank', 'RÉSERVOIR (L)', 'number', 0.1],
     ['startFuel', 'ESSENCE DÉPART (L)', 'number', 0.1], ['fuelPerLap', 'CONSO RÉF. (L/TOUR)', 'number', 0.01], ['fuelMargin', 'MARGE FUEL (%)', 'number', 0.1],
@@ -2524,7 +2783,7 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
   function renderSetup() {
     const prof = E.PROFILES[draft.profileId];
     $('setupFields').innerHTML = `<div class="field profile-field"><label for="f_profile">CHAMPIONNAT · RÈGLEMENT</label><select id="f_profile">${Object.values(E.PROFILES).map((p) => `<option value="${p.id}" ${p.id === draft.profileId ? 'selected' : ''}>${esc(p.name)} · ${esc(p.permit)}</option>`).join('')}</select></div>`
-      + FIELDS.filter((f) => !f[4] || f[4] === prof.windowMode).map(([k, label, type, step]) => `<div class="field"><label for="f_${k}">${label}</label><input id="f_${k}" type="${type}" ${step ? `step="${step}"` : ''} value="${esc(draft[k])}"></div>`).join('')
+      + FIELDS.filter((f) => !f[4] || f[4] === prof.windowMode || (f[4] === 'relays' && prof.planMode === 'relays') || (f[4] === 'mand' && prof.planMode !== 'relays')).map(([k, label, type, step]) => `<div class="field"><label for="f_${k}">${label}</label><input id="f_${k}" type="${type}" ${step ? `step="${step}"` : ''} value="${esc(draft[k])}"></div>`).join('')
       + `<div class="field check" style="align-self:end"><input id="f_virtualLaps" type="checkbox" ${draft.virtualLaps ? 'checked' : ''}><label for="f_virtualLaps">TOURS VIRTUELS EN MANUAL</label></div>`;
     $('setupRelays').innerHTML = '';
     renderSetupLists();
@@ -2547,11 +2806,18 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
     const norm = E.normalizeSetup(draft);
     const plan = S.planTargets(norm);
     const box = $('setupRelays');
-    const fresh = box.querySelectorAll('.srow').length !== norm.relayPlan.length || box.dataset.stops !== String(norm.mandatoryStops);
+    const relays = E.isRelays(norm);
+    const nStops = E.plannedStops(norm);
+    const fresh = box.querySelectorAll('.srow').length !== norm.relayPlan.length || box.dataset.stops !== String(nStops);
+    $('relayBtns').hidden = !relays;
+    if (relays) {
+      const used = norm.relayPlan.slice(0, -1).reduce((a, r) => a + r.minutes, 0);
+      $('relaySum').textContent = `${norm.relayPlan.length} relais · dernier relais ≈ ${Math.max(0, norm.raceMinutes - used)} min jusqu'au damier`;
+    }
     if (fresh) {
-      box.dataset.stops = String(norm.mandatoryStops);
+      box.dataset.stops = String(nStops);
       box.innerHTML = norm.relayPlan.map((r, i) => {
-        const end = i >= norm.mandatoryStops;
+        const end = i >= nStops;
         return `<div class="srow"><span class="mono">R${i + 1}</span>
           <select data-rdrv="${i}" aria-label="Pilote relais ${i + 1}"></select>
           ${end ? '<span class="t">→ damier</span>' : `<input data-rmin="${i}" type="number" min="1" value="${r.minutes}" aria-label="Minutes relais ${i + 1}">`}
@@ -2560,7 +2826,7 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
     }
     const optsKey = JSON.stringify(norm.drivers);
     norm.relayPlan.forEach((r, i) => {
-      const end = i >= norm.mandatoryStops;
+      const end = i >= nStops;
       const sel = box.querySelector(`[data-rdrv="${i}"]`);
       if (sel.dataset.k !== optsKey) { sel.innerHTML = norm.drivers.map((d) => `<option value="${esc(d.id)}">${esc(d.id)} · ${esc(d.name)}</option>`).join(''); sel.dataset.k = optsKey; }
       if (sel.value !== r.driver) sel.value = r.driver;
@@ -2568,8 +2834,9 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
       if (min && document.activeElement !== min && Number(min.value) !== r.minutes) min.value = r.minutes;
       box.querySelector(`[data-rbox="${i}"]`).textContent = end ? '' : `box ${F.hms(plan[i].at).slice(0, 5)}`;
       const w = box.querySelector(`[data-rwarn="${i}"]`);
-      const bad = !end && (plan[i].overDeadline || plan[i].beforeWindow);
-      w.textContent = !bad ? '' : plan[i].beforeWindow ? 'AVANT FENÊTRE' : (E.profileOf(norm).windowMode === 'window' ? 'APRÈS FENÊTRE' : 'HORS DEADLINE');
+      const tooLong = relays && norm.maxStintMin > 0 && (end ? Math.max(0, norm.raceMinutes - norm.relayPlan.slice(0, -1).reduce((a, x) => a + x.minutes, 0)) : r.minutes) > norm.maxStintMin;
+      const bad = tooLong || (!end && (plan[i].overDeadline || plan[i].beforeWindow));
+      w.textContent = !bad ? '' : tooLong ? `> ${norm.maxStintMin} MIN` : plan[i].beforeWindow ? 'AVANT FENÊTRE' : (E.profileOf(norm).windowMode === 'window' ? 'APRÈS FENÊTRE' : 'HORS DEADLINE');
       w.className = `t ${bad ? 'stop' : ''}`;
     });
     const v = E.validateSetup(norm);
@@ -2581,14 +2848,28 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
   $('setupModal').addEventListener('input', (e) => {
     const t = e.target, d = t.dataset;
     if (d.dname != null) draft.drivers[+d.dname].name = t.value;
-    else if (d.dcode != null) { const old = draft.drivers[+d.dcode].id; const nu = t.value.toUpperCase(); draft.drivers[+d.dcode].id = nu; draft.relayPlan.forEach((r) => { if (r.driver === old) r.driver = nu; }); }
+    // Code pilote : appliqué à la sortie du champ (voir 'change'), jamais pendant la frappe.
   });
   $('setupModal').addEventListener('change', (e) => {
     const t = e.target, d = t.dataset;
     if (t.id === 'f_profile') { readFields(); draft = E.applyProfile(draft, t.value); renderSetup(); return; }
+    if (d.dcode != null) {
+      // Renommage d'un code : refusé s'il est déjà pris (sinon deux pilotes fusionnent dans le plan de relais).
+      const i = +d.dcode, old = draft.drivers[i].id, nu = t.value.trim().toUpperCase().slice(0, 3);
+      const taken = draft.drivers.some((x, j) => j !== i && x.id === nu);
+      if (!nu || taken) {
+        t.value = old;
+        $('setupErrors').insertAdjacentHTML('afterbegin', `<div class="e">✗ Code « ${esc(nu)} » ${nu ? 'déjà utilisé par un autre pilote' : 'vide'} : renommez d'abord l'autre pilote</div>`);
+        return;
+      }
+      draft.drivers[i].id = nu; t.value = nu;
+      draft.relayPlan.forEach((r) => { if (r.driver === old) r.driver = nu; });
+      renderSetupPlan();
+      return;
+    }
     if (d.rdrv != null) { draft = E.normalizeSetup(draft); draft.relayPlan[+d.rdrv].driver = t.value; }
     else if (d.rmin != null) { draft = E.normalizeSetup(draft); draft.relayPlan[+d.rmin].minutes = Math.max(1, Math.round(Number(t.value) || 1)); }
-    else if (['f_mandatoryStops', 'f_raceMinutes', 'f_lastStopDeadlineMin', 'f_windowOpenMin', 'f_windowCloseMin', 'f_minPitSeconds', 'f_startFuel', 'f_tank'].includes(t.id)) { readFields(); draft = E.normalizeSetup(draft); }
+    else if (['f_maxStintMin', 'f_minDriverMin', 'f_maxFillL', 'f_mandatoryStops', 'f_raceMinutes', 'f_lastStopDeadlineMin', 'f_windowOpenMin', 'f_windowCloseMin', 'f_minPitSeconds', 'f_startFuel', 'f_tank'].includes(t.id)) { readFields(); draft = E.normalizeSetup(draft); }
     else if (d.dcode == null && d.dname == null) return;
     renderSetupPlan();
   });
@@ -2596,6 +2877,15 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
     const del = e.target.closest('[data-ddel]');
     if (del && !del.disabled) { const id = draft.drivers[+del.dataset.ddel].id; draft.drivers.splice(+del.dataset.ddel, 1); draft.relayPlan.forEach((r) => { if (r.driver === id) r.driver = null; }); renderSetupLists(); }
   });
+  $('addRelay').onclick = () => {
+    draft = E.normalizeSetup(draft);
+    const ids = draft.drivers.map((d) => d.id);
+    const last = draft.relayPlan[draft.relayPlan.length - 1];
+    const nextId = ids[(ids.indexOf(last.driver) + 1) % ids.length];
+    draft.relayPlan.push({ driver: nextId, minutes: Math.min(draft.maxStintMin || 120, 120) });
+    renderSetupPlan();
+  };
+  $('delRelay').onclick = () => { draft = E.normalizeSetup(draft); if (draft.relayPlan.length > 2) { draft.relayPlan.pop(); renderSetupPlan(); } };
   $('addDriver').onclick = () => {
     const used = new Set(draft.drivers.map((d) => d.id));
     let c = 65; while (used.has(String.fromCharCode(c))) c++;
@@ -2617,7 +2907,8 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
     $('rDriver').innerHTML = setup.drivers.map((d) => `<option value="${esc(d.id)}" ${d.id === race.driver ? 'selected' : ''}>${esc(d.id)} · ${esc(d.name)}</option>`).join('');
     const s = E.currentStint(race);
     $('rStintTime').value = F.hms(s.startElapsed); $('rStintLap').value = s.startLap;
-    $('rFuel').value = race.fuel.toFixed(1); $('rMand').value = st.mandDone; $('rExtra').value = st.extras; $('recErr').textContent = '';
+    $('rMandLbl').textContent = st.relays ? 'RELAIS TERMINÉS' : 'ARRÊTS OBLIGATOIRES FAITS';
+    $('rFuel').value = race.fuel.toFixed(1); $('rMand').value = st.relays ? st.planDone : st.mandDone; $('rExtra').value = st.extras; $('recErr').textContent = '';
     closeM('setupModal'); openM('recoveryModal');
   };
   $('recoveryClose').onclick = () => { closeM('recoveryModal'); openM('setupModal'); };
@@ -2625,12 +2916,27 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
     const el = parseClock($('rTime').value), ss = parseClock($('rStintTime').value);
     const laps = parseInt($('rLaps').value, 10), sl = parseInt($('rStintLap').value, 10);
     const mand = parseInt($('rMand').value, 10), ex = parseInt($('rExtra').value, 10);
-    if (el == null || ss == null || ss > el || !(laps >= 0) || !(sl >= 0) || sl > laps || !(mand >= 0) || mand > setup.mandatoryStops || !(ex >= 0)) {
-      $('recErr').innerHTML = '<div class="e">Vérifiez les valeurs : début de stint ≤ temps course, tours cohérents, obligatoires ≤ ' + setup.mandatoryStops + '.</div>'; return;
+    if (el == null || ss == null || ss > el || !(laps >= 0) || !(sl >= 0) || sl > laps || !(mand >= 0) || mand > E.plannedStops(setup) || !(ex >= 0)) {
+      $('recErr').innerHTML = `<div class="e">Vérifiez les valeurs : début de stint ≤ temps course, tours cohérents, ${st.relays ? 'relais terminés' : 'arrêts obligatoires'} ≤ ${E.plannedStops(setup)}.</div>`; return;
     }
     dispatch({ type: 'RECOVER', elapsed: el, laps, driver: $('rDriver').value, stintStartElapsed: ss, stintStartLap: sl, fuel: Number($('rFuel').value), mandatoryDone: mand, extrasDone: ex });
     rowsKey = ''; closeM('recoveryModal');
   };
+
+  /* ---------- Écran toujours allumé (Wake Lock, page https ou appli installée) ----------
+     Le verrou saute quand l'appli passe en arrière-plan : on le redemande au retour. */
+  let wake = null;
+  async function keepAwake() {
+    if (!('wakeLock' in navigator) || document.visibilityState !== 'visible' || wake) return;
+    try {
+      wake = await navigator.wakeLock.request('screen');
+      wake.addEventListener('release', () => { wake = null; $('wakeTag').hidden = true; });
+      $('wakeTag').hidden = false;
+    } catch (e) { wake = null; }
+  }
+  document.addEventListener('visibilitychange', keepAwake);
+  ['click', 'touchend'].forEach((t) => document.addEventListener(t, keepAwake, { passive: true }));
+  keepAwake();
 
   /* ---------- Démarrage ---------- */
   runTests();
