@@ -58,6 +58,11 @@ button:disabled{cursor:not-allowed;opacity:.45}
 .clock-sep{color:var(--dim)}
 .clock-rem{font-family:var(--f-mono);font-size:17px;color:var(--muted)}
 .clock-lbl{font-size:10px;letter-spacing:.14em;color:var(--dim);font-weight:600}
+.tod{display:flex;flex-direction:column;align-items:flex-end;line-height:1.05;margin-left:auto;padding-right:12px;border-right:1px solid var(--line)}
+.tod-t{font-family:var(--f-mono);font-size:20px;font-weight:600;color:var(--fg)}
+.tod-eta{font-family:var(--f-mono);font-size:11px;letter-spacing:.04em;color:var(--muted)}
+.tod + .clock{margin-left:0}
+@media (max-width:1339px){.topbar{gap:8px 10px}.brand{font-size:17px;gap:6px}.badge{font-size:14px;padding:4px 8px}.clock-el{font-size:24px}.clock-rem{font-size:15px}.tod-t{font-size:18px}.tb-actions .btn{padding:8px 10px}}
 .tb-actions{display:flex;gap:6px}
 .btn{border:1px solid var(--line-2);background:var(--panel-2);border-radius:6px;padding:8px 12px;font-weight:600;letter-spacing:.04em}
 .btn:hover:not(:disabled){border-color:var(--muted)}
@@ -171,6 +176,9 @@ button:disabled{cursor:not-allowed;opacity:.45}
 .alert.critical .alert-main{color:#ff8a8a}
 .alert.warning .alert-main{color:var(--amber)}
 .alert-list{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.alert-head{display:flex;align-items:center;gap:12px}.alert-head .alert-main{flex:1;min-width:0}
+.alert-x{flex:none;border:1px solid currentColor;background:transparent;color:inherit;border-radius:6px;padding:8px 12px;font-weight:700;font-size:13px;letter-spacing:.06em;min-height:44px}
+.chip-x{border:0;background:transparent;color:inherit;font-size:12px;padding:0 2px 0 6px;min-width:24px;min-height:24px;cursor:pointer}
 .chip{font-size:12px;padding:3px 8px;border-radius:12px;border:1px solid var(--line-2);color:var(--muted)}
 .chip.critical{border-color:var(--stop);color:#ff9a9a} .chip.warning{border-color:var(--amber);color:var(--amber)}
 
@@ -239,8 +247,9 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
 </style>
 
 <header class="topbar">
-  <div class="brand">Strategy Wall <span class="ver">V6</span></div>
+  <div class="brand">Strategy Wall <span class="ver">V6.1</span></div>
   <div class="badges"><span class="badge" id="eventBadge">TTE</span><span class="badge" id="carBadge">#208</span><span class="badge flag-GREEN" id="flagBadge">GREEN</span></div>
+  <div class="tod" title="Heure de la tablette · heure de fin de course estimée"><span class="tod-t" id="tod">--:--:--</span><span class="tod-eta" id="eta"></span></div>
   <div class="clock">
     <button class="clock-el editable" id="elapsed" title="Ajuster le temps de course">00:00:00</button>
     <span class="clock-sep">/</span><span class="clock-rem" id="remaining">04:00:00</span><span class="clock-lbl">RESTANT</span>
@@ -356,7 +365,7 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
   </section>
 
   <section class="alert info" id="alertBar" aria-live="polite">
-    <div class="alert-main" id="alertMain">STRATÉGIE PRÊTE</div>
+    <div class="alert-head"><div class="alert-main" id="alertMain">STRATÉGIE PRÊTE</div><button class="alert-x" id="alertClose" hidden title="Effacer ce message" aria-label="Effacer ce message">✕ EFFACER</button></div>
     <div class="alert-list" id="alertList"></div>
   </section>
 
@@ -1376,7 +1385,7 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
   /* ========================== PARSER (pur) ================================ */
   function createParser(opts) {
     const o = Object.assign({ carNumber: null, syncTolerance: 2.5 }, opts || {});
-    const st = { field: {}, official: null, frozenAt: null, durChecked: false, outWait: 0, car: null, seen: false, lap: null, pos: null, pits: null, pitTime: null, status: null, driverIdx: null, inPit: false, pitInAt: null, flagRaw: null, info: null, lastElapsed: null };
+    const st = { field: {}, official: null, frozenAt: null, lastEl: null, lastT: null, stale: 0, durChecked: false, outWait: 0, car: null, seen: false, lap: null, pos: null, pits: null, pitTime: null, status: null, driverIdx: null, inPit: false, pitInAt: null, flagRaw: null, info: null, lastElapsed: null };
 
     /* Temps officiel. Mesuré en direct le 31/10 (340R EQ2) : elapsed_time est à jour à chaque
        réponse (+3,1 s entre deux appels espacés de 3,1 s) ; `epoch` n'avance qu'aux passages.
@@ -1386,6 +1395,20 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
       return info.elapsed_time / 1000;
     }
 
+    /* Trame périmée. Relevé 2 Tours d'Horloge 2026 (session 75) : quand le serveur ne reçoit rien de neuf
+       pendant ~12 s, elapsed_time recule de 8 à 12 s sur une trame (parfois deux), puis revient à la bonne valeur.
+       Un recul isolé pendant que la course roule est ignoré ; s'il se confirme sur 3 trames, il est accepté. */
+    function guardElapsed(el, t, info) {
+      if (el == null) return el;
+      const rolling = info && isRunningFlag(info.race_flag) && !isChequered(info.race_flag) && st.frozenAt == null;
+      if (rolling && st.lastEl != null && st.lastT != null) {
+        const expect = st.lastEl + Math.max(0, t - st.lastT) / 1000;
+        if (el < expect - 5 && st.stale < 2) { st.stale++; return null; }
+      }
+      st.stale = 0; st.lastEl = el; st.lastT = t;
+      return el;
+    }
+
     const isChequered = (raw) => /CHECKERED|CHEQUERED/i.test(String(raw || ''));
 
     function ingest(frame, race, setup) {
@@ -1393,7 +1416,7 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
       const t = frame.t;
       const info = frame.info || st.info;
       if (frame.info) st.info = frame.info;
-      const el = officialElapsed(info);
+      const el = guardElapsed(officialElapsed(info), t, info);
 
       /* Horloge + drapeau.
          Relevé session 62 : sous drapeau à damier, ItsLive continue d'avancer elapsed_time
@@ -1509,7 +1532,13 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
         } else if (pitTime !== st.pitTime) st.pitTime = pitTime;   // cumul modifié hors arrêt (départ des stands…) : absorbé
 
         /* Voiture plus détectée par le chronométrage */
-        if (rec.status_img === '_MaximumTime' && st.status !== '_MaximumTime') evs.push({ type: 'NOTICE', level: 'critical', text: `ItsLive : #${rec.number} n'est plus détectée par le chronométrage (temps maximum dépassé) — arrêt en piste ?` });
+        /* Relevé 2TH 2026 : _MaximumTime arrive aussi pendant un long arrêt au stand (> ~6 min, réparation).
+           L'alerte est retirée d'elle-même dès que la voiture repasse une boucle. */
+        if (rec.status_img === '_MaximumTime' && st.status !== '_MaximumTime') {
+          evs.push(st.inPit || race.pit
+            ? { type: 'NOTICE', key: 'MAXTIME', level: 'warning', text: `ItsLive : #${rec.number} au stand depuis longtemps, plus de passage boucle — réparation ?` }
+            : { type: 'NOTICE', key: 'MAXTIME', level: 'critical', text: `ItsLive : #${rec.number} n'est plus détectée par le chronométrage (temps maximum dépassé) — arrêt en piste ?` });
+        } else if (st.status === '_MaximumTime' && rec.status_img && rec.status_img !== '_MaximumTime') evs.push({ type: 'NOTICE_CLEAR', key: 'MAXTIME' });
         st.status = rec.status_img; st.driverIdx = rec.current_driver;
       }
       return evs;
@@ -1682,7 +1711,8 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
       frames: c.rows.map(([dt, el, rem, fl, r]) => ({ t: c.t0 + dt, info: { elapsed_time: el, remaining_time: rem, race_flag: c.flags[fl] },
         ranking: r ? [Object.assign({ data_id: r[0], pos: r[1], total_lap: r[2], lap_time: r[3], status_img: r[4], total_pit_stop: r[5], total_pit_time: r[6] }, c.car)] : [] })) };
   }
-  const api = { ledenonS58Car701: () => expand58(S58), ledenonS62Car18: () => expand62(S62), ledenonS74Car5: () => expand62(S74) };
+  const TH75 = {"source":"Les 2 Tours d'Horloge 2026 \u00b7 session 75 \u00b7 voiture #55 \u00b7 extraits r\u00e9els (export du 09/11/2026)","glitch":[{"t":1794083981245,"info":{"elapsed_time":20383586,"remaining_time":66016414,"race_flag":"GREEN FLAG","data_id":184918},"ranking":[{"number":"55","pos":1,"total_lap":126,"lap_time":140164,"status_img":"_TrackPassing","total_pit_stop":2,"total_pit_time":1107850,"current_driver":2}]},{"t":1794083984379,"info":{"elapsed_time":20386732,"remaining_time":66013268,"race_flag":"GREEN FLAG","data_id":184918},"ranking":[]},{"t":1794083988075,"info":{"elapsed_time":20390063,"remaining_time":66009937,"race_flag":"GREEN FLAG","data_id":184947},"ranking":[{"number":"55","pos":1,"total_lap":126,"lap_time":140164,"status_img":"_TrackPassing","total_pit_stop":2,"total_pit_time":1107850,"current_driver":2}]},{"t":1794083992060,"info":{"elapsed_time":20394064,"remaining_time":66005936,"race_flag":"GREEN FLAG","data_id":184947},"ranking":[]},{"t":1794083996055,"info":{"elapsed_time":20398439,"remaining_time":66001561,"race_flag":"GREEN FLAG","data_id":184948},"ranking":[]},{"t":1794084000068,"info":{"elapsed_time":20402430,"remaining_time":65997570,"race_flag":"GREEN FLAG","data_id":184948},"ranking":[{"number":"55","pos":1,"total_lap":126,"lap_time":140164,"status_img":"_TrackPassing","total_pit_stop":2,"total_pit_time":1107850,"current_driver":2}]},{"t":1794084004081,"info":{"elapsed_time":20406427,"remaining_time":65993573,"race_flag":"GREEN FLAG","data_id":185058},"ranking":[{"number":"55","pos":1,"total_lap":126,"lap_time":140164,"status_img":"_TrackPassing","total_pit_stop":2,"total_pit_time":1107850,"current_driver":2}]},{"t":1794084008144,"info":{"elapsed_time":20410857,"remaining_time":65989143,"race_flag":"GREEN FLAG","data_id":185142},"ranking":[{"number":"55","pos":1,"total_lap":126,"lap_time":140164,"status_img":"_TrackPassing","total_pit_stop":2,"total_pit_time":1107850,"current_driver":2}]},{"t":1794084012131,"info":{"elapsed_time":20414915,"remaining_time":65985085,"race_flag":"GREEN FLAG","data_id":185142},"ranking":[{"number":"55","pos":1,"total_lap":126,"lap_time":140164,"status_img":"_TrackPassing","total_pit_stop":2,"total_pit_time":1107850,"current_driver":2}]},{"t":1794084016042,"info":{"elapsed_time":20418283,"remaining_time":65981717,"race_flag":"GREEN FLAG","data_id":185197},"ranking":[]},{"t":1794084020094,"info":{"elapsed_time":20422295,"remaining_time":65977705,"race_flag":"GREEN FLAG","data_id":185197},"ranking":[{"number":"55","pos":1,"total_lap":126,"lap_time":140164,"status_img":"_TrackPassing","total_pit_stop":2,"total_pit_time":1107850,"current_driver":2}]},{"t":1794084024069,"info":{"elapsed_time":20426723,"remaining_time":65973277,"race_flag":"GREEN FLAG","data_id":185225},"ranking":[{"number":"55","pos":1,"total_lap":126,"lap_time":140164,"status_img":"_TrackPassing","total_pit_stop":2,"total_pit_time":1107850,"current_driver":2}]},{"t":1794084028087,"info":{"elapsed_time":20430484,"remaining_time":65969516,"race_flag":"GREEN FLAG","data_id":185362},"ranking":[{"number":"55","pos":1,"total_lap":126,"lap_time":140164,"status_img":"_TrackPassing","total_pit_stop":2,"total_pit_time":1107850,"current_driver":2}]},{"t":1794084032257,"info":{"elapsed_time":20434640,"remaining_time":65965360,"race_flag":"GREEN FLAG","data_id":185362},"ranking":[]},{"t":1794084036042,"info":{"elapsed_time":20438063,"remaining_time":65961937,"race_flag":"GREEN FLAG","data_id":185391},"ranking":[]},{"t":1794084040067,"info":{"elapsed_time":20442068,"remaining_time":65957932,"race_flag":"GREEN FLAG","data_id":185391},"ranking":[{"number":"55","pos":1,"total_lap":127,"lap_time":139923,"status_img":"_TrackPassing","total_pit_stop":2,"total_pit_time":1107850,"current_driver":2}]},{"t":1794084044068,"info":{"elapsed_time":20446509,"remaining_time":65953491,"race_flag":"GREEN FLAG","data_id":185447},"ranking":[{"number":"55","pos":1,"total_lap":127,"lap_time":139923,"status_img":"_TrackPassing","total_pit_stop":2,"total_pit_time":1107850,"current_driver":2}]},{"t":1794084048160,"info":{"elapsed_time":20450064,"remaining_time":65949936,"race_flag":"GREEN FLAG","data_id":185502},"ranking":[{"number":"55","pos":1,"total_lap":127,"lap_time":139923,"status_img":"_TrackPassing","total_pit_stop":2,"total_pit_time":1107850,"current_driver":2}]},{"t":1794084052067,"info":{"elapsed_time":20453973,"remaining_time":65946027,"race_flag":"GREEN FLAG","data_id":185502},"ranking":[{"number":"55","pos":1,"total_lap":127,"lap_time":139923,"status_img":"_TrackPassing","total_pit_stop":2,"total_pit_time":1107850,"current_driver":2}]},{"t":1794084056055,"info":{"elapsed_time":20458421,"remaining_time":65941579,"race_flag":"GREEN FLAG","data_id":185584},"ranking":[]},{"t":1794084060170,"info":{"elapsed_time":20462468,"remaining_time":65937532,"race_flag":"GREEN FLAG","data_id":185584},"ranking":[{"number":"55","pos":1,"total_lap":127,"lap_time":139923,"status_img":"_TrackPassing","total_pit_stop":2,"total_pit_time":1107850,"current_driver":2}]},{"t":1794084064213,"info":{"elapsed_time":20466940,"remaining_time":65933060,"race_flag":"GREEN FLAG","data_id":185666},"ranking":[{"number":"55","pos":1,"total_lap":127,"lap_time":139923,"status_img":"_TrackPassing","total_pit_stop":2,"total_pit_time":1107850,"current_driver":2}]},{"t":1794084068061,"info":{"elapsed_time":20470906,"remaining_time":65929094,"race_flag":"GREEN FLAG","data_id":185666},"ranking":[{"number":"55","pos":1,"total_lap":127,"lap_time":139923,"status_img":"_TrackPassing","total_pit_stop":2,"total_pit_time":1107850,"current_driver":2}]},{"t":1794084072046,"info":{"elapsed_time":20461919,"remaining_time":65938081,"race_flag":"GREEN FLAG","data_id":185666},"ranking":[]},{"t":1794084083088,"info":{"elapsed_time":20485575,"remaining_time":65914425,"race_flag":"GREEN FLAG","data_id":185860},"ranking":[{"number":"55","pos":1,"total_lap":127,"lap_time":139923,"status_img":"_TrackPassing","total_pit_stop":2,"total_pit_time":1107850,"current_driver":2}]},{"t":1794084087048,"info":{"elapsed_time":20489556,"remaining_time":65910444,"race_flag":"GREEN FLAG","data_id":185860},"ranking":[]},{"t":1794084091060,"info":{"elapsed_time":20480562,"remaining_time":65919438,"race_flag":"GREEN FLAG","data_id":185860},"ranking":[]},{"t":1794084095048,"info":{"elapsed_time":20480562,"remaining_time":65919438,"race_flag":"GREEN FLAG","data_id":185860},"ranking":[]},{"t":1794084099065,"info":{"elapsed_time":20501078,"remaining_time":65898922,"race_flag":"GREEN FLAG","data_id":186054},"ranking":[]},{"t":1794084103090,"info":{"elapsed_time":20505077,"remaining_time":65894923,"race_flag":"GREEN FLAG","data_id":186054},"ranking":[{"number":"55","pos":1,"total_lap":127,"lap_time":139923,"status_img":"_TrackPassing","total_pit_stop":2,"total_pit_time":1107850,"current_driver":2}]},{"t":1794084107160,"info":{"elapsed_time":20509580,"remaining_time":65890420,"race_flag":"GREEN FLAG","data_id":186109},"ranking":[{"number":"55","pos":1,"total_lap":127,"lap_time":139923,"status_img":"_TrackPassing","total_pit_stop":2,"total_pit_time":1107850,"current_driver":2}]},{"t":1794084111047,"info":{"elapsed_time":20513984,"remaining_time":65886016,"race_flag":"GREEN FLAG","data_id":186164},"ranking":[]},{"t":1794084115092,"info":{"elapsed_time":20518007,"remaining_time":65881993,"race_flag":"GREEN FLAG","data_id":186164},"ranking":[{"number":"55","pos":1,"total_lap":127,"lap_time":139923,"status_img":"_TrackPassing","total_pit_stop":2,"total_pit_time":1107850,"current_driver":2}]},{"t":1794084119080,"info":{"elapsed_time":20521609,"remaining_time":65878391,"race_flag":"GREEN FLAG","data_id":186275},"ranking":[{"number":"55","pos":1,"total_lap":127,"lap_time":139923,"status_img":"_TrackPassing","total_pit_stop":2,"total_pit_time":1107850,"current_driver":2}]},{"t":1794084123079,"info":{"elapsed_time":20525609,"remaining_time":65874391,"race_flag":"GREEN FLAG","data_id":186275},"ranking":[{"number":"55","pos":1,"total_lap":127,"lap_time":139923,"status_img":"_TrackPassing","total_pit_stop":2,"total_pit_time":1107850,"current_driver":2}]}],"longPit":[{"t":1794107599737,"info":{"elapsed_time":44003207,"remaining_time":42396793,"race_flag":"SAFETY CAR","data_id":383307},"ranking":[]},{"t":1794107603721,"info":{"elapsed_time":44006614,"remaining_time":42393386,"race_flag":"SAFETY CAR","data_id":383308},"ranking":[]},{"t":1794107607774,"info":{"elapsed_time":44010665,"remaining_time":42389335,"race_flag":"SAFETY CAR","data_id":383336},"ranking":[{"number":"55","pos":1,"total_lap":267,"lap_time":300577,"status_img":"_TrackPassing","total_pit_stop":5,"total_pit_time":1977396,"current_driver":1}]},{"t":1794107611721,"info":{"elapsed_time":44014633,"remaining_time":42385367,"race_flag":"SAFETY CAR","data_id":383336},"ranking":[]},{"t":1794107615749,"info":{"elapsed_time":44018665,"remaining_time":42381335,"race_flag":"SAFETY CAR","data_id":383338},"ranking":[{"number":"55","pos":1,"total_lap":268,"lap_time":-1,"status_img":"_PitIn","total_pit_stop":6,"total_pit_time":1977396,"current_driver":1}]},{"t":1794107619716,"info":{"elapsed_time":44022648,"remaining_time":42377352,"race_flag":"SAFETY CAR","data_id":383393},"ranking":[]},{"t":1794107623744,"info":{"elapsed_time":44026653,"remaining_time":42373347,"race_flag":"SAFETY CAR","data_id":383393},"ranking":[{"number":"55","pos":1,"total_lap":268,"lap_time":-1,"status_img":"_PitIn","total_pit_stop":6,"total_pit_time":1977396,"current_driver":1}]},{"t":1794107627748,"info":{"elapsed_time":44030666,"remaining_time":42369334,"race_flag":"SAFETY CAR","data_id":383448},"ranking":[{"number":"55","pos":1,"total_lap":268,"lap_time":-1,"status_img":"_PitIn","total_pit_stop":6,"total_pit_time":1977396,"current_driver":1}]},{"t":1794107631729,"info":{"elapsed_time":44034668,"remaining_time":42365332,"race_flag":"SAFETY CAR","data_id":383448},"ranking":[]},{"t":1794107635726,"info":{"elapsed_time":44038670,"remaining_time":42361330,"race_flag":"SAFETY CAR","data_id":383449},"ranking":[]},{"t":1794107639721,"info":{"elapsed_time":44042665,"remaining_time":42357335,"race_flag":"SAFETY CAR","data_id":383449},"ranking":[]},{"t":1794107643743,"info":{"elapsed_time":44046722,"remaining_time":42353278,"race_flag":"SAFETY CAR","data_id":383504},"ranking":[{"number":"55","pos":1,"total_lap":268,"lap_time":-1,"status_img":"_PitIn","total_pit_stop":6,"total_pit_time":1977396,"current_driver":1}]},{"t":1794107647755,"info":{"elapsed_time":44050739,"remaining_time":42349261,"race_flag":"SAFETY CAR","data_id":383695},"ranking":[{"number":"55","pos":1,"total_lap":268,"lap_time":-1,"status_img":"_PitIn","total_pit_stop":6,"total_pit_time":1977396,"current_driver":1}]},{"t":1794107651736,"info":{"elapsed_time":44054725,"remaining_time":42345275,"race_flag":"SAFETY CAR","data_id":383695},"ranking":[{"number":"55","pos":1,"total_lap":268,"lap_time":-1,"status_img":"_PitIn","total_pit_stop":6,"total_pit_time":1977396,"current_driver":1}]},{"t":1794107655714,"info":{"elapsed_time":44058746,"remaining_time":42341254,"race_flag":"SAFETY CAR","data_id":383777},"ranking":[]},{"t":1794107659738,"info":{"elapsed_time":44062761,"remaining_time":42337239,"race_flag":"SAFETY CAR","data_id":383777},"ranking":[]},{"t":1794107663722,"info":{"elapsed_time":44066770,"remaining_time":42333230,"race_flag":"SAFETY CAR","data_id":383778},"ranking":[]},{"t":1794107667732,"info":{"elapsed_time":44070779,"remaining_time":42329221,"race_flag":"SAFETY CAR","data_id":383778},"ranking":[]},{"t":1794107671740,"info":{"elapsed_time":44074795,"remaining_time":42325205,"race_flag":"SAFETY CAR","data_id":383779},"ranking":[]},{"t":1794107675730,"info":{"elapsed_time":44078793,"remaining_time":42321207,"race_flag":"SAFETY CAR","data_id":383779},"ranking":[]},{"t":1794107679719,"info":{"elapsed_time":44082826,"remaining_time":42317174,"race_flag":"SAFETY CAR","data_id":383780},"ranking":[]},{"t":1794107683746,"info":{"elapsed_time":44086830,"remaining_time":42313170,"race_flag":"SAFETY CAR","data_id":383780},"ranking":[{"number":"55","pos":1,"total_lap":268,"lap_time":-1,"status_img":"_PitIn","total_pit_stop":6,"total_pit_time":1977396,"current_driver":1}]},{"t":1794107687722,"info":{"elapsed_time":44090829,"remaining_time":42309171,"race_flag":"SAFETY CAR","data_id":383808},"ranking":[]},{"t":1794107691737,"info":{"elapsed_time":44094843,"remaining_time":42305157,"race_flag":"SAFETY CAR","data_id":383808},"ranking":[]},{"t":1794107695720,"info":{"elapsed_time":44098832,"remaining_time":42301168,"race_flag":"SAFETY CAR","data_id":383809},"ranking":[]},{"t":1794107699724,"info":{"elapsed_time":44102832,"remaining_time":42297168,"race_flag":"SAFETY CAR","data_id":383810},"ranking":[]},{"t":1794107703728,"info":{"elapsed_time":44106835,"remaining_time":42293165,"race_flag":"SAFETY CAR","data_id":383810},"ranking":[]},{"t":1794107707727,"info":{"elapsed_time":44110857,"remaining_time":42289143,"race_flag":"SAFETY CAR","data_id":383811},"ranking":[]},{"t":1794107711746,"info":{"elapsed_time":44114853,"remaining_time":42285147,"race_flag":"SAFETY CAR","data_id":383811},"ranking":[{"number":"55","pos":1,"total_lap":268,"lap_time":-1,"status_img":"_PitIn","total_pit_stop":6,"total_pit_time":1977396,"current_driver":1}]},{"t":1794107715732,"info":{"elapsed_time":44118864,"remaining_time":42281136,"race_flag":"SAFETY CAR","data_id":383839},"ranking":[]},{"t":1794107719750,"info":{"elapsed_time":44122955,"remaining_time":42277045,"race_flag":"SAFETY CAR","data_id":383867},"ranking":[{"number":"55","pos":1,"total_lap":268,"lap_time":-1,"status_img":"_PitIn","total_pit_stop":6,"total_pit_time":1977396,"current_driver":1}]},{"t":1794107723731,"info":{"elapsed_time":44126938,"remaining_time":42273062,"race_flag":"SAFETY CAR","data_id":383867},"ranking":[{"number":"55","pos":1,"total_lap":268,"lap_time":-1,"status_img":"_PitIn","total_pit_stop":6,"total_pit_time":1977396,"current_driver":1}]},{"t":1794107727734,"info":{"elapsed_time":44130879,"remaining_time":42269121,"race_flag":"SAFETY CAR","data_id":383976},"ranking":[]},{"t":1794107731744,"info":{"elapsed_time":44134870,"remaining_time":42265130,"race_flag":"SAFETY CAR","data_id":383976},"ranking":[{"number":"55","pos":1,"total_lap":268,"lap_time":-1,"status_img":"_PitIn","total_pit_stop":6,"total_pit_time":1977396,"current_driver":1}]},{"t":1794107735735,"info":{"elapsed_time":44138873,"remaining_time":42261127,"race_flag":"SAFETY CAR","data_id":384140},"ranking":[{"number":"55","pos":1,"total_lap":268,"lap_time":-1,"status_img":"_PitIn","total_pit_stop":6,"total_pit_time":1977396,"current_driver":1}]},{"t":1794107739748,"info":{"elapsed_time":44142836,"remaining_time":42257164,"race_flag":"SAFETY CAR","data_id":384222},"ranking":[{"number":"55","pos":1,"total_lap":268,"lap_time":-1,"status_img":"_PitIn","total_pit_stop":6,"total_pit_time":1977396,"current_driver":1}]},{"t":1794107743741,"info":{"elapsed_time":44146827,"remaining_time":42253173,"race_flag":"SAFETY CAR","data_id":384222},"ranking":[{"number":"55","pos":1,"total_lap":268,"lap_time":-1,"status_img":"_PitIn","total_pit_stop":6,"total_pit_time":1977396,"current_driver":1}]},{"t":1794107747726,"info":{"elapsed_time":44151297,"remaining_time":42248703,"race_flag":"SAFETY CAR","data_id":384250},"ranking":[]},{"t":1794107751727,"info":{"elapsed_time":44155304,"remaining_time":42244696,"race_flag":"SAFETY CAR","data_id":384250},"ranking":[]},{"t":1794107755743,"info":{"elapsed_time":44158927,"remaining_time":42241073,"race_flag":"SAFETY CAR","data_id":384251},"ranking":[]},{"t":1794107759732,"info":{"elapsed_time":44162918,"remaining_time":42237082,"race_flag":"SAFETY CAR","data_id":384251},"ranking":[]},{"t":1794107763724,"info":{"elapsed_time":44167664,"remaining_time":42232336,"race_flag":"SAFETY CAR","data_id":384252},"ranking":[]},{"t":1794107767727,"info":{"elapsed_time":44171668,"remaining_time":42228332,"race_flag":"SAFETY CAR","data_id":384252},"ranking":[]},{"t":1794107771727,"info":{"elapsed_time":44174906,"remaining_time":42225094,"race_flag":"SAFETY CAR","data_id":384253},"ranking":[]},{"t":1794107775726,"info":{"elapsed_time":44178902,"remaining_time":42221098,"race_flag":"SAFETY CAR","data_id":384253},"ranking":[]},{"t":1794107779722,"info":{"elapsed_time":44182915,"remaining_time":42217085,"race_flag":"SAFETY CAR","data_id":384254},"ranking":[]},{"t":1794107783724,"info":{"elapsed_time":44186916,"remaining_time":42213084,"race_flag":"SAFETY CAR","data_id":384254},"ranking":[]},{"t":1794107787808,"info":{"elapsed_time":44190989,"remaining_time":42209011,"race_flag":"SAFETY CAR","data_id":384255},"ranking":[{"number":"55","pos":1,"total_lap":268,"lap_time":-1,"status_img":"_PitIn","total_pit_stop":6,"total_pit_time":1977396,"current_driver":1}]},{"t":1794107791755,"info":{"elapsed_time":44194956,"remaining_time":42205044,"race_flag":"SAFETY CAR","data_id":384310},"ranking":[{"number":"55","pos":1,"total_lap":268,"lap_time":-1,"status_img":"_PitIn","total_pit_stop":6,"total_pit_time":1977396,"current_driver":1}]},{"t":1794107795729,"info":{"elapsed_time":44198951,"remaining_time":42201049,"race_flag":"SAFETY CAR","data_id":384310},"ranking":[]},{"t":1794107799724,"info":{"elapsed_time":44202963,"remaining_time":42197037,"race_flag":"SAFETY CAR","data_id":384311},"ranking":[]},{"t":1794107803731,"info":{"elapsed_time":44206970,"remaining_time":42193030,"race_flag":"SAFETY CAR","data_id":384311},"ranking":[]},{"t":1794107807752,"info":{"elapsed_time":44210979,"remaining_time":42189021,"race_flag":"SAFETY CAR","data_id":384339},"ranking":[{"number":"55","pos":1,"total_lap":268,"lap_time":-1,"status_img":"_PitIn","total_pit_stop":6,"total_pit_time":1977396,"current_driver":1}]},{"t":1794107811749,"info":{"elapsed_time":44214962,"remaining_time":42185038,"race_flag":"SAFETY CAR","data_id":384340},"ranking":[{"number":"55","pos":1,"total_lap":268,"lap_time":-1,"status_img":"_PitIn","total_pit_stop":6,"total_pit_time":1977396,"current_driver":1}]},{"t":1794107815749,"info":{"elapsed_time":44218983,"remaining_time":42181017,"race_flag":"SAFETY CAR","data_id":384340},"ranking":[]},{"t":1794107819718,"info":{"elapsed_time":44222831,"remaining_time":42177169,"race_flag":"SAFETY CAR","data_id":384368},"ranking":[]},{"t":1794107823740,"info":{"elapsed_time":44226994,"remaining_time":42173006,"race_flag":"SAFETY CAR","data_id":384478},"ranking":[{"number":"55","pos":1,"total_lap":268,"lap_time":-1,"status_img":"_PitIn","total_pit_stop":6,"total_pit_time":1977396,"current_driver":1}]},{"t":1794107827736,"info":{"elapsed_time":44231755,"remaining_time":42168245,"race_flag":"SAFETY CAR","data_id":384614},"ranking":[{"number":"55","pos":1,"total_lap":268,"lap_time":-1,"status_img":"_PitIn","total_pit_stop":6,"total_pit_time":1977396,"current_driver":1}]},{"t":1794107831746,"info":{"elapsed_time":44235766,"remaining_time":42164234,"race_flag":"SAFETY CAR","data_id":384614},"ranking":[{"number":"55","pos":1,"total_lap":268,"lap_time":-1,"status_img":"_PitIn","total_pit_stop":6,"total_pit_time":1977396,"current_driver":1}]},{"t":1794107835721,"info":{"elapsed_time":44239655,"remaining_time":42160345,"race_flag":"SAFETY CAR","data_id":384750},"ranking":[]},{"t":1794107839760,"info":{"elapsed_time":44243666,"remaining_time":42156334,"race_flag":"SAFETY CAR","data_id":384750},"ranking":[{"number":"55","pos":1,"total_lap":268,"lap_time":-1,"status_img":"_PitIn","total_pit_stop":6,"total_pit_time":1977396,"current_driver":1}]},{"t":1794107843726,"info":{"elapsed_time":44246057,"remaining_time":42153943,"race_flag":"SAFETY CAR","data_id":384751},"ranking":[]},{"t":1794107847757,"info":{"elapsed_time":44250598,"remaining_time":42149402,"race_flag":"SAFETY CAR","data_id":384779},"ranking":[{"number":"55","pos":1,"total_lap":268,"lap_time":-1,"status_img":"_PitIn","total_pit_stop":6,"total_pit_time":1977396,"current_driver":1}]},{"t":1794107851726,"info":{"elapsed_time":44254592,"remaining_time":42145408,"race_flag":"SAFETY CAR","data_id":384779},"ranking":[]},{"t":1794107855736,"info":{"elapsed_time":44258101,"remaining_time":42141899,"race_flag":"SAFETY CAR","data_id":384834},"ranking":[{"number":"55","pos":1,"total_lap":268,"lap_time":-1,"status_img":"_PitIn","total_pit_stop":6,"total_pit_time":1977396,"current_driver":1}]},{"t":1794107859731,"info":{"elapsed_time":44262579,"remaining_time":42137421,"race_flag":"SAFETY CAR","data_id":384835},"ranking":[]},{"t":1794107863729,"info":{"elapsed_time":44266574,"remaining_time":42133426,"race_flag":"SAFETY CAR","data_id":384835},"ranking":[]},{"t":1794107867724,"info":{"elapsed_time":44270051,"remaining_time":42129949,"race_flag":"SAFETY CAR","data_id":384836},"ranking":[]},{"t":1794107871718,"info":{"elapsed_time":44274111,"remaining_time":42125889,"race_flag":"SAFETY CAR","data_id":384864},"ranking":[]},{"t":1794107875754,"info":{"elapsed_time":44278130,"remaining_time":42121870,"race_flag":"SAFETY CAR","data_id":384864},"ranking":[{"number":"55","pos":1,"total_lap":268,"lap_time":-1,"status_img":"_PitIn","total_pit_stop":6,"total_pit_time":1977396,"current_driver":1}]},{"t":1794107879752,"info":{"elapsed_time":44282438,"remaining_time":42117562,"race_flag":"SAFETY CAR","data_id":384892},"ranking":[{"number":"55","pos":1,"total_lap":268,"lap_time":-1,"status_img":"_PitIn","total_pit_stop":6,"total_pit_time":1977396,"current_driver":1}]},{"t":1794107883729,"info":{"elapsed_time":44286434,"remaining_time":42113566,"race_flag":"SAFETY CAR","data_id":384892},"ranking":[]},{"t":1794107887723,"info":{"elapsed_time":44290898,"remaining_time":42109102,"race_flag":"SAFETY CAR","data_id":384893},"ranking":[]},{"t":1794107891711,"info":{"elapsed_time":44294156,"remaining_time":42105844,"race_flag":"SAFETY CAR","data_id":384894},"ranking":[]},{"t":1794107895720,"info":{"elapsed_time":44298165,"remaining_time":42101835,"race_flag":"SAFETY CAR","data_id":384894},"ranking":[]},{"t":1794107899724,"info":{"elapsed_time":44302821,"remaining_time":42097179,"race_flag":"SAFETY CAR","data_id":384895},"ranking":[]},{"t":1794107903724,"info":{"elapsed_time":44306202,"remaining_time":42093798,"race_flag":"SAFETY CAR","data_id":384923},"ranking":[]},{"t":1794107907764,"info":{"elapsed_time":44310215,"remaining_time":42089785,"race_flag":"SAFETY CAR","data_id":384923},"ranking":[{"number":"55","pos":1,"total_lap":268,"lap_time":-1,"status_img":"_PitIn","total_pit_stop":6,"total_pit_time":1977396,"current_driver":1}]},{"t":1794107911729,"info":{"elapsed_time":44314228,"remaining_time":42085772,"race_flag":"SAFETY CAR","data_id":384924},"ranking":[]},{"t":1794107915713,"info":{"elapsed_time":44318213,"remaining_time":42081787,"race_flag":"SAFETY CAR","data_id":384924},"ranking":[]},{"t":1794107919722,"info":{"elapsed_time":44322216,"remaining_time":42077784,"race_flag":"SAFETY CAR","data_id":384925},"ranking":[]},{"t":1794107923732,"info":{"elapsed_time":44326210,"remaining_time":42073790,"race_flag":"SAFETY CAR","data_id":384926},"ranking":[]},{"t":1794107927715,"info":{"elapsed_time":44330196,"remaining_time":42069804,"race_flag":"SAFETY CAR","data_id":384926},"ranking":[]},{"t":1794107931747,"info":{"elapsed_time":44334252,"remaining_time":42065748,"race_flag":"SAFETY CAR","data_id":384981},"ranking":[{"number":"55","pos":1,"total_lap":268,"lap_time":-1,"status_img":"_PitIn","total_pit_stop":6,"total_pit_time":1977396,"current_driver":1}]},{"t":1794107935743,"info":{"elapsed_time":44338090,"remaining_time":42061910,"race_flag":"SAFETY CAR","data_id":385009},"ranking":[{"number":"55","pos":1,"total_lap":268,"lap_time":-1,"status_img":"_PitIn","total_pit_stop":6,"total_pit_time":1977396,"current_driver":1}]},{"t":1794107939739,"info":{"elapsed_time":44342108,"remaining_time":42057892,"race_flag":"SAFETY CAR","data_id":385009},"ranking":[]},{"t":1794107943733,"info":{"elapsed_time":44346297,"remaining_time":42053703,"race_flag":"SAFETY CAR","data_id":385010},"ranking":[]},{"t":1794107947750,"info":{"elapsed_time":44350333,"remaining_time":42049667,"race_flag":"SAFETY CAR","data_id":385148},"ranking":[{"number":"55","pos":1,"total_lap":268,"lap_time":-1,"status_img":"_PitIn","total_pit_stop":6,"total_pit_time":1977396,"current_driver":1}]},{"t":1794107951745,"info":{"elapsed_time":44354328,"remaining_time":42045672,"race_flag":"SAFETY CAR","data_id":385148},"ranking":[{"number":"55","pos":1,"total_lap":268,"lap_time":-1,"status_img":"_PitIn","total_pit_stop":6,"total_pit_time":1977396,"current_driver":1}]},{"t":1794107955764,"info":{"elapsed_time":44358341,"remaining_time":42041659,"race_flag":"SAFETY CAR","data_id":385284},"ranking":[{"number":"55","pos":1,"total_lap":268,"lap_time":-1,"status_img":"_PitIn","total_pit_stop":6,"total_pit_time":1977396,"current_driver":1}]},{"t":1794107959725,"info":{"elapsed_time":44362334,"remaining_time":42037666,"race_flag":"SAFETY CAR","data_id":385284},"ranking":[]},{"t":1794107963744,"info":{"elapsed_time":44366335,"remaining_time":42033665,"race_flag":"SAFETY CAR","data_id":385366},"ranking":[{"number":"55","pos":1,"total_lap":268,"lap_time":-1,"status_img":"_PitIn","total_pit_stop":6,"total_pit_time":1977396,"current_driver":1}]},{"t":1794107967737,"info":{"elapsed_time":44370349,"remaining_time":42029651,"race_flag":"SAFETY CAR","data_id":385367},"ranking":[]},{"t":1794107971734,"info":{"elapsed_time":44374340,"remaining_time":42025660,"race_flag":"SAFETY CAR","data_id":385367},"ranking":[]},{"t":1794107975730,"info":{"elapsed_time":44378305,"remaining_time":42021695,"race_flag":"SAFETY CAR","data_id":385368},"ranking":[]},{"t":1794107979725,"info":{"elapsed_time":44382298,"remaining_time":42017702,"race_flag":"SAFETY CAR","data_id":385368},"ranking":[]},{"t":1794107983751,"info":{"elapsed_time":44386365,"remaining_time":42013635,"race_flag":"SAFETY CAR","data_id":385396},"ranking":[{"number":"55","pos":1,"total_lap":268,"lap_time":-1,"status_img":"_MaximumTime","total_pit_stop":6,"total_pit_time":1977396,"current_driver":1}]},{"t":1794107987739,"info":{"elapsed_time":44390369,"remaining_time":42009631,"race_flag":"SAFETY CAR","data_id":385397},"ranking":[]},{"t":1794107991740,"info":{"elapsed_time":44394657,"remaining_time":42005343,"race_flag":"SAFETY CAR","data_id":385398},"ranking":[{"number":"55","pos":1,"total_lap":268,"lap_time":-2,"status_img":"_PitOut","total_pit_stop":6,"total_pit_time":2352286,"current_driver":1}]},{"t":1794107995734,"info":{"elapsed_time":44398376,"remaining_time":42001624,"race_flag":"SAFETY CAR","data_id":385426},"ranking":[]},{"t":1794107999723,"info":{"elapsed_time":44402375,"remaining_time":41997625,"race_flag":"SAFETY CAR","data_id":385427},"ranking":[]},{"t":1794108003726,"info":{"elapsed_time":44406371,"remaining_time":41993629,"race_flag":"SAFETY CAR","data_id":385427},"ranking":[]},{"t":1794108007729,"info":{"elapsed_time":44410386,"remaining_time":41989614,"race_flag":"SAFETY CAR","data_id":385428},"ranking":[]}]};
+  const api = { th2026S75Car55: () => JSON.parse(JSON.stringify(TH75)), ledenonS58Car701: () => expand58(S58), ledenonS62Car18: () => expand62(S62), ledenonS74Car5: () => expand62(S74) };
   if (typeof module === 'object' && module.exports) module.exports = api; else root.EswFixtures = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
 </script>
@@ -2064,6 +2094,33 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
         const { r } = run([f]);
         near(E.elapsed(r, (EP + 3.5) * SEC), 136.7, 'horloge', 0.01);
       });
+      test('2 Tours d\'Horloge #55 : trame ItsLive périmée (elapsed qui recule de 9 s) → pas de recalage arrière', 'Live ItsLive', () => {
+        const FX = (typeof module === 'object' && module.exports) ? require('./fixtures.js') : globalThis.EswFixtures;
+        const fx = FX.th2026S75Car55();
+        const s = E.applyProfile(base(), 'VDEV_ENDURANCE_VHC_2026'); let r = E.createRace(s, fx.glitch[0].t);
+        const a = L.createAdapter({ carNumber: '55', record: false });
+        let back = 0, n = 0;
+        fx.glitch.forEach((f) => { a.feed(f); a.poll(r, s).forEach((ev) => {
+          if (ev.type === 'SYNC_CLOCK') { n++; if (n > 1 && ev.elapsed < E.elapsed(r, f.t) - 2.5) back++; }
+          if (ev.type !== 'NOTICE') r = E.apply(r, s, ev); }); });
+        eq(back, 0, 'recalages en arrière');
+        const last = fx.glitch[fx.glitch.length - 1];
+        near(E.elapsed(r, last.t), last.info.elapsed_time / 1000, 'temps final = officiel', 3);
+        return `${fx.glitch.length} trames · ${n} recalage(s)`;
+      });
+      test('2 Tours d\'Horloge #55 : arrêt réparation 6 min → alerte « au stand » puis effacée au retour en piste', 'Live ItsLive', () => {
+        const FX = (typeof module === 'object' && module.exports) ? require('./fixtures.js') : globalThis.EswFixtures;
+        const fx = FX.th2026S75Car55();
+        const s = E.applyProfile(base(), 'VDEV_ENDURANCE_VHC_2026'); let r = E.createRace(s, fx.longPit[0].t);
+        const a = L.createAdapter({ carNumber: '55', record: false });
+        const seq = [];
+        fx.longPit.forEach((f) => { a.feed(f); a.poll(r, s).forEach((ev) => {
+          if (ev.key === 'MAXTIME' || ev.type === 'PIT_IN' || ev.type === 'PIT_OUT') seq.push(ev.type === 'NOTICE' ? `NOTICE:${ev.level}` : ev.type);
+          if (ev.type !== 'NOTICE') r = E.apply(r, s, ev); }); });
+        eq(seq.join(' > '), 'PIT_IN > NOTICE:warning > PIT_OUT > NOTICE_CLEAR', 'séquence');
+        eq(r.stops.length, 1, 'un arrêt'); near(r.stops[0].duration, 374.9, 'durée officielle', 0.2);
+        return seq.join(' > ');
+      });
       test('Flux réel Lédenon #701 (59 trames) → tours, temps, position', 'Live ItsLive', () => {
         const FX = (typeof module === 'object' && module.exports) ? require('./fixtures.js') : globalThis.EswFixtures;
         const rec = FX.ledenonS58Car701();
@@ -2222,15 +2279,24 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
     race = E.apply(race, setup, ev);
     persist(); render();
   }
-  function notice(level, text) {
-    if (notices.some((n) => n.text === text)) return;
-    notices.push({ level, text, code: 'LIVE' });
-    if (notices.length > 4) notices.shift();
+  /* Messages LIVE du bandeau : une info s'efface seule après 90 s ; un avertissement ou une alerte critique
+     reste jusqu'à ce que la cause disparaisse (NOTICE_CLEAR) ou que l'opérateur la ferme (✕). */
+  let noticeSeq = 0;
+  function notice(level, text, key) {
+    if (key) notices = notices.filter((n) => n.key !== key);
+    else if (notices.some((n) => n.text === text)) return;
+    notices.push({ id: ++noticeSeq, level, text, key: key || null, code: 'LIVE', until: level === 'info' ? Date.now() + 90000 : null });
+    while (notices.length > 5) {                              // trop de messages : on retire d'abord la plus vieille info
+      const i = notices.findIndex((n) => n.level === 'info');
+      notices.splice(i >= 0 ? i : 0, 1);
+    }
   }
+  function clearNotice(sel) { notices = notices.filter((n) => !(sel.key ? n.key === sel.key : n.id === sel.id)); }
   /* Événements venant du timing : le pit ItsLive ouvre la fenêtre PIT ; à la sortie,
      litres / pilote / changement viennent de cette fenêtre (ItsLive ne connaît pas le fuel). */
   function applyTimed(ev) {
-    if (ev.type === 'NOTICE') { notice(ev.level, ev.text); return; }
+    if (ev.type === 'NOTICE') { notice(ev.level, ev.text, ev.key); return; }
+    if (ev.type === 'NOTICE_CLEAR') { clearNotice({ key: ev.key }); return; }
     if (ev.type === 'PIT_IN' && ev.source === 'ITSLIVE' && !race.pit) {
       race = E.apply(race, setup, ev);
       st = S.compute(race, setup, now());
@@ -2306,9 +2372,13 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
     $('carBadge').textContent = `#${setup.carNumber}`;
     $('flagBadge').textContent = race.flag; $('flagBadge').className = `badge flag-${race.flag}`;
     $('elapsed').textContent = F.hms(st.el); $('remaining').textContent = F.hms(st.remaining);
+    // Heure du jour (en REPLAY : l'heure de la course rejouée) + heure de fin estimée.
+    const nowMs = now(), hhmm = (ms, sec) => new Date(ms).toLocaleTimeString('fr-FR', sec ? { hour: '2-digit', minute: '2-digit', second: '2-digit' } : { hour: '2-digit', minute: '2-digit' });
+    $('tod').textContent = hhmm(nowMs, true);
+    $('eta').textContent = race.clock.running && st.remaining > 0 ? `FIN ≈ ${hhmm(nowMs + st.remaining * 1000)}` : '';
     $('sourceLbl').textContent = adapter.source + (mode === 'MANUAL' && !setup.virtualLaps ? ' · OFF' : '');
     $('srcKpi').textContent = mode === 'LIVE' ? 'ITSLIVE' : mode === 'REPLAY' ? 'REJEU' : mode === 'SIMULATION' ? 'SIMULATION' : (setup.virtualLaps ? 'VIRTUEL' : 'MANUEL');
-    $('footer').textContent = `${prof.name} · ${prof.permit} · Race Engine / Strategy Engine / Timing Adapter / Strategy Wall · V6.0`;
+    $('footer').textContent = `${prof.name} · ${prof.permit} · Race Engine / Strategy Engine / Timing Adapter / Strategy Wall · V6.1`;
 
     // Pilote / stint
     $('curDriver').textContent = dn(race.driver);
@@ -2406,6 +2476,7 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
 
     // Alertes
     const ls = liveStatus();
+    if (notices.some((n) => n.until && n.until < Date.now())) notices = notices.filter((n) => !n.until || n.until >= Date.now());
     const extra = notices.slice();
     if (ls && mode === 'LIVE' && ls.state === 'error') extra.unshift({ level: 'critical', text: `ITSLIVE INJOIGNABLE — ${ls.error}` });
     else if (ls && mode === 'LIVE' && ls.age != null && ls.age > 15) extra.unshift({ level: 'critical', text: `DONNÉES ITSLIVE FIGÉES DEPUIS ${ls.age} s — passer en saisie manuelle si besoin` });
@@ -2414,7 +2485,9 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
     const h = all[0] || st.headline;
     $('alertBar').className = `alert ${h.level}`;
     $('alertMain').textContent = h.text;
-    $('alertList').innerHTML = all.slice(1).map((a) => `<span class="chip ${a.level}">${esc(a.text)}</span>`).join('')
+    $('alertClose').hidden = !h.id;
+    $('alertClose').dataset.nid = h.id || '';
+    $('alertList').innerHTML = all.slice(1).map((a) => `<span class="chip ${a.level}">${esc(a.text)}${a.id ? ` <button class="chip-x" data-nid="${a.id}" title="Effacer ce message" aria-label="Effacer ce message">✕</button>` : ''}</span>`).join('')
       || `<span class="chip">NEXT ${esc(st.next ? dn(st.next.driverIn) : '—')} · ${esc($('fuelAdd').textContent)}</span>`;
 
     // Commandes
@@ -2499,6 +2572,12 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
     $('pitLiveNote').hidden = race.pit.src !== 'ITSLIVE';
     pitPrepared = true;
   }
+  // ✕ sur un message LIVE : pointerdown car le bandeau est reconstruit à chaque rafraîchissement.
+  $('alertBar').addEventListener('pointerdown', (e) => {
+    const b = e.target.closest('[data-nid]');
+    if (!b || !b.dataset.nid) return;
+    e.preventDefault(); clearNotice({ id: +b.dataset.nid }); render();
+  });
   $('pitBtn').onclick = () => {
     const fresh = !race.pit;
     if (fresh) dispatch({ type: 'PIT_IN' });
