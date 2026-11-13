@@ -247,7 +247,7 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
 </style>
 
 <header class="topbar">
-  <div class="brand">Strategy Wall <span class="ver">V6.1</span></div>
+  <div class="brand">Strategy Wall <span class="ver">V6.2</span></div>
   <div class="badges"><span class="badge" id="eventBadge">TTE</span><span class="badge" id="carBadge">#208</span><span class="badge flag-GREEN" id="flagBadge">GREEN</span></div>
   <div class="tod" title="Heure de la tablette · heure de fin de course estimée"><span class="tod-t" id="tod">--:--:--</span><span class="tod-eta" id="eta"></span></div>
   <div class="clock">
@@ -2378,7 +2378,7 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
     $('eta').textContent = race.clock.running && st.remaining > 0 ? `FIN ≈ ${hhmm(nowMs + st.remaining * 1000)}` : '';
     $('sourceLbl').textContent = adapter.source + (mode === 'MANUAL' && !setup.virtualLaps ? ' · OFF' : '');
     $('srcKpi').textContent = mode === 'LIVE' ? 'ITSLIVE' : mode === 'REPLAY' ? 'REJEU' : mode === 'SIMULATION' ? 'SIMULATION' : (setup.virtualLaps ? 'VIRTUEL' : 'MANUEL');
-    $('footer').textContent = `${prof.name} · ${prof.permit} · Race Engine / Strategy Engine / Timing Adapter / Strategy Wall · V6.1`;
+    $('footer').textContent = `${prof.name} · ${prof.permit} · Race Engine / Strategy Engine / Timing Adapter / Strategy Wall · V6.2`;
 
     // Pilote / stint
     $('curDriver').textContent = dn(race.driver);
@@ -2633,7 +2633,17 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
   $('lapBtn').onclick = () => {
     dispatch({ type: 'LAP_COMPLETED', advanceClock: true });
   };
-  $('resetBtn').onclick = () => confirmBox('Réinitialiser la course ?', 'Temps, tours, arrêts et fuel repartent de zéro. Le setup et le plan de relais sont conservés.', 'RÉINITIALISER', () => { dispatch({ type: 'RESET' }); rowsKey = ''; });
+  /* RESET COURSE : remet la vraie course à zéro. Une connexion ItsLive (ou un rejeu / une simulation) est d'abord coupée :
+     sinon le flux de la session suivie recalerait aussitôt temps, tours et arrêts (constat 13/11/2026 après la 24 h). */
+  $('resetBtn').onclick = () => {
+    const linked = mode === 'LIVE' ? 'La connexion ItsLive sera coupée : reconnectez la session du jour via LIVE. ' : isCopy() ? (mode === 'REPLAY' ? 'Le rejeu sera arrêté. ' : 'La simulation sera arrêtée. ') : '';
+    confirmBox('Réinitialiser la course ?', `${linked}Temps, tours, arrêts et fuel repartent de zéro. Le setup et le plan de relais sont conservés.`, 'RÉINITIALISER', () => {
+      if (mode === 'LIVE') { liveCfg.active = false; saveLive(); }
+      if (mode !== 'MANUAL') backToReal();
+      notices = [];
+      dispatch({ type: 'RESET' }); rowsKey = '';
+    });
+  };
 
   /* ---------- Corrections manuelles ---------- */
   $('elapsed').onclick = () => editField('Temps de course', 'TEMPS ÉCOULÉ (HH:MM:SS)', F.hms(E.elapsed(race, now())), (v) => {
@@ -2709,7 +2719,7 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
     setup.carNumber = String(cfg.carNumber); setup = E.normalizeSetup(setup);
     adapter = T.createLiveAdapter({ ssid: cfg.ssid, carNumber: cfg.carNumber, intervalMs: cfg.intervalMs || 3000 }).start();
     mode = 'LIVE';
-    liveCfg = Object.assign({}, cfg, { active: true }); saveLive();
+    liveCfg = Object.assign({}, cfg, { active: true, savedAt: Date.now() }); saveLive();
     if (!silent) notice('info', `Connecté à ItsLive · ${cfg.label || ''} · voiture #${cfg.carNumber}`);
     const lbl = String(cfg.label || '').toLowerCase();
     const sug = Object.values(E.PROFILES).find((p) => p.itslive && cfg.ssid && cfg.ssid.cs_id === p.itslive.cs && lbl.includes(p.itslive.folder));
@@ -3021,6 +3031,8 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
   runTests();
   document.querySelectorAll('#replaySpeedCtl button').forEach((b) => { b.onclick = () => { adapter.setSpeed && adapter.setSpeed(Number(b.dataset.rs)); document.querySelectorAll('#replaySpeedCtl button').forEach((x) => x.classList.toggle('on', x === b)); }; });
   // Refresh navigateur pendant un LIVE : reconnexion automatique, la course reprend là où elle était.
+  // Reconnexion automatique seulement si la connexion date de moins de 36 h (une 24 h + marge) : sinon ce serait l'ancienne course.
+  if (liveCfg.active && !(liveCfg.savedAt && Date.now() - liveCfg.savedAt < 36 * 3600e3)) { liveCfg.active = false; saveLive(); }
   if (liveCfg.active && liveCfg.ssid && liveCfg.carNumber && window.ItsLive) {
     try { startLive(liveCfg, true); notice('info', 'Reconnexion automatique à ItsLive après rechargement'); } catch (e) { liveCfg.active = false; saveLive(); }
   }
