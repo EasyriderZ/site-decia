@@ -247,7 +247,7 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
 </style>
 
 <header class="topbar">
-  <div class="brand">Strategy Wall <span class="ver">V6.2</span></div>
+  <div class="brand">Strategy Wall <span class="ver">V6.3</span></div>
   <div class="badges"><span class="badge" id="eventBadge">TTE</span><span class="badge" id="carBadge">#208</span><span class="badge flag-GREEN" id="flagBadge">GREEN</span></div>
   <div class="tod" title="Heure de la tablette · heure de fin de course estimée"><span class="tod-t" id="tod">--:--:--</span><span class="tod-eta" id="eta"></span></div>
   <div class="clock">
@@ -551,7 +551,10 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
       windowMode: 'deadline', shortStop: 'EXTRA', outOfWindow: 'EXTRA',
       pitSpeedKmh: 60, driversMin: 2, driversMax: 6,
       penalty: { missing: '2 tours par arrêt manquant (art. 7-9/1)', short: 'arrêt non comptabilisé (art. 7-9/1)', outOfWindow: 'arrêt non comptabilisé + 1 tour (art. 7-9/3)' },
-      defaults: { refLap: 92, tank: 50, startFuel: 50, fuelPerLap: 1.45, relays: [['A', 40], ['B', 40], ['C', 40], ['A', 40], ['B', 40], ['C', 40]], drivers: ['A', 'B', 'C'] },
+      // Règle SC tirée de Val de Vienne 2026 (2 SC de 13'24 et 11'42) : 1er arrêt sous SC ≈ 1'20 gagné, 2e ≈ 30 s s'il part
+      // dans les 6 premières minutes, 3e ≈ rien. Sans SC, un arrêt de 2'30 coûte 2'35 à 2'50.
+      scRule: { maxStops: 2, secondStopMaxMin: 6, gains: ['≈ 1\'20 gagné', '≈ 30 s gagnées'] },
+      defaults: { refLap: 133, tank: 40, startFuel: 40, fuelPerLap: 0.93, relays: [['A', 40], ['B', 40], ['C', 40], ['A', 40], ['B', 40], ['C', 40]], drivers: ['A', 'B', 'C'] },
       itslive: null,
       pitNote: 'Ravitaillement interdit pendant le changement de pilote (art. 4-2/3-2.6) · moteur arrêté avant remplissage (art. 7-9/4-2) · pitlane 60 km/h.',
       rules: [
@@ -822,6 +825,9 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
         // Périodes de drapeau rouge (temps de conduite non compté en V de V, art. 7.3.1).
         if (ev.flag === 'RED' && race.flag !== 'RED') race.redFrom = el;
         if (ev.flag !== 'RED' && race.flag === 'RED' && race.redFrom != null) { (race.reds = race.reds || []).push([race.redFrom, el]); race.redFrom = null; }
+        // Début de la neutralisation en cours (SC/FCY) : sert à la règle « arrêts sous SC » du Strategy Engine.
+        if ((ev.flag === 'SC' || ev.flag === 'FCY') && race.flag !== 'SC' && race.flag !== 'FCY') race.neutralFrom = el;
+        if (FLAGS.includes(ev.flag) && ev.flag !== 'SC' && ev.flag !== 'FCY') race.neutralFrom = null;
         if (FLAGS.includes(ev.flag)) race.flag = ev.flag;
         if (ev.flag === 'SC' || ev.flag === 'FCY' || ev.flag === 'RED') race.lapNeutral = true;
         // RED : le chrono continue (art. 7-8/2). Seul le damier fige l'horloge.
@@ -1153,7 +1159,25 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
     if (over && !finished) add('warning', `Plan : arrêt #${over.n} projeté à ${fmt.hms(over.at)}, après la ${P.windowMode === 'window' ? 'fermeture de fenêtre' : 'deadline'} ${fmt.hms(dl)} — raccourcir un relais`, 'PLAN');
     const under = live.find((t) => !t.done && t.at < open);
     if (under && !finished) add('warning', `Plan : arrêt #${under.n} projeté à ${fmt.hms(under.at)}, avant l'ouverture de fenêtre ${fmt.hms(open)} — allonger le relais`, 'PLAN');
-    if ((race.flag === 'SC' || race.flag === 'FCY') && next && next.at - el < 15 * 60) add('info', `${race.flag} : fenêtre d'arrêt avantageuse (target dans ${Math.max(0, Math.round((next.at - el) / 60))} min)`, 'NEUTRAL');
+    /* Règle SC (profil.scRule) : sous SC/FCY, un arrêt obligatoire coûte bien moins qu'en piste libre.
+       1er arrêt : box tout de suite. 2e : seulement si la neutralisation a moins de secondStopMaxMin. Ensuite : rester en piste. */
+    const neutral = race.flag === 'SC' || race.flag === 'FCY';
+    const scR = P.scRule || { maxStops: 1, secondStopMaxMin: 0, gains: ['arrêt moins coûteux'] };
+    let scAdvice = null;
+    if (neutral && !finished && !relays && stopsLeft > 0) {
+      const from = race.neutralFrom != null ? race.neutralFrom : el;
+      const since = Math.max(0, el - from);
+      const done = race.stops.filter((x) => x.inElapsed >= from - 1 && x.type === 'MANDATORY').length + (race.pit && race.pit.inElapsed >= from - 1 ? 1 : 0);
+      const openOk = P.windowMode !== 'window' || el >= open;
+      const closeOk = el < dl;
+      const sinceTxt = fmt.hms(since).slice(3);
+      if (race.pit) scAdvice = null;
+      else if (!openOk || !closeOk) scAdvice = null;
+      else if (done === 0) scAdvice = { level: 'critical', n: 1, text: `${race.flag} : BOX MAINTENANT · ${scR.gains[0]} · plein complet` };
+      else if (done < scR.maxStops && since < scR.secondStopMaxMin * 60) scAdvice = { level: 'warning', n: done + 1, text: `${race.flag} ${sinceTxt} : 2e ARRÊT POSSIBLE si box avant ${scR.secondStopMaxMin}:00 de ${race.flag} · ${scR.gains[1] || ''}` };
+      else scAdvice = { level: 'info', n: 0, text: `${race.flag} ${sinceTxt} : RESTER EN PISTE · ${done} arrêt${done > 1 ? 's' : ''} déjà fait${done > 1 ? 's' : ''} sous ce ${race.flag}, un de plus ne rapporte plus` };
+      if (scAdvice) add(scAdvice.level, scAdvice.text, 'SC');
+    } else if (neutral && next && next.at - el < 15 * 60) add('info', `${race.flag} : fenêtre d'arrêt avantageuse (target dans ${Math.max(0, Math.round((next.at - el) / 60))} min)`, 'NEUTRAL');
     if (race.flag === 'RED') add('info', 'DRAPEAU ROUGE — le chronomètre continue (art. 7-8/2)', 'RED');
     race.stops.forEach((s) => {
       if (s.penalties && s.penalties.length) add('critical', `Arrêt #${s.n} : ${s.penalties.join(' · ')}`, 'PENALTY');
@@ -1165,7 +1189,7 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
     return {
       el, total, remaining, deadline: dl, windowOpen: open, profile: P, toDeadline: dl - el, finished,
       relays, planDone, plannedStops, planLeft, maxStint, drvRemain, drvBoxMax, minDriver: minDrv, driverDeficit, reds,
-      mandDone, totalStops, extras: totalStops - mandDone, stopsLeft,
+      mandDone, totalStops, extras: totalStops - mandDone, stopsLeft, scAdvice,
       stint: stintInfo, last: race.lapLog.length ? race.lapLog[race.lapLog.length - 1].t : null,
       best: greenTimes.length ? Math.min(...greenTimes) : null,
       pace, greenPace, neutralPace, paceMode: neutralNow ? race.flag : 'GREEN', conso, range, boxMax, plan, live, next, projLaps, fuelToFinish, pit, drivers,
@@ -1431,7 +1455,14 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
         if (target != null && (Math.abs(ours - target) > o.syncTolerance || race.clock.running !== running)) evs.push({ type: 'SYNC_CLOCK', elapsed: target, running });
         // Drapeau officiel = dernier drapeau ItsLive significatif (les jaunes locaux ne comptent pas).
         // Comparé à l'état réel du mur à chaque trame : un RESET ou un SETUP validé ne le fait pas perdre.
-        if (info.race_flag !== st.flagRaw) { st.flagRaw = info.race_flag; const f = mapFlag(info.race_flag); if (f) st.official = f; }
+        if (info.race_flag !== st.flagRaw) {
+          const wasLocal = /YELLOW/i.test(st.flagRaw || '') && /SECTOR|TURN|SECTEUR/i.test(st.flagRaw || '');
+          st.flagRaw = info.race_flag; const f = mapFlag(info.race_flag); if (f) st.official = f;
+          // Jaune local : pré-alerte (Val de Vienne 2026 : SC 1'20 à 1'50 après un jaune de secteur). Retirée au retour du vert / au SC.
+          const isLocal = /YELLOW/i.test(info.race_flag || '') && /SECTOR|TURN|SECTEUR/i.test(info.race_flag || '');
+          if (isLocal && !wasLocal) evs.push({ type: 'NOTICE', key: 'YELLOW', level: 'warning', text: `Jaune local (${String(info.race_flag).toLowerCase()}) : SC possible — pilote et carburant prêts au box` });
+          else if (!isLocal && wasLocal) evs.push({ type: 'NOTICE_CLEAR', key: 'YELLOW' });
+        }
         if (st.official && st.official !== race.flag) evs.push({ type: 'RACE_STATUS', flag: st.official });
         // Durée de course ItsLive (elapsed + remaining) différente du setup : à signaler une fois.
         if (!st.durChecked && running && info.remaining_time > 0 && el > 0) {
@@ -1771,9 +1802,10 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
       near(st.stint.time, 2 * s.refLap, 'START : temps stint'); eq(st.stint.laps, 2, 'START : tours');
       near(E.elapsed(g, T0 + 21000), 2 * s.refLap + 10, 'START : horloge continue ensuite');
       // Course lancée, tour réel plus long que la réf. : pas de saut, temps réel conservé
-      let h = E.apply(started(s), s, Object.assign({ at: T0 + 100000 }, lap));
-      near(E.elapsed(h, T0 + 100000), 100, 'tour réel 100 s : pas de saut');
-      near(h.lapLog[0].t, 100, 'tour réel 100 s : temps du tour');
+      const real = Math.round(s.refLap + 8);           // tour réel plus long que la référence
+      let h = E.apply(started(s), s, Object.assign({ at: T0 + real * 1000 }, lap));
+      near(E.elapsed(h, T0 + real * 1000), real, 'tour réel > réf : pas de saut');
+      near(h.lapLog[0].t, real, 'tour réel > réf : temps du tour');
       return `pause ${F3(3 * s.refLap)} s / START ${F3(2 * s.refLap)} s après clics`;
     });
     test('PIT 45 s → arrêt extra', 'Suite', () => {
@@ -2094,6 +2126,56 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
         const { r } = run([f]);
         near(E.elapsed(r, (EP + 3.5) * SEC), 136.7, 'horloge', 0.01);
       });
+      /* ---- Règle SC (Val de Vienne 2026 : 1er arrêt sous SC ≈ 1'20 gagné, 2e ≈ 30 s dans les 6 min, 3e ≈ rien) ---- */
+      test('SC annoncé, 5 obligatoires restants → BOX MAINTENANT', 'Règle SC', () => {
+        const s = base(); let r = started(s);
+        r = E.apply(r, s, { type: 'RACE_STATUS', flag: 'SC', at: T0 + 59 * M });
+        const c = S.compute(r, s, T0 + 59.5 * M);
+        eq(c.scAdvice && c.scAdvice.level, 'critical', 'niveau'); eq(c.scAdvice.n, 1, '1er arrêt');
+        eq(c.alerts[0].code, 'SC', 'alerte en tête');
+        return c.scAdvice.text;
+      });
+      test('1 arrêt fait sous SC, SC depuis < 6 min → 2e ARRÊT POSSIBLE ; ≥ 6 min → RESTER EN PISTE', 'Règle SC', () => {
+        const s = base(); let r = started(s);
+        r = E.apply(r, s, { type: 'RACE_STATUS', flag: 'SC', at: T0 + 59 * M });
+        eq(S.compute(r, s, T0 + 60 * M).scAdvice !== null, true, 'conseil SC');
+        r = E.apply(r, s, { type: 'PIT_IN', at: T0 + 60 * M });
+        eq(S.compute(r, s, T0 + 61 * M).scAdvice, null, 'pas de conseil pendant l\'arrêt');
+        r = E.apply(r, s, { type: 'PIT_OUT', at: T0 + 60 * M + 151000 });
+        const a = S.compute(r, s, T0 + 63.5 * M).scAdvice, b = S.compute(r, s, T0 + 65.5 * M).scAdvice;
+        eq(a.level, 'warning', '2e arrêt à 4 min 30'); eq(b.level, 'info', 'à 6 min 30'); eq(/RESTER EN PISTE/.test(b.text), true, 'texte');
+        return `${a.text.slice(0, 40)}… / ${b.text.slice(0, 40)}…`;
+      });
+      test('2 arrêts sous le même SC → RESTER EN PISTE ; vert → plus de conseil SC', 'Règle SC', () => {
+        const s = base(); let r = started(s);
+        r = E.apply(r, s, { type: 'RACE_STATUS', flag: 'SC', at: T0 + 59 * M });
+        r = pit(r, s, 59.5, 151); r = pit(r, s, 64.3, 151);
+        const c = S.compute(r, s, T0 + 67.2 * M);
+        eq(c.mandDone, 2, 'obligatoires'); eq(c.scAdvice.level, 'info', 'rester en piste');
+        r = E.apply(r, s, { type: 'RACE_STATUS', flag: 'GREEN', at: T0 + 72 * M });
+        eq(r.neutralFrom, null, 'fin de neutralisation'); eq(S.compute(r, s, T0 + 73 * M).scAdvice, null, 'vert');
+        r = E.apply(r, s, { type: 'RACE_STATUS', flag: 'SC', at: T0 + 118 * M });
+        const d = S.compute(r, s, T0 + 118.5 * M).scAdvice;
+        eq(d.level, 'critical', 'nouveau SC : BOX de nouveau');
+        return 'SC2 → BOX MAINTENANT (3 restants)';
+      });
+      test('Tous les obligatoires faits ou deadline passée → pas de conseil SC', 'Règle SC', () => {
+        const s = base(); let r = started(s);
+        [20, 60, 100, 140, 180].forEach((m) => { r = pit(r, s, m, 151); });
+        r = E.apply(r, s, { type: 'RACE_STATUS', flag: 'SC', at: T0 + 200 * M });
+        eq(S.compute(r, s, T0 + 201 * M).scAdvice, null, '5/5');
+        let r2 = started(s); r2 = E.apply(r2, s, { type: 'RACE_STATUS', flag: 'SC', at: T0 + 225 * M });
+        eq(S.compute(r2, s, T0 + 226 * M).scAdvice, null, 'après 3:40');
+        return 'OK';
+      });
+      test('ItsLive : jaune de secteur → pré-alerte « SC possible », retirée au retour du vert', 'Règle SC', () => {
+        const s = base(); let r = E.createRace(s, T0);
+        const a = L.createAdapter({ carNumber: '7', record: false }); const seen = [];
+        const fr = (i, flag) => ({ t: T0 + i * 5000, info: { elapsed_time: i * 5000 + 1000, remaining_time: 1e7, race_flag: flag, data_id: i }, ranking: [{ number: '7', pos: 1, total_lap: 1, status_img: null, total_pit_stop: 0 }] });
+        ['GREEN', 'YELLOW SECTOR 2', 'YELLOW SECTOR 2', 'GREEN'].forEach((f, i) => { a.feed(fr(i + 1, f)); a.poll(r, s).forEach((ev) => { if (ev.key === 'YELLOW') seen.push(ev.type + (ev.level ? ':' + ev.level : '')); if (ev.type !== 'NOTICE') r = E.apply(r, s, ev); }); });
+        eq(seen.join(' > '), 'NOTICE:warning > NOTICE_CLEAR', 'séquence'); eq(r.flag, 'GREEN', 'drapeau inchangé');
+        return seen.join(' > ');
+      });
       test('2 Tours d\'Horloge #55 : trame ItsLive périmée (elapsed qui recule de 9 s) → pas de recalage arrière', 'Live ItsLive', () => {
         const FX = (typeof module === 'object' && module.exports) ? require('./fixtures.js') : globalThis.EswFixtures;
         const fx = FX.th2026S75Car55();
@@ -2378,7 +2460,7 @@ details summary{cursor:pointer;font-size:12px;letter-spacing:.12em;color:var(--m
     $('eta').textContent = race.clock.running && st.remaining > 0 ? `FIN ≈ ${hhmm(nowMs + st.remaining * 1000)}` : '';
     $('sourceLbl').textContent = adapter.source + (mode === 'MANUAL' && !setup.virtualLaps ? ' · OFF' : '');
     $('srcKpi').textContent = mode === 'LIVE' ? 'ITSLIVE' : mode === 'REPLAY' ? 'REJEU' : mode === 'SIMULATION' ? 'SIMULATION' : (setup.virtualLaps ? 'VIRTUEL' : 'MANUEL');
-    $('footer').textContent = `${prof.name} · ${prof.permit} · Race Engine / Strategy Engine / Timing Adapter / Strategy Wall · V6.2`;
+    $('footer').textContent = `${prof.name} · ${prof.permit} · Race Engine / Strategy Engine / Timing Adapter / Strategy Wall · V6.3`;
 
     // Pilote / stint
     $('curDriver').textContent = dn(race.driver);
